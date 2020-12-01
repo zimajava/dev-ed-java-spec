@@ -1,7 +1,9 @@
-package org.zipli.socknet.security.util;
+package org.zipli.socknet.security.jwt;
+
 
 import io.jsonwebtoken.*;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -10,8 +12,8 @@ import org.zipli.socknet.security.services.UserDetailsImpl;
 import java.util.Date;
 
 @Component
-@Slf4j
 public class JwtUtils {
+	private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
 	@Value("${bezkoder.app.jwtSecret}")
 	private String jwtSecret;
@@ -19,12 +21,10 @@ public class JwtUtils {
 	@Value("${bezkoder.app.jwtExpirationMs}")
 	private int jwtExpirationMs;
 
-	public String generateJwtToken(Authentication authentication) {
-
-		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+	public String generateJwtToken(UserDetailsImpl userPrincipal) {
 
 		return Jwts.builder()
-				.setSubject((userDetails.getUsername()))
+				.setSubject((userPrincipal.getUsername()))
 				.setIssuedAt(new Date())
 				.setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
 				.signWith(SignatureAlgorithm.HS512, jwtSecret)
@@ -40,9 +40,15 @@ public class JwtUtils {
 			Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
 			return true;
 		} catch (SignatureException e) {
-			log.error("Invalid JWT signature: {}", e.getMessage());
-		} catch (Exception e){
-			log.error("Error JWT: {}", e.getMessage());
+			logger.error("Invalid JWT signature: {}", e.getMessage());
+		} catch (MalformedJwtException e) {
+			logger.error("Invalid JWT token: {}", e.getMessage());
+		} catch (ExpiredJwtException e) {
+			logger.error("JWT token is expired: {}", e.getMessage());
+		} catch (UnsupportedJwtException e) {
+			logger.error("JWT token is unsupported: {}", e.getMessage());
+		} catch (IllegalArgumentException e) {
+			logger.error("JWT claims string is empty: {}", e.getMessage());
 		}
 
 		return false;
