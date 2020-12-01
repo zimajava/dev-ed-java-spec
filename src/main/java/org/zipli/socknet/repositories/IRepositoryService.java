@@ -1,4 +1,4 @@
-package repositories;
+package org.zipli.socknet.repositories;
 
 import java.util.List;
 import java.util.Optional;
