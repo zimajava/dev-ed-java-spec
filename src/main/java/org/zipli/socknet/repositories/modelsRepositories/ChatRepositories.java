@@ -1,6 +1,6 @@
-package repositories.modelsRepositories;
+package org.zipli.socknet.repositories.modelsRepositories;
 
-import models.Chat;
+import org.zipli.socknet.models.Chat;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 

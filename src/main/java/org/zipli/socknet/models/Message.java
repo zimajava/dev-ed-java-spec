@@ -1,4 +1,4 @@
-package models;
+package org.zipli.socknet.models;
 
 import com.sun.mail.iap.ByteArray;
 import lombok.Getter;

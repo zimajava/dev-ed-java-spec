@@ -1,6 +1,6 @@
-package repositories.modelsRepositories;
+package org.zipli.socknet.repositories.modelsRepositories;
 
-import models.Message;
+import org.zipli.socknet.models.Message;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;

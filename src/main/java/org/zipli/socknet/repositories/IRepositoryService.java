@@ -1,13 +1,13 @@
-package repositories;
+package org.zipli.socknet.repositories;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface IRepositoryService<T> {
-    public void save(T t);
-    public List<T> findAll();
-    public T update(T t);
-    public void delete(T t);
+    void save(T t);
+    List<T> findAll();
+    T update(T t);
+    void delete(T t);
 
     Optional<T> getOneByParams(Object... obj);
     List<T> getByParams(Object... obj);
