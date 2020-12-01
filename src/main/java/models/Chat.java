@@ -5,21 +5,29 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Document
 public class Chat {
     @Id
-    private long id;
+    private long chatId;
 
     private String chatName;
     private boolean isPrivate;
-    private String message;
+    private List<Long> idMessage;
 
-    public Chat(long id, String chatName, boolean isPrivate, String message) {
-        this.id = id;
+    public Chat(long chatId, boolean isPrivate, List<Long> idMessage) {
+        this.chatId = chatId;
+        this.isPrivate = isPrivate;
+        this.idMessage = idMessage;
+    }
+
+    public Chat(long chatId, String chatName, boolean isPrivate, List<Long> idMessage) {
+        this.chatId = chatId;
         this.chatName = chatName;
         this.isPrivate = isPrivate;
-        this.message = message;
+        this.idMessage = idMessage;
     }
 }

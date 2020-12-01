@@ -9,8 +9,8 @@ public interface IRepositoryService<T> {
     public T update(T t);
     public void delete(T t);
 
-    public Optional<T> getOneByParams(Object... obj);
-    public List<T> getByParams(Object... obj);
-    public List<T> updateByParams(Object... obj);
-    public List<T> deleteByParams(Object... obj);
+    Optional<T> getOneByParams(Object... obj);
+    List<T> getByParams(Object... obj);
+    List<T> updateByParams(Object... obj);
+    List<T> deleteByParams(Object... obj);
 }

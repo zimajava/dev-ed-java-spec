@@ -15,11 +15,24 @@ public class User {
     private String email;
     private String password;
     private String userName;
+    private String nickName;
+    private boolean isConfirm;
 
-    public User(long id, String email, String password, String userName) {
+    public User(long id, String email, String password, String userName, String nickName) {
         this.id = id;
         this.email = email;
         this.password = password;
         this.userName = userName;
+        this.nickName = nickName;
+        this.isConfirm = false;
+    }
+
+    public User(long id, String email, String password, String userName, String nickName, boolean isConfirm) {
+        this.id = id;
+        this.email = email;
+        this.password = password;
+        this.userName = userName;
+        this.nickName = nickName;
+        this.isConfirm = isConfirm;
     }
 }

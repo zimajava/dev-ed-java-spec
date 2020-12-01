@@ -7,9 +7,7 @@ import java.util.List;
 
 @Repository
 public interface MessageRepository extends MongoRepository<Message, Long> {
-    List<Message> getMessagesByInputChat(String inputChat);
-    List<Message> getMessagesByOutputChat(String outputChat);
-    Message getMessageByInputChat(String inputChat);
-    Message getMessageByOutputChat(String outputChat);
-    Long getMessageById(Long id);
+    List<Message> getMessagesByChatId(Long id);
+    List<Message> getMessagesByAuthorId(Long userId);
+    String getMessageByMessageId(Long id);
 }

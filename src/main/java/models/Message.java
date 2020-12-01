@@ -1,5 +1,6 @@
 package models;
 
+import com.sun.mail.iap.ByteArray;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
@@ -10,16 +11,24 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document
 public class Message {
     @Id
-    private long id;
+    private long messageId;
 
-    private String inputChat;
-    private String outputChat;
-    private String message;
+    private long authorId;
+    private long chatId;
+    private String textMessage;
+    private ByteArray message;
 
-    public Message(long id, String to, String outputChat, String message) {
-        this.id = id;
-        this.inputChat = to;
-        this.outputChat = outputChat;
+    public Message(long messageId, long authorId, long chatId, String textMessage) {
+        this.messageId = messageId;
+        this.authorId = authorId;
+        this.chatId = chatId;
+        this.textMessage = textMessage;
+    }
+
+    public Message(long messageId, long authorId, long chatId, ByteArray message) {
+        this.messageId = messageId;
+        this.authorId = authorId;
+        this.chatId = chatId;
         this.message = message;
     }
 }
