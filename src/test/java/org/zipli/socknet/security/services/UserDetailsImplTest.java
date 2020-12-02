@@ -3,21 +3,25 @@ package org.zipli.socknet.security.services;
 import org.junit.jupiter.api.Test;
 import org.zipli.socknet.models.User;
 
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class UserDetailsImplTest {
 
-    private UserDetailsImpl userDetails = new UserDetailsImpl(new User(1,"dsadasd","dsadsad","dasdasdasd","dsad"));
+    private UserDetailsImpl userDetails = new UserDetailsImpl(new User(1,
+            "dsadasd",
+            "dsadsad",
+            "dasdasdasd",
+            "dsad"));
 
     @Test
     void getPassword() {
-        assertEquals(userDetails.getPassword(),"dsadsad");
+        assertEquals(userDetails.getPassword(), "dsadsad");
     }
 
     @Test
     void getUsername() {
-        assertEquals(userDetails.getUsername(),"dasdasdasd");
+        assertEquals(userDetails.getUsername(), "dasdasdasd");
     }
 
     @Test
@@ -42,8 +46,18 @@ class UserDetailsImplTest {
 
     @Test
     void equals1() {
-        UserDetailsImpl userDetailsOne = new UserDetailsImpl(new User(1,"dsadasd","dsadsad","dasdasdasd","sas"));
-        UserDetailsImpl userDetailsTwo = new UserDetailsImpl(new User(1,"dsadasd","dsadsad","dasdasdasd","saa"));
+        UserDetailsImpl userDetailsOne = new UserDetailsImpl(
+                new User(1,
+                        "dsadasd",
+                        "dsadsad",
+                        "dasdasdasd",
+                        "sas"));
+        UserDetailsImpl userDetailsTwo = new UserDetailsImpl(
+                new User(1,
+                        "dsadasd",
+                        "dsadsad",
+                        "dasdasdasd",
+                        "saa"));
 
         assertTrue(userDetailsOne.equals(userDetailsTwo));
         assertTrue(userDetailsTwo.equals(userDetailsOne));

@@ -17,7 +17,12 @@ class JwtUtilsTest {
 
     @Test
     void generateJwtToken() {
-        UserDetailsImpl userDetails = new UserDetailsImpl(new User(1, "dsadasd", "dsadsad", "dasdasdasd","sas"));
+        UserDetailsImpl userDetails = new UserDetailsImpl(
+                new User(1,
+                        "dsadasd",
+                        "dsadsad",
+                        "dasdasdasd",
+                        "sas"));
 
         String jwt = jwtUtils.generateJwtToken(userDetails);
 
@@ -26,7 +31,12 @@ class JwtUtilsTest {
 
     @Test
     void getUserNameFromJwtToken() {
-        UserDetailsImpl userDetails = new UserDetailsImpl(new User(1, "dsadasd", "dsadsad", "dasdasdasd","sas"));
+        UserDetailsImpl userDetails = new UserDetailsImpl(
+                new User(1,
+                        "dsadasd",
+                        "dsadsad",
+                        "dasdasdasd",
+                        "sas"));
 
         String jwt = jwtUtils.generateJwtToken(userDetails);
         String usernameByJwt = jwtUtils.getUserNameFromJwtToken(jwt);
@@ -36,7 +46,11 @@ class JwtUtilsTest {
 
     @Test
     void validateJwtTokenPass() {
-        UserDetailsImpl userDetails = new UserDetailsImpl(new User(1, "dsadasd", "dsadsad", "dasdasdasd","sas"));
+        UserDetailsImpl userDetails = new UserDetailsImpl(new User(1,
+                "dsadasd",
+                "dsadsad",
+                "dasdasdasd",
+                "sas"));
 
         String jwtFalse = "noValidJwt";
         String jwtTry = jwtUtils.generateJwtToken(userDetails);
