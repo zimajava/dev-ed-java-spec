@@ -13,14 +13,16 @@ import org.zipli.socknet.repositories.modelsRepositories.UserRepository;
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-	@Autowired
-	UserRepository userRepository;
+	private final UserRepository userRepository;
+
+	public UserDetailsServiceImpl(UserRepository userRepository) {
+		this.userRepository = userRepository;
+	}
 
 	@Override
 	@Transactional
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		User user = userRepository.findByUserName(username);
-
 		return new UserDetailsImpl(user);
 	}
 
