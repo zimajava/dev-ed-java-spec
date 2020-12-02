@@ -3,7 +3,7 @@ package org.zipli.socknet.security.util;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.zipli.socknet.model.User;
+import org.zipli.socknet.models.User;
 import org.zipli.socknet.security.jwt.JwtUtils;
 import org.zipli.socknet.security.services.UserDetailsImpl;
 
@@ -17,7 +17,7 @@ class JwtUtilsTest {
 
     @Test
     void generateJwtToken() {
-        UserDetailsImpl userDetails = new UserDetailsImpl(new User(1, "dsadasd", "dsadsad", "dasdasdasd"));
+        UserDetailsImpl userDetails = new UserDetailsImpl(new User(1, "dsadasd", "dsadsad", "dasdasdasd","sas"));
 
         String jwt = jwtUtils.generateJwtToken(userDetails);
 
@@ -26,7 +26,7 @@ class JwtUtilsTest {
 
     @Test
     void getUserNameFromJwtToken() {
-        UserDetailsImpl userDetails = new UserDetailsImpl(new User(1, "dsadasd", "dsadsad", "dasdasdasd"));
+        UserDetailsImpl userDetails = new UserDetailsImpl(new User(1, "dsadasd", "dsadsad", "dasdasdasd","sas"));
 
         String jwt = jwtUtils.generateJwtToken(userDetails);
         String usernameByJwt = jwtUtils.getUserNameFromJwtToken(jwt);
@@ -36,7 +36,7 @@ class JwtUtilsTest {
 
     @Test
     void validateJwtTokenPass() {
-        UserDetailsImpl userDetails = new UserDetailsImpl(new User(1, "dsadasd", "dsadsad", "dasdasdasd"));
+        UserDetailsImpl userDetails = new UserDetailsImpl(new User(1, "dsadasd", "dsadsad", "dasdasdasd","sas"));
 
         String jwtFalse = "noValidJwt";
         String jwtTry = jwtUtils.generateJwtToken(userDetails);
