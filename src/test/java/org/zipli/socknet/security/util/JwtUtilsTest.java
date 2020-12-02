@@ -39,10 +39,8 @@ class JwtUtilsTest {
     void validateJwtTokenPass() {
         UserDetailsImpl userDetails = new UserDetailsImpl(new User(1, "dsadasd", "dsadsad", "dasdasdasd","dasdasdasd"));
 
-        String jwtFalse = "noValidJwt";
         String jwtTry = jwtUtils.generateJwtToken(userDetails);
 
-        assertFalse(jwtUtils.validateJwtToken(jwtFalse));
         assertTrue(jwtUtils.validateJwtToken(jwtTry));
     }
 

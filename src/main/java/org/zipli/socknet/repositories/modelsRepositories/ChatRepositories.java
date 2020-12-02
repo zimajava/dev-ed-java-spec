@@ -9,6 +9,6 @@ import java.util.List;
 @Repository
 public interface ChatRepositories extends MongoRepository<Chat, Long> {
     Long findChatIdByChatName(String name);
-    String findChatByChatId(Long id);
+    Chat findChatByChatId(Long id);
     List<Chat> getChatsByPrivate(boolean isPrivate);
 }
