@@ -2,9 +2,11 @@ package org.zipli.socknet.security.services;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.zipli.socknet.models.User;
+
 import java.util.Collection;
 import java.util.Objects;
-import org.zipli.socknet.model.User;
+
 
 public class UserDetailsImpl implements UserDetails {
 
@@ -24,7 +26,7 @@ public class UserDetailsImpl implements UserDetails {
 	}
 	@Override
 	public String getPassword() {
-		return user.getPass();
+		return user.getPassword();
 	}
 	@Override
 	public String getUsername() { return user.getUserName(); }
