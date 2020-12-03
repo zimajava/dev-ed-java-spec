@@ -1,5 +1,6 @@
 package org.zipli.socknet.security.jwt;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+@Slf4j
 public class AuthTokenFilter extends OncePerRequestFilter {
 
     private final JwtUtils jwtUtils;
@@ -38,9 +40,12 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+                log.info("User authentication");
+            }else {
+                log.info("Cannot set user authentication: no valid Jwt token");
             }
         } catch (Exception e) {
-            logger.error("Cannot set user authentication: ", e);
+            log.error("Cannot set user authentication: ", e);
         }
 
         filterChain.doFilter(request, response);

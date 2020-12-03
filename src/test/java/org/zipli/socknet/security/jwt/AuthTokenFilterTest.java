@@ -32,7 +32,6 @@ class AuthTokenFilterTest {
 
         Mockito.when(mockReq.getRequestURI()).thenReturn("/home");
         Mockito.when(mockReq.getParameter("jwt")).thenReturn("eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJkYXNkYXNkYXNkIiwiaWF0IjoxNjA2OTIxMzEzLCJleHAiOjE2MDcwMDc3MTN9.QPGfBCVwg5SJ6y2HDONEnTjO7K1RLPWQvEjSdbbpNxtD1d_JLYQullURnh856NJAGSpahskHygGZn62eeg68-A");
-//        Mockito.when(mockReq.getQueryString()).thenReturn("");
         try {
             filter.doFilter(mockReq, mockResp, mockFilterChain);
         } catch (ServletException | IOException e) {
