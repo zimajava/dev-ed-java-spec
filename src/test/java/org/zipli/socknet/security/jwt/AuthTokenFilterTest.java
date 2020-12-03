@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
 @SpringBootTest
 class AuthTokenFilterTest {
 
@@ -53,6 +55,7 @@ class AuthTokenFilterTest {
         try {
             filter.doFilter(mockReq, mockResp, mockFilterChain);
         } catch (ServletException | IOException e) {
+            assertNotEquals("",e.getMessage());
             e.printStackTrace();
         }
     }

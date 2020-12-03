@@ -1,19 +1,19 @@
 package org.zipli.socknet.security.services;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.zipli.socknet.models.User;
 import org.zipli.socknet.repositories.modelsRepositories.UserRepository;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
+@DataMongoTest
+@ExtendWith(SpringExtension.class)
 class UserDetailsServiceImplTest {
-
-    @Autowired
-    UserRepository userRepository;
 
     private User user = new User(51,
             "asdsda@asdasd.sad",
@@ -22,14 +22,27 @@ class UserDetailsServiceImplTest {
             "dsaaaaa");
 
     @Test
-    void loadUserByUsername() {
+    void loadUserByUsernamePass(@Autowired UserRepository userRepository) {
+
         userRepository.save(user);
 
         UserDetailsServiceImpl userDetailsService = new UserDetailsServiceImpl(userRepository);
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUserName());
 
         assertEquals(userDetails.getUsername(), user.getUserName());
-        userRepository.deleteAllByUserName(user.getUserName());
+    }
+
+    @Test
+    void loadUserByUsernameFail(@Autowired UserRepository userRepository) throws NullPointerException{
+
+        UserDetailsServiceImpl userDetailsService = new UserDetailsServiceImpl(userRepository);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUserName());
+
+        try {
+            userDetails.getUsername();
+        }catch (NullPointerException e){
+            assertNotEquals("", e.getMessage());
+        }
     }
 
 }

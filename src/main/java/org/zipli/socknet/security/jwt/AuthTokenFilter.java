@@ -18,7 +18,6 @@ import java.io.IOException;
 public class AuthTokenFilter extends OncePerRequestFilter {
 
     private final JwtUtils jwtUtils;
-
     private final UserDetailsServiceImpl userDetailsService;
 
     public AuthTokenFilter(JwtUtils jwtUtils, UserDetailsServiceImpl userDetailsService) {
@@ -43,6 +42,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 log.info("User authentication");
             }else {
                 log.info("Cannot set user authentication: no valid Jwt token");
+                throw new Exception();
             }
         } catch (Exception e) {
             log.error("Cannot set user authentication: ", e);

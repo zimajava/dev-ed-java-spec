@@ -9,14 +9,11 @@ import java.util.List;
 public interface UserRepository extends MongoRepository<User, Long> {
     User getUserByEmail(String email);
     User getByUserName(String userName);
-    User findByUserName(String userName);
-    User findByEmail(String email);
     List<User> getUsersByNickName(String nickName);
     List<User> getUserByConfirm(boolean isConfirm);
     void deleteByEmail(String email);
-    List<User> deleteAllByUserName(String userName);
     List<User> deleteByNickName(String nickName);
     boolean existsByUserName(String userName);
     boolean existsByEmail(String email);
-
+    boolean deleteByUserName(String userName);
 }
