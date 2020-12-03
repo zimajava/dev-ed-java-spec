@@ -11,7 +11,6 @@ import java.util.Objects;
 public class UserDetailsImpl implements UserDetails {
 
     private static final long serialVersionUID = 1L;
-
     private User user;
 
     private Collection<? extends GrantedAuthority> authorities;
@@ -56,12 +55,23 @@ public class UserDetailsImpl implements UserDetails {
     }
 
     @Override
+    public int hashCode() {
+        return Objects.hash(user.getId(),
+                user.getUserName(),
+                user.getEmail(),
+                user.getPassword(),
+                user.getNickName(),
+                user.isConfirm());
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o)
             return true;
         if (o == null || getClass() != o.getClass())
             return false;
         UserDetailsImpl user = (UserDetailsImpl) o;
-        return Objects.equals(this.user.getUserName(), user.getUsername());
+        return  Objects.equals(this.user.getUserName(), user.getUsername())
+                && Objects.equals(this.user.getPassword(),user.getPassword());
     }
 }
