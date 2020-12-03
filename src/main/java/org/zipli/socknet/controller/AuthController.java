@@ -1,29 +1,32 @@
 package org.zipli.socknet.controller;
 
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.zipli.socknet.models.User;
+import org.zipli.socknet.payload.request.LoginRequest;
+import org.zipli.socknet.payload.request.SignupRequest;
+import org.zipli.socknet.repositories.modelsRepositories.UserRepository;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/zipli/auth")
 public class AuthController {
-    @GetMapping("/sign-up")
-    public String registration(Model model) {
-        // method realization
-        return "registration";
+
+    private final UserRepository userRepository;
+
+    public AuthController(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
-    @PostMapping("/sign-up")
-    public String addUser(@ModelAttribute("userForm") @Validated User userForm, BindingResult bindingResult, Model model) {
+    @PostMapping("/signup")
+    public ResponseEntity<?> addUser(@Valid @RequestBody SignupRequest signupRequest) {
         //method realization
-        return "/redirect:/";
+        return ResponseEntity.ok("User registered");
     }
 
-    @PostMapping("/sign-in")
-    public String authenticate() {
+    @PostMapping("/signin")
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         //method realization
-        return "/";
+        return ResponseEntity.ok("Here will be JwtResponse");
     }
 }
