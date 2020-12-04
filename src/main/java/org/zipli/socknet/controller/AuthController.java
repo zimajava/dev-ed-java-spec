@@ -12,7 +12,7 @@ import org.zipli.socknet.payload.request.SignupRequest;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/zipli/auth")
+@RequestMapping(value = "/zipli/auth", consumes = MediaType.APPLICATION_JSON_VALUE)
 public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<?> addUser(@Valid @RequestBody SignupRequest signupRequest) {
@@ -20,7 +20,7 @@ public class AuthController {
         return ResponseEntity.ok("User registered");
     }
 
-    @PostMapping(value = "/signin", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         //method realization
         return ResponseEntity.ok("Here will be JwtResponse");
