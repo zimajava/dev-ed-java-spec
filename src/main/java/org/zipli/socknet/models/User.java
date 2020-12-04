@@ -1,6 +1,8 @@
 package org.zipli.socknet.models;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -8,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Getter
 @Setter
 @Document
+@NoArgsConstructor
 public class User {
     @Id
     private long id;
@@ -27,12 +30,4 @@ public class User {
         this.isConfirm = false;
     }
 
-    public User(long id, String email, String password, String userName, String nickName, boolean isConfirm) {
-        this.id = id;
-        this.email = email;
-        this.password = password;
-        this.userName = userName;
-        this.nickName = nickName;
-        this.isConfirm = isConfirm;
-    }
 }

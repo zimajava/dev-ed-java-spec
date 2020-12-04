@@ -9,5 +9,5 @@ import java.util.List;
 public interface MessageRepository extends MongoRepository<Message, Long> {
     List<Message> getMessagesByChatId(Long id);
     List<Message> getMessagesByAuthorId(Long userId);
-    String getMessageByMessageId(Long id);
+    Message getMessageByMessageId(Long id);
 }
