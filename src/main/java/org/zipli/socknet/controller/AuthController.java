@@ -1,10 +1,13 @@
 package org.zipli.socknet.controller;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.zipli.socknet.payload.request.LoginRequest;
 import org.zipli.socknet.payload.request.SignupRequest;
-import org.zipli.socknet.repositories.modelsRepositories.UserRepository;
 
 import javax.validation.Valid;
 
@@ -17,7 +20,7 @@ public class AuthController {
         return ResponseEntity.ok("User registered");
     }
 
-    @PostMapping("/signin")
+    @PostMapping(value = "/signin", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         //method realization
         return ResponseEntity.ok("Here will be JwtResponse");
