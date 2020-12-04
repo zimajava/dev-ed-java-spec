@@ -12,9 +12,8 @@ import org.zipli.socknet.repositories.modelsRepositories.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
 import org.zipli.socknet.security.services.UserDetailsImpl;
 
-import java.util.List;
 
-@Service("emailConfirmationService")
+@Service
 public class EmailConfirmationService {
 
     @Autowired
