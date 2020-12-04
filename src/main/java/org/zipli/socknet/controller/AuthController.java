@@ -11,13 +11,6 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/zipli/auth")
 public class AuthController {
-
-    private final UserRepository userRepository;
-
-    public AuthController(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
     @PostMapping("/signup")
     public ResponseEntity<?> addUser(@Valid @RequestBody SignupRequest signupRequest) {
         //method realization
