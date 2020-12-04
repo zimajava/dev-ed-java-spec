@@ -81,4 +81,5 @@ class AuthTokenFilterTest {
     void failAuthException(){
         fail("AuthenticationException must be thrown");
     }
+
 }
