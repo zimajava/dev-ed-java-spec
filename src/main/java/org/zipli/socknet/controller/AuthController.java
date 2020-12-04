@@ -21,6 +21,16 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping(value = "/zipli/auth", consumes = MediaType.APPLICATION_JSON_VALUE)
 public class AuthController {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private JwtUtils jwtUtils;
+
+    @Autowired
+    private EmailConfirmationService emailConfirmationService;
+
     @PostMapping("/signup")
     public ResponseEntity<?> addUser(@Valid @RequestBody SignupRequest signupRequest) {
         //method realization
@@ -32,15 +42,6 @@ public class AuthController {
         //method realization
         return ResponseEntity.ok("Here will be JwtResponse");
     }
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private JwtUtils jwtUtils;
-
-    @Autowired
-    private EmailConfirmationService emailConfirmationService;
 
     @PostMapping(value = "/emailConfirmation")
     public ResponseEntity<?> sendConfirmationEmail(User user) {
