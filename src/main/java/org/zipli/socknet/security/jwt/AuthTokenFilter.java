@@ -1,18 +1,18 @@
 package org.zipli.socknet.security.jwt;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.zipli.socknet.exception.AuthenticationException;
 import org.zipli.socknet.security.services.UserDetailsServiceImpl;
-
 import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+
 
 @Slf4j
 public class AuthTokenFilter extends OncePerRequestFilter {
@@ -25,10 +25,9 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         this.userDetailsService = userDetailsService;
     }
 
+    @SneakyThrows
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
-        try {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain){
             String jwt = request.getParameter("jwt");
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
                 String username = jwtUtils.getUserNameFromJwtToken(jwt);
@@ -42,11 +41,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 log.info("User authentication");
             }else {
                 log.info("Cannot set user authentication: no valid Jwt token");
-                throw new Exception();
+                throw new AuthenticationException();
             }
-        } catch (Exception e) {
-            log.error("Cannot set user authentication: ", e);
-        }
 
         filterChain.doFilter(request, response);
     }

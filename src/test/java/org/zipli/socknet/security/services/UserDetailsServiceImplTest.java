@@ -1,5 +1,6 @@
 package org.zipli.socknet.security.services;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.zipli.socknet.repositories.modelsRepositories.UserRepository;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataMongoTest
+@Slf4j
 @ExtendWith(SpringExtension.class)
 class UserDetailsServiceImplTest {
 
@@ -40,8 +42,9 @@ class UserDetailsServiceImplTest {
 
         try {
             userDetails.getUsername();
+            fail("NullPointerException must be thrown");
         }catch (NullPointerException e){
-            assertNotEquals("", e.getMessage());
+            assertNull(e.getMessage());
         }
     }
 

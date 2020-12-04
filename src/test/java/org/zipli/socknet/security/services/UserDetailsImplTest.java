@@ -8,11 +8,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class UserDetailsImplTest {
 
-    private UserDetailsImpl userDetails = new UserDetailsImpl(new User(1,
-            "dsadasd",
-            "dsadsad",
-            "dasdasdasd",
-            "dsad"));
+    private UserDetailsImpl userDetails = new UserDetailsImpl(
+            new User(1,
+                    "dsadasd",
+                    "dsadsad",
+                    "dasdasdasd",
+                    "dsad"));
 
     @Test
     void getPassword() {
@@ -61,6 +62,5 @@ class UserDetailsImplTest {
 
         assertTrue(userDetailsOne.equals(userDetailsTwo));
         assertTrue(userDetailsTwo.equals(userDetailsOne));
-
     }
 }

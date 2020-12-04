@@ -9,7 +9,7 @@ import org.zipli.socknet.models.User;
 import org.zipli.socknet.repositories.modelsRepositories.UserRepository;
 
 @Service
-public class UserDetailsServiceImpl implements UserDetailsService {
+public class UserDetailsServiceImpl implements UserDetailsService  {
 
 	private final UserRepository userRepository;
 

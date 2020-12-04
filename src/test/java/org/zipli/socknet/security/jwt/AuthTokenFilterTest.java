@@ -1,9 +1,11 @@
 package org.zipli.socknet.security.jwt;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.zipli.socknet.exception.AuthenticationException;
 import org.zipli.socknet.security.services.UserDetailsServiceImpl;
 
 import javax.servlet.FilterChain;
@@ -12,8 +14,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
+@Slf4j
 @SpringBootTest
 class AuthTokenFilterTest {
 
@@ -36,7 +40,7 @@ class AuthTokenFilterTest {
         Mockito.when(mockReq.getParameter("jwt")).thenReturn("eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJkYXNkYXNkYXNkIiwiaWF0IjoxNjA2OTIxMzEzLCJleHAiOjE2MDcwMDc3MTN9.QPGfBCVwg5SJ6y2HDONEnTjO7K1RLPWQvEjSdbbpNxtD1d_JLYQullURnh856NJAGSpahskHygGZn62eeg68-A");
         try {
             filter.doFilter(mockReq, mockResp, mockFilterChain);
-        } catch (ServletException | IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -54,9 +58,15 @@ class AuthTokenFilterTest {
 
         try {
             filter.doFilter(mockReq, mockResp, mockFilterChain);
-        } catch (ServletException | IOException e) {
-            assertNotEquals("",e.getMessage());
-            e.printStackTrace();
+            failAuthException();
+        } catch ( ServletException | IOException e) {
+            failAuthException();
+        } catch (AuthenticationException e){
+            assertEquals("Cannot set user authentication", e.getMessage());
         }
+    }
+
+    void failAuthException(){
+        fail("AuthenticationException must be thrown");
     }
 }

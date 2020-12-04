@@ -10,7 +10,7 @@ public interface UserRepository extends MongoRepository<User, Long> {
     User getUserByEmail(String email);
     User getByUserName(String userName);
     List<User> getUsersByNickName(String nickName);
-    List<User> getUserByConfirm(boolean isConfirm);
+    List<User> getAllUserByConfirm(boolean isConfirm);
     void deleteByEmail(String email);
     List<User> deleteByNickName(String nickName);
     boolean existsByUserName(String userName);
