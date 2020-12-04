@@ -32,6 +32,6 @@ class EmailConfirmationServiceTest {
     void sendConfirmationEmail() {
 
         assertTrue(emailConfirmationService.sendConfirmationEmail(user)
-                .equals(ResponseEntity.badRequest().body("This email already exists!")));
+                .equals(ResponseEntity.ok("User registered successfully!")));
     }
 }
