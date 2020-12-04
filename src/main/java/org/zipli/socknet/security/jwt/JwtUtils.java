@@ -4,6 +4,7 @@ package org.zipli.socknet.security.jwt;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.zipli.socknet.security.services.UserDetailsImpl;
 
@@ -18,7 +19,7 @@ public class JwtUtils {
 	@Value("${app.jwtExpirationMs}")
 	private int jwtExpirationMs;
 
-	public String generateJwtToken(UserDetailsImpl userPrincipal) {
+	public String generateJwtToken(UserDetails userPrincipal) {
 		return Jwts.builder()
 				.setSubject((userPrincipal.getUsername()))
 				.setIssuedAt(new Date())

@@ -5,7 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.zipli.socknet.exception.AuthenticationException;
+import org.zipli.socknet.models.User;
+import org.zipli.socknet.security.services.UserDetailsImpl;
 import org.zipli.socknet.security.services.UserDetailsServiceImpl;
 
 import javax.servlet.FilterChain;
@@ -32,15 +35,24 @@ class AuthTokenFilterTest {
 
         AuthTokenFilter filter = new AuthTokenFilter(jwtUtils, userDetailsService);
 
+        UserDetails userDetails = new UserDetailsImpl(new User(1,
+                "dsadasd",
+                "dsadsad",
+                "dasdasdasd",
+                "dsad"));
+
+        String jwtToken = jwtUtils.generateJwtToken(userDetails);
+
         HttpServletRequest mockReq = Mockito.mock(HttpServletRequest.class);
         HttpServletResponse mockResp = Mockito.mock(HttpServletResponse.class);
         FilterChain mockFilterChain = Mockito.mock(FilterChain.class);
 
         Mockito.when(mockReq.getRequestURI()).thenReturn("/home");
-        Mockito.when(mockReq.getParameter("jwt")).thenReturn("eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJkYXNkYXNkYXNkIiwiaWF0IjoxNjA2OTIxMzEzLCJleHAiOjE2MDcwMDc3MTN9.QPGfBCVwg5SJ6y2HDONEnTjO7K1RLPWQvEjSdbbpNxtD1d_JLYQullURnh856NJAGSpahskHygGZn62eeg68-A");
+        Mockito.when(mockReq.getParameter("jwt")).thenReturn(jwtToken);
         try {
             filter.doFilter(mockReq, mockResp, mockFilterChain);
         } catch (Exception e) {
+            fail("should not throw an error");
             e.printStackTrace();
         }
     }
