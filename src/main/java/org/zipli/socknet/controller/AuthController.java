@@ -1,6 +1,5 @@
 package org.zipli.socknet.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,14 +23,15 @@ import javax.validation.Valid;
 @RequestMapping(value = "/zipli/auth", consumes = MediaType.APPLICATION_JSON_VALUE)
 public class AuthController {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final JwtUtils jwtUtils;
+    private final EmailConfirmationService emailConfirmationService;
 
-    @Autowired
-    private JwtUtils jwtUtils;
-
-    @Autowired
-    private EmailConfirmationService emailConfirmationService;
+    public AuthController(UserRepository userRepository, JwtUtils jwtUtils, EmailConfirmationService emailConfirmationService) {
+        this.userRepository = userRepository;
+        this.jwtUtils = jwtUtils;
+        this.emailConfirmationService = emailConfirmationService;
+    }
 
     @Value("${deploy.app}")
     private String deploy;
