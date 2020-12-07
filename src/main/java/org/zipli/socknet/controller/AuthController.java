@@ -1,9 +1,11 @@
 package org.zipli.socknet.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,41 +33,44 @@ public class AuthController {
     @Autowired
     private EmailConfirmationService emailConfirmationService;
 
+    @Value("${deploy.app}")
+    private String deploy;
+
     @PostMapping("/signup")
     public ResponseEntity<?> addUser(@Valid @RequestBody SignupRequest signupRequest) {
-        //method realization
-        return ResponseEntity.ok("User registered");
-    }
 
-    @PostMapping("/signin")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-        //method realization
-        return ResponseEntity.ok("Here will be JwtResponse");
-    }
-
-    @PostMapping(value = "/emailConfirmation")
-    public ResponseEntity<?> sendConfirmationEmail(User user) {
-
-        User existingUser = userRepository.getUserByEmail(user.getEmail());
+        User existingUser = userRepository.getUserByEmail(signupRequest.getEmail());
         if (existingUser != null) {
             return ResponseEntity
                     .badRequest()
                     .body("This email already exists!");
         } else {
+            User user = new User(1,
+                    signupRequest.getEmail(),
+                    signupRequest.getPassword(),
+                    signupRequest.getUserName(),
+                    signupRequest.getNickName());
             userRepository.save(user);
-            UserDetailsImpl userDetailsImpl = new UserDetailsImpl(user);
-            String token = jwtUtils.generateJwtToken(userDetailsImpl);
+            UserDetails userDetails = new UserDetailsImpl(user);
+            String token = jwtUtils.generateJwtToken(userDetails);
 
             SimpleMailMessage mailMessage = new SimpleMailMessage();
-            mailMessage.setTo(user.getEmail());
+            mailMessage.setTo(signupRequest.getEmail());
             mailMessage.setSubject("Complete Registration!");
             mailMessage.setFrom("zipli.socknet@gmail.com");
             mailMessage.setText("To confirm your account, please click here : "
-                    + "http://localhost:8080/confirm-account?token=" + token);//поменять ссылку после деплоя
+                    + deploy + "/confirm-account?token=" + token);//поменять ссылку после деплоя
 
             emailConfirmationService.sendEmail(mailMessage);
         }
 
         return ResponseEntity.ok("User registered successfully!");
+    }
+
+
+    @PostMapping("/signin")
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+        //method realization
+        return ResponseEntity.ok("Here will be JwtResponse");
     }
 }
