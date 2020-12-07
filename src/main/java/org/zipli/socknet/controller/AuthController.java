@@ -1,9 +1,7 @@
 package org.zipli.socknet.controller;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,9 +31,6 @@ public class AuthController {
         this.emailConfirmationService = emailConfirmationService;
     }
 
-    @Value("${deploy.app}")
-    private String deploy;
-
     @PostMapping("/signup")
     public ResponseEntity<?> addUser(@Valid @RequestBody SignupRequest signupRequest) {
 
@@ -54,14 +49,7 @@ public class AuthController {
             UserDetails userDetails = new UserDetailsImpl(user);
             String token = jwtUtils.generateJwtToken(userDetails);
 
-            SimpleMailMessage mailMessage = new SimpleMailMessage();
-            mailMessage.setTo(signupRequest.getEmail());
-            mailMessage.setSubject("Complete Registration!");
-            mailMessage.setFrom("zipli.socknet@gmail.com");
-            mailMessage.setText("To confirm your account, please click here : "
-                    + deploy + "/confirm-account?token=" + token);//поменять ссылку после деплоя
-
-            emailConfirmationService.sendEmail(mailMessage);
+            emailConfirmationService.sendEmail(signupRequest, token);
         }
 
         return ResponseEntity.ok("User registered successfully!");
