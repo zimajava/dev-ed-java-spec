@@ -1,34 +1,35 @@
 package org.zipli.socknet.security;
 
+import io.netty.util.internal.NoOpTypeParameterMatcher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
-import org.zipli.socknet.security.jwt.AuthTokenFilter;
-import org.zipli.socknet.security.jwt.AuthenticationManager;
-import org.zipli.socknet.security.jwt.JwtUtils;
-import org.zipli.socknet.security.services.UserDetailsServiceImpl;
+import org.zipli.socknet.security.jwt.AuthTokenManager;
 import reactor.core.publisher.Mono;
 
 @Configuration
 @EnableWebFluxSecurity
-@PropertySource("")
-public class WebSecurityConfig{
+//@PropertySource("")
+public class WebSecurityConfig {
 
-    private final AuthenticationManager authenticationManager;
+    private final AuthTokenManager authTokenManager;
     private final SecurityContextRepository securityContextRepository;
 
-    public WebSecurityConfig(AuthenticationManager authenticationManager, SecurityContextRepository securityContextRepository) {
-        this.authenticationManager = authenticationManager;
+    public WebSecurityConfig(AuthTokenManager authTokenManager, SecurityContextRepository securityContextRepository) {
+        this.authTokenManager = authTokenManager;
         this.securityContextRepository = securityContextRepository;
 
     }
 
     @Bean
-    public SecurityWebFilterChain configure(ServerHttpSecurity http) {
+    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         return http
                 .exceptionHandling()
                 .authenticationEntryPoint(
@@ -37,13 +38,13 @@ public class WebSecurityConfig{
                         )
                 )
                 .and()
-                .cors().disable()
-                .authenticationManager(authenticationManager)
+                /*.cors().and()*/.csrf().disable()
+                .authenticationManager(authTokenManager)
                 .securityContextRepository(securityContextRepository)
                 .authorizeExchange()
-                .pathMatchers("/zipli/auth/**").permitAll()
+                .pathMatchers("/zipli/auth/signin").permitAll()
                 .anyExchange().authenticated()
-                .and().oauth2Client()
+//                .and().oauth2Client()
                 .and().build();
     }
 

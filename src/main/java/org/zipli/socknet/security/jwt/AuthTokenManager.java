@@ -2,6 +2,7 @@ package org.zipli.socknet.security.jwt;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -13,15 +14,14 @@ import reactor.core.publisher.Mono;
 
 @Slf4j
 @Component
-public class AuthenticationManager implements ReactiveAuthenticationManager {
+public class AuthTokenManager implements ReactiveAuthenticationManager {
     private final JwtUtils jwtUtils;
     private final UserDetailsService userDetailsService;
 
-    public AuthenticationManager(JwtUtils jwtUtils, @Qualifier("userDetailsServiceImpl") UserDetailsService userDetailsService) {
+    public AuthTokenManager(JwtUtils jwtUtils, @Qualifier("userDetailsServiceImpl") UserDetailsService userDetailsService) {
         this.jwtUtils = jwtUtils;
         this.userDetailsService = userDetailsService;
     }
-
 
     @Override
     public Mono<Authentication> authenticate(Authentication authentication) {
@@ -38,7 +38,7 @@ public class AuthenticationManager implements ReactiveAuthenticationManager {
 
             log.info("User authentication");
             return Mono.just(authenticationToken);
-        }else {
+        } else {
             log.info("Cannot set user authentication: no valid Jwt token");
             throw new AuthenticationException();
         }
