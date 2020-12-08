@@ -1,15 +1,10 @@
 package org.zipli.socknet.security;
 
-import io.netty.util.internal.NoOpTypeParameterMatcher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.zipli.socknet.security.jwt.AuthTokenManager;
 import reactor.core.publisher.Mono;
@@ -38,7 +33,7 @@ public class WebSecurityConfig {
                         )
                 )
                 .and()
-                /*.cors().and()*/.csrf().disable()
+                .csrf().disable()
                 .authenticationManager(authTokenManager)
                 .securityContextRepository(securityContextRepository)
                 .authorizeExchange()
