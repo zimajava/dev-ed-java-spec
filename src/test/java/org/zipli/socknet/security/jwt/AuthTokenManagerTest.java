@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.zipli.socknet.exception.AuthenticationException;
 import org.zipli.socknet.model.User;
@@ -22,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 @Slf4j
 @SpringBootTest
-class AuthTokenFilterTest {
+class AuthTokenManagerTest {
 
     @Autowired
     JwtUtils jwtUtils;
@@ -33,7 +34,7 @@ class AuthTokenFilterTest {
     @Test
     void doFilterInternalPass() {
 
-        AuthTokenFilter filter = new AuthTokenFilter(jwtUtils, userDetailsService);
+        AuthTokenManager filter = new AuthTokenManager(jwtUtils, userDetailsService);
 
         UserDetails userDetails = new UserDetailsImpl(
                 new User(
@@ -44,14 +45,11 @@ class AuthTokenFilterTest {
 
         String jwtToken = jwtUtils.generateJwtToken(userDetails);
 
-        HttpServletRequest mockReq = Mockito.mock(HttpServletRequest.class);
-        HttpServletResponse mockResp = Mockito.mock(HttpServletResponse.class);
-        FilterChain mockFilterChain = Mockito.mock(FilterChain.class);
+        Authentication mockAuth = Mockito.mock(Authentication.class);
 
-        Mockito.when(mockReq.getRequestURI()).thenReturn("/home");
-        Mockito.when(mockReq.getParameter("jwt")).thenReturn(jwtToken);
+        Mockito.when(mockAuth.getCredentials()).thenReturn(jwtToken);
         try {
-            filter.doFilter(mockReq, mockResp, mockFilterChain);
+            filter.authenticate(mockAuth);
         } catch (Exception e) {
             fail("should not throw an error");
             e.printStackTrace();
@@ -61,25 +59,21 @@ class AuthTokenFilterTest {
     @Test
     void doFilterInternalFail() {
 
-        AuthTokenFilter filter = new AuthTokenFilter(jwtUtils, userDetailsService);
+        AuthTokenManager filter = new AuthTokenManager(jwtUtils, userDetailsService);
 
-        HttpServletRequest mockReq = Mockito.mock(HttpServletRequest.class);
-        HttpServletResponse mockResp = Mockito.mock(HttpServletResponse.class);
-        FilterChain mockFilterChain = Mockito.mock(FilterChain.class);
+        Authentication mockAuth = Mockito.mock(Authentication.class);
 
-        Mockito.when(mockReq.getRequestURI()).thenReturn("/home");
+        Mockito.when(mockAuth.getCredentials()).thenReturn("/home");
 
         try {
-            filter.doFilter(mockReq, mockResp, mockFilterChain);
+            filter.authenticate(mockAuth);
             failAuthException();
-        } catch ( ServletException | IOException e) {
-            failAuthException();
-        } catch (AuthenticationException e){
+        } catch (AuthenticationException e) {
             assertEquals("Cannot set user authentication", e.getMessage());
         }
     }
 
-    void failAuthException(){
+    void failAuthException() {
         fail("AuthenticationException must be thrown");
     }
 
