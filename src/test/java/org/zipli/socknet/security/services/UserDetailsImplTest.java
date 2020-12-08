@@ -9,8 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class UserDetailsImplTest {
 
     private UserDetailsImpl userDetails = new UserDetailsImpl(
-            new User(1,
-                    "dsadasd",
+            new User("dsadasd",
                     "dsadsad",
                     "dasdasdasd",
                     "dsad"));
@@ -48,14 +47,12 @@ class UserDetailsImplTest {
     @Test
     void equals1() {
         UserDetailsImpl userDetailsOne = new UserDetailsImpl(
-                new User(1,
-                        "dsadasd",
+                new User("dsadasd",
                         "dsadsad",
                         "dasdasdasd",
                         "sas"));
         UserDetailsImpl userDetailsTwo = new UserDetailsImpl(
-                new User(1,
-                        "dsadasd",
+                new User("dsadasd",
                         "dsadsad",
                         "dasdasdasd",
                         "saa"));

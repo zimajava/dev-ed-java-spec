@@ -40,8 +40,7 @@ public class AuthController {
                     .badRequest()
                     .body("This email already exists!");
         } else {
-            User user = new User(1,
-                    signupRequest.getEmail(),
+            User user = new User(signupRequest.getEmail(),
                     signupRequest.getPassword(),
                     signupRequest.getUserName(),
                     signupRequest.getNickName());

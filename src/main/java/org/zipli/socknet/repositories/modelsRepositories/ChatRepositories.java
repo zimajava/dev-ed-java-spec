@@ -7,8 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ChatRepositories extends MongoRepository<Chat, Long> {
-    Long findChatIdByChatName(String name);
-    Chat findChatByChatId(Long id);
+public interface ChatRepositories extends MongoRepository<Chat, String> {
+    Chat findChatById(String id);
     List<Chat> getChatsByPrivate(boolean isPrivate);
 }

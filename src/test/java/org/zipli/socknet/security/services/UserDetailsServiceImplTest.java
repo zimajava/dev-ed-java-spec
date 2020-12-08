@@ -17,8 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
 class UserDetailsServiceImplTest {
 
-    private User user = new User(51,
-            "asdsda@asdasd.sad",
+    private User user = new User("asdsda@asdasd.sad",
             "dsadasdasd",
             "asddd",
             "dsaaaaa");

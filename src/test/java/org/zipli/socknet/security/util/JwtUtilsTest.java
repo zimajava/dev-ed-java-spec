@@ -16,8 +16,7 @@ class JwtUtilsTest {
     JwtUtils jwtUtils;
 
     private UserDetailsImpl userDetails = new UserDetailsImpl(
-            new User(1,
-                    "dsadasd",
+            new User("dsadasd",
                     "dsadsad",
                     "dasdasdasd",
                     "sas"));

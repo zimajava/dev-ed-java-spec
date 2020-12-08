@@ -35,7 +35,8 @@ class AuthTokenFilterTest {
 
         AuthTokenFilter filter = new AuthTokenFilter(jwtUtils, userDetailsService);
 
-        UserDetails userDetails = new UserDetailsImpl(new User(1,
+        UserDetails userDetails = new UserDetailsImpl(
+                new User(
                 "dsadasd",
                 "dsadsad",
                 "dasdasdasd",

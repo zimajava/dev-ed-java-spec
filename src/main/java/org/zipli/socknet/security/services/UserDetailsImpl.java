@@ -56,7 +56,7 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public int hashCode() {
-        return Objects.hash(user.getId(),
+        return Objects.hash(
                 user.getUserName(),
                 user.getEmail(),
                 user.getPassword(),
