@@ -3,7 +3,7 @@ package org.zipli.socknet.security.util;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.zipli.socknet.models.User;
+import org.zipli.socknet.model.User;
 import org.zipli.socknet.security.jwt.JwtUtils;
 import org.zipli.socknet.security.services.UserDetailsImpl;
 

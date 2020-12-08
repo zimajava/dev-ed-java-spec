@@ -1,4 +1,4 @@
-package org.zipli.socknet.models;
+package org.zipli.socknet.model;
 
 import lombok.Setter;
 import lombok.Getter;
