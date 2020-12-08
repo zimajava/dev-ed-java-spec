@@ -2,7 +2,7 @@ package org.zipli.socknet.security.services;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.zipli.socknet.models.User;
+import org.zipli.socknet.model.User;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -56,7 +56,7 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public int hashCode() {
-        return Objects.hash(user.getId(),
+        return Objects.hash(
                 user.getUserName(),
                 user.getEmail(),
                 user.getPassword(),

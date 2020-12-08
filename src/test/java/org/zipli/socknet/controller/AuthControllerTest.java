@@ -1,17 +1,15 @@
 package org.zipli.socknet.controller;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.zipli.socknet.models.User;
+import org.zipli.socknet.model.User;
 import org.zipli.socknet.payload.request.SignupRequest;
-import org.zipli.socknet.repositories.modelsRepositories.UserRepository;
-import org.zipli.socknet.services.EmailConfirmationService;
+import org.zipli.socknet.repository.UserRepository;
 
 import static org.junit.jupiter.api.Assertions.*;
 
