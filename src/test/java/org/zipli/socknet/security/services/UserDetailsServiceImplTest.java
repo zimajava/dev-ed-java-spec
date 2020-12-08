@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.zipli.socknet.models.User;
-import org.zipli.socknet.repositories.modelsRepositories.UserRepository;
+import org.zipli.socknet.model.User;
+import org.zipli.socknet.repository.UserRepository;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,8 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
 class UserDetailsServiceImplTest {
 
-    private User user = new User(51,
-            "asdsda@asdasd.sad",
+    private User user = new User("asdsda@asdasd.sad",
             "dsadasdasd",
             "asddd",
             "dsaaaaa");

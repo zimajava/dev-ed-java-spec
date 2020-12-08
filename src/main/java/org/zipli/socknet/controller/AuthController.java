@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.zipli.socknet.models.User;
+import org.zipli.socknet.model.User;
 import org.zipli.socknet.payload.request.LoginRequest;
 import org.zipli.socknet.payload.request.SignupRequest;
-import org.zipli.socknet.repositories.modelsRepositories.UserRepository;
+import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
 import org.zipli.socknet.security.services.UserDetailsImpl;
 import org.zipli.socknet.services.EmailConfirmationService;
@@ -40,8 +40,7 @@ public class AuthController {
                     .badRequest()
                     .body("This email already exists!");
         } else {
-            User user = new User(1,
-                    signupRequest.getEmail(),
+            User user = new User(signupRequest.getEmail(),
                     signupRequest.getPassword(),
                     signupRequest.getUserName(),
                     signupRequest.getNickName());

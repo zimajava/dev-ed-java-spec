@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.zipli.socknet.exception.AuthenticationException;
-import org.zipli.socknet.models.User;
+import org.zipli.socknet.model.User;
 import org.zipli.socknet.security.services.UserDetailsImpl;
 import org.zipli.socknet.security.services.UserDetailsServiceImpl;
 
@@ -35,7 +35,8 @@ class AuthTokenFilterTest {
 
         AuthTokenFilter filter = new AuthTokenFilter(jwtUtils, userDetailsService);
 
-        UserDetails userDetails = new UserDetailsImpl(new User(1,
+        UserDetails userDetails = new UserDetailsImpl(
+                new User(
                 "dsadasd",
                 "dsadsad",
                 "dasdasdasd",
