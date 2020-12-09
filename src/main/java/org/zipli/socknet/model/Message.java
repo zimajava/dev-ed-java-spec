@@ -1,10 +1,10 @@
 package org.zipli.socknet.model;
 
-import com.sun.mail.iap.ByteArray;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.Getter;
 import lombok.ToString;
+import lombok.NoArgsConstructor;
+import com.sun.mail.iap.ByteArray;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -13,25 +13,25 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @ToString
 @Document
 @NoArgsConstructor
-public class MessagePrivate {
+public class Message {
 
     @Id
     private String id;
 
     private String authorId;
-    private String hostUserId;
+    private String chatId;
     private String textMessage;
     private ByteArray message;
 
-    public MessagePrivate(String authorId, String hostUserId, String textMessage) {
+    public Message(String authorId, String chatId, String textMessage) {
         this.authorId = authorId;
-        this.hostUserId = hostUserId;
+        this.chatId = chatId;
         this.textMessage = textMessage;
     }
 
-    public MessagePrivate(String authorId, String hostUserId, ByteArray message) {
+    public Message(String authorId, String chatId, ByteArray message) {
         this.authorId = authorId;
-        this.hostUserId = hostUserId;
+        this.chatId = chatId;
         this.message = message;
     }
 }
