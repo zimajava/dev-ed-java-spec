@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.zipli.socknet.model.User;
+import org.springframework.web.bind.annotation.*;
 import org.zipli.socknet.payload.request.LoginRequest;
 import org.zipli.socknet.payload.request.SignupRequest;
 import org.zipli.socknet.repository.UserRepository;
@@ -54,6 +55,21 @@ public class AuthController {
         return ResponseEntity.ok("User registered successfully!");
     }
 
+    @PostMapping("/confirm-account")
+    public ResponseEntity<?> emailConfirm(@Valid @RequestBody @RequestParam("token") String token, SignupRequest signupRequest, LoginRequest loginRequest) {
+        if (token != null) {
+            User user = userRepository.getUserByEmail(signupRequest.getEmail());
+            user.isConfirm();
+            userRepository.save(user);
+            authenticateUser(loginRequest);
+            return ResponseEntity.ok("Account verified");
+
+        } else {
+            return ResponseEntity
+                    .badRequest()
+                    .body("Error. The link is invalid or broken!");
+        }
+    }
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
