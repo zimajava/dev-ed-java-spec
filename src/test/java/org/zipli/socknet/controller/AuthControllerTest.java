@@ -69,9 +69,6 @@ class AuthControllerTest {
                 .when(userRepository)
                 .getByUserName(username);
 
-        assertTrue(authController.emailConfirm(null)
-                .equals(ResponseEntity.badRequest()
-                        .body("Error. The link is invalid or broken!")));
         assertTrue(authController.emailConfirm(token)
                 .equals(ResponseEntity.ok("Account verified")));
     }

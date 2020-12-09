@@ -58,21 +58,12 @@ public class AuthController {
 
     @PostMapping("/confirm-account")
     public ResponseEntity<?> emailConfirm(@Valid @RequestBody @RequestParam("token") String token) {
-        if (token != null) {
-            String userName = jwtUtils.getUserNameFromJwtToken(token);
-            User user = userRepository.getByUserName(userName);
-            user.isConfirm();
-            userRepository.save(user);
-            LoginRequest loginRequest = new LoginRequest(user.getEmail(),
-                    user.getPassword());
-            authenticateUser(loginRequest);
-//       EmailConfirmationService.confirmAccount(token);
+        try {
+            LoginRequest loginRequest = emailConfirmationService.confirmAccount(token);
 
             authenticateUser(loginRequest);
-
             return ResponseEntity.ok("Account verified");
-
-        } else {
+        } catch (NullPointerException e) {
             return ResponseEntity
                     .badRequest()
                     .body("Error. The link is invalid or broken!");

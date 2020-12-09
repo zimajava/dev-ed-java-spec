@@ -41,22 +41,18 @@ public class EmailConfirmationService {
         javaMailSender.send(mailMessage);
     }
 
-//    @PostMapping("/confirm-account")
-//    public void confirmAccount(String token) {
-//        if (token != null) {
-//            String userName = jwtUtils.getUserNameFromJwtToken(token);
-//            User user = userRepository.getByUserName(userName);
-//            user.isConfirm();
-//            userRepository.save(user);
-//            LoginRequest loginRequest = new LoginRequest(user.getEmail(),
-//                    user.getPassword());
-////            authenticateUser(loginRequest);
-////            return ResponseEntity.ok("Account verified");
-//
-////        } else {
-////            return ResponseEntity
-////                    .badRequest()
-////                    .body("Error. The link is invalid or broken!");
-////        }
-//    }
+    public LoginRequest confirmAccount(String token) {
+
+        if (token != null) {
+            String userName = jwtUtils.getUserNameFromJwtToken(token);
+            User user = userRepository.getByUserName(userName);
+            user.isConfirm();
+            userRepository.save(user);
+            LoginRequest loginRequest = new LoginRequest(user.getUserName(),
+                    user.getPassword());
+            return loginRequest;
+        } else {
+            return null;
+        }
+    }
 }
