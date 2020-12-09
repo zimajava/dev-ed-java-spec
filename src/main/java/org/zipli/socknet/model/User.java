@@ -34,5 +34,4 @@ public class User {
         this.nickName = nickName;
         this.isConfirm = false;
     }
-
 }
