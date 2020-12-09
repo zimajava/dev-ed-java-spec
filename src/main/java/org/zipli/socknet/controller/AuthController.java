@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.zipli.socknet.payload.request.LoginRequest;
 import org.zipli.socknet.payload.request.SignupRequest;
 import org.zipli.socknet.repository.UserRepository;
+import org.zipli.socknet.security.jwt.AuthTokenManager;
 import org.zipli.socknet.security.jwt.JwtUtils;
 import org.zipli.socknet.security.services.UserDetailsImpl;
 import org.zipli.socknet.services.EmailConfirmationService;
@@ -56,12 +57,19 @@ public class AuthController {
     }
 
     @PostMapping("/confirm-account")
-    public ResponseEntity<?> emailConfirm(@Valid @RequestBody @RequestParam("token") String token, SignupRequest signupRequest, LoginRequest loginRequest) {
+    public ResponseEntity<?> emailConfirm(@Valid @RequestBody @RequestParam("token") String token) {
         if (token != null) {
-            User user = userRepository.getUserByEmail(signupRequest.getEmail());
+            String userName = jwtUtils.getUserNameFromJwtToken(token);
+            User user = userRepository.getByUserName(userName);
             user.isConfirm();
             userRepository.save(user);
+            LoginRequest loginRequest = new LoginRequest(user.getEmail(),
+                    user.getPassword());
             authenticateUser(loginRequest);
+//       EmailConfirmationService.confirmAccount(token);
+
+            authenticateUser(loginRequest);
+
             return ResponseEntity.ok("Account verified");
 
         } else {
