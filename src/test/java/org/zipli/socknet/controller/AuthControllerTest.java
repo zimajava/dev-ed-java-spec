@@ -8,6 +8,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.zipli.socknet.model.User;
+import org.zipli.socknet.payload.request.LoginRequest;
 import org.zipli.socknet.payload.request.SignupRequest;
 import org.zipli.socknet.repository.UserRepository;
 
@@ -37,20 +38,27 @@ class AuthControllerTest {
             "uyfrjjj",
             "gfr53");
 
+    LoginRequest loginRequest = new LoginRequest(
+            "registeredUser@gmail.com",
+            "ugyur");
+
     @Test
     void addUser() {
         Mockito.doReturn(new User())
-        .when(userRepository)
-        .getUserByEmail("registeredUser@gmail.com");
+               .when(userRepository)
+               .getUserByEmail("registeredUser@gmail.com");
 
         assertTrue(authController.addUser(signupRequest1)
-                .equals(ResponseEntity.badRequest()
-                        .body("This email already exists!")));
+                                 .equals(ResponseEntity.badRequest()
+                                                       .body("This email already exists!")));
         assertTrue(authController.addUser(signupRequest)
-                .equals(ResponseEntity.ok("User registered successfully!")));
+                                 .equals(ResponseEntity.ok("User registered successfully!")));
     }
 
     @Test
-    void authenticateUser() {
+    void authenticateUser_shouldReturnStatusOk() {
+        assertTrue(authController.authenticateUser(loginRequest)
+                                 .equals(ResponseEntity.ok("Here will be JwtResponse")));
+
     }
 }
