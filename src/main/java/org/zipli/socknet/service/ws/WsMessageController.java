@@ -11,11 +11,11 @@ import org.zipli.socknet.dto.WsMessage;
 public class WsMessageController {
 
     private final IMessageService messageService;
-    private final IChatService chatService;
+//    private final IChatService chatService;
 
-    public WsMessageController(IMessageService messageService, IChatService chatService) {
+    public WsMessageController(IMessageService messageService/*, IChatService chatService*/) {
         this.messageService = messageService;
-        this.chatService = chatService;
+//        this.chatService = chatService;
     }
 
     @MessageMapping("/globalChat/sendMessage")
@@ -33,36 +33,42 @@ public class WsMessageController {
     @MessageMapping("/createChat")
     @SendTo("/topic/chat")
     public void createChat(@Payload WsMessage message) {
-        chatService.createChat(message);
+         messageService.createChat(message);
+        // chatService.createChat(message);
     }
 
     @MessageMapping("/removeChat")
     @SendTo("/topic/chat")
     public void removeChat(@Payload WsMessage message) {
-        chatService.removeChat(message);
+        messageService.removeChat(message);
+        //chatService.removeChat(message);
     }
 
     @MessageMapping("/updateChat")
     @SendTo("/topic/chat")
     public void updateChat(@Payload WsMessage message) {
-        chatService.updateChat(message);
+        messageService.updateChat(message);
+       // chatService.updateChat(message);
     }
 
     @MessageMapping("/globalChat/join")
     @SendTo("/globalChat")
     public void joinGlobalChat(@Payload WsMessage message) {
-        chatService.joinGlobalChat(message);
+        messageService.joinGlobalChat(message);
+       // chatService.joinGlobalChat(message);
     }
 
     @MessageMapping("/privateChat/showAll")
     @SendTo("/privateChat")
     public void showAllPrivateChat(@Payload WsMessage message) {
-        chatService.showAllPrivateChat(message);
+        messageService.showAllPrivateChat(message);
+       // chatService.showAllPrivateChat(message);
     }
 
     @MessageMapping("/showAllGlobalChat")
     @SendTo("/globalChat")
     public void showAllGlobalChat(@Payload WsMessage message) {
-        chatService.showAllGlobalChat(message);
+        messageService.showAllGlobalChat(message);
+       // chatService.showAllGlobalChat(message);
     }
 }

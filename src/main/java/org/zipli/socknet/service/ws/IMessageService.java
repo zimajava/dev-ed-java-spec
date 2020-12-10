@@ -15,5 +15,5 @@ public interface IMessageService {
     List<Message> joinGlobalChat(WsMessage wsMessage);
     boolean updateChat(WsMessage wsMessage);
     List<Chat> showAllPrivateChat(WsMessage wsMessage);
-    List<Chat> showAllGroupChat(WsMessage wsMessage);
+    List<Chat> showAllGlobalChat(WsMessage wsMessage);
 }

@@ -106,7 +106,7 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public List<Chat> showAllGroupChat(WsMessage wsMessage) {
+    public List<Chat> showAllGlobalChat(WsMessage wsMessage) {
         return chatRepository.getChatsByPrivate(false);
     }
 }
