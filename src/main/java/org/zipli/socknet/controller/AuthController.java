@@ -13,7 +13,7 @@ import org.zipli.socknet.payload.request.SignupRequest;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
 import org.zipli.socknet.security.services.UserDetailsImpl;
-import org.zipli.socknet.services.EmailConfirmationService;
+import org.zipli.socknet.service.email.EmailConfirmationService;
 
 import javax.validation.Valid;
 
@@ -34,23 +34,9 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<?> addUser(@Valid @RequestBody SignupRequest signupRequest) {
 
-        User existingUser = userRepository.getUserByEmail(signupRequest.getEmail());
-        if (existingUser != null) {
-            return ResponseEntity
-                    .badRequest()
-                    .body("This email already exists!");
-        } else {
-            User user = new User(signupRequest.getEmail(),
-                    signupRequest.getPassword(),
-                    signupRequest.getUserName(),
-                    signupRequest.getNickName());
-            userRepository.save(user);
-            UserDetails userDetails = new UserDetailsImpl(user);
-            String token = jwtUtils.generateJwtToken(userDetails);
-
-            emailConfirmationService.sendEmail(signupRequest, token);
-        }
-
+//        return ResponseEntity
+//                .badRequest()
+//                .body();
         return ResponseEntity.ok("User registered successfully!");
     }
 
