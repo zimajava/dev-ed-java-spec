@@ -1,4 +1,4 @@
-package org.zipli.socknet.service.auth;
+package org.zipli.socknet.service;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -8,6 +8,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.zipli.socknet.exception.AuthException;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.repository.UserRepository;
+import org.zipli.socknet.service.auth.AuthService;
 
 import static org.junit.jupiter.api.Assertions.*;
 
