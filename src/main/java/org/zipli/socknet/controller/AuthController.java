@@ -7,13 +7,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.zipli.socknet.exception.NotConfirmAccountException;
 import org.zipli.socknet.model.User;
+import org.springframework.web.bind.annotation.*;
 import org.zipli.socknet.payload.request.LoginRequest;
 import org.zipli.socknet.payload.request.SignupRequest;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
 import org.zipli.socknet.security.services.UserDetailsImpl;
-import org.zipli.socknet.services.EmailConfirmationService;
+import org.zipli.socknet.service.email.EmailConfirmationService;
 
 import javax.validation.Valid;
 
@@ -54,6 +56,17 @@ public class AuthController {
         return ResponseEntity.ok("User registered successfully!");
     }
 
+    @PostMapping("/confirm-account")
+    public ResponseEntity<?> emailConfirm(@Valid @RequestParam("token") String token) {
+        try {
+            emailConfirmationService.confirmAccount(token);
+        } catch (NotConfirmAccountException e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(e);
+        }
+        return ResponseEntity.ok("Account verified");
+    }
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
