@@ -14,7 +14,7 @@ import org.zipli.socknet.payload.request.LoginRequest;
 import org.zipli.socknet.payload.request.SignupRequest;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
-import org.zipli.socknet.services.EmailConfirmationService;
+import org.zipli.socknet.service.email.EmailConfirmationService;
 
 import static org.junit.jupiter.api.Assertions.*;
 

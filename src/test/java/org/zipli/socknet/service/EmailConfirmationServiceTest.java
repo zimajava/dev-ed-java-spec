@@ -1,4 +1,4 @@
-package org.zipli.socknet.services;
+package org.zipli.socknet.service;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -9,6 +9,7 @@ import org.zipli.socknet.exception.NotConfirmAccountException;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
+import org.zipli.socknet.service.email.EmailConfirmationService;
 
 import static org.junit.jupiter.api.Assertions.*;
 

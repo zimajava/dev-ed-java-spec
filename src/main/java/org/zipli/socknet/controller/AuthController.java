@@ -15,7 +15,7 @@ import org.zipli.socknet.payload.request.SignupRequest;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
 import org.zipli.socknet.security.services.UserDetailsImpl;
-import org.zipli.socknet.services.EmailConfirmationService;
+import org.zipli.socknet.service.email.EmailConfirmationService;
 
 import javax.validation.Valid;
 
