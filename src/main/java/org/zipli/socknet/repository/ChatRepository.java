@@ -10,4 +10,6 @@ import java.util.List;
 public interface ChatRepository extends MongoRepository<Chat, String> {
     Chat findChatById(String id);
     List<Chat> getChatsByPrivate(boolean isPrivate);
+    boolean existsByChatName(String chatName);
+    boolean existsByChatNameAndCreatorUserId(String chatName, String creatorUserId);
 }
