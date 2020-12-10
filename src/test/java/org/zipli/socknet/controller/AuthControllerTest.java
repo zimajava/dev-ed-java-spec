@@ -56,9 +56,7 @@ class AuthControllerTest {
                 "uyfrjjj",
                 "gfr53");
 
-        loginRequest = new LoginRequest(
-                "registeredUser@gmail.com",
-                "ugyur");
+        loginRequest = new LoginRequest();
     }
 
     @Test
