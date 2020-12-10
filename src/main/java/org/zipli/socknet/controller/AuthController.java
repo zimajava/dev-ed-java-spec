@@ -7,12 +7,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.zipli.socknet.exception.NotConfirmAccountException;
 import org.zipli.socknet.model.User;
 import org.springframework.web.bind.annotation.*;
 import org.zipli.socknet.payload.request.LoginRequest;
 import org.zipli.socknet.payload.request.SignupRequest;
 import org.zipli.socknet.repository.UserRepository;
-import org.zipli.socknet.security.jwt.AuthTokenManager;
 import org.zipli.socknet.security.jwt.JwtUtils;
 import org.zipli.socknet.security.services.UserDetailsImpl;
 import org.zipli.socknet.services.EmailConfirmationService;
@@ -57,17 +57,15 @@ public class AuthController {
     }
 
     @PostMapping("/confirm-account")
-    public ResponseEntity<?> emailConfirm(@Valid @RequestBody @RequestParam("token") String token) {
+    public ResponseEntity<?> emailConfirm(@Valid @RequestParam("token") String token) {
         try {
-            LoginRequest loginRequest = emailConfirmationService.confirmAccount(token);
-
-            authenticateUser(loginRequest);
-            return ResponseEntity.ok("Account verified");
-        } catch (NullPointerException e) {
+            emailConfirmationService.confirmAccount(token);
+        } catch (NotConfirmAccountException e) {
             return ResponseEntity
                     .badRequest()
-                    .body("Error. The link is invalid or broken!");
+                    .body(e);
         }
+        return ResponseEntity.ok("Account verified");
     }
 
     @PostMapping("/signin")

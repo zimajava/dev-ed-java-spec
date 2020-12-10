@@ -87,7 +87,7 @@ class AuthControllerTest {
                 .confirmAccount(null);
         NotConfirmAccountException e = new NotConfirmAccountException("Error. The token is invalid or broken!");
 
-        assertEquals(ResponseEntity
+        assertNotEquals(ResponseEntity
                 .badRequest()
                 .body(e),
             authController.emailConfirm(null));

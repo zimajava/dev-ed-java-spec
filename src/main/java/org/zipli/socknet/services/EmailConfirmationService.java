@@ -1,13 +1,12 @@
 package org.zipli.socknet.services;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.zipli.socknet.exception.NotConfirmAccountException;
 import org.zipli.socknet.model.User;
-import org.zipli.socknet.payload.request.LoginRequest;
 import org.zipli.socknet.payload.request.SignupRequest;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
@@ -41,18 +40,16 @@ public class EmailConfirmationService {
         javaMailSender.send(mailMessage);
     }
 
-    public LoginRequest confirmAccount(String token) {
+    public String confirmAccount(String token) {
 
         if (token != null) {
             String userName = jwtUtils.getUserNameFromJwtToken(token);
             User user = userRepository.getByUserName(userName);
             user.isConfirm();
             userRepository.save(user);
-            LoginRequest loginRequest = new LoginRequest(user.getUserName(),
-                    user.getPassword());
-            return loginRequest;
+            return "Account verified";
         } else {
-            return null;
+            throw new NotConfirmAccountException("Error. The token is invalid or broken!");
         }
     }
 }
