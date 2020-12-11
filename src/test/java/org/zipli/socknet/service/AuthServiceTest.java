@@ -10,20 +10,19 @@ import org.zipli.socknet.model.User;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.service.auth.AuthService;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 public class AuthServiceTest {
 
-    @Autowired
-    private AuthService authService;
-
-    @MockBean
-    private UserRepository userRepository;
-
     private final String email = "asd@gmail.com";
     private final String userName = "Vasya";
     private final String password = "12345";
+    @Autowired
+    private AuthService authService;
+    @MockBean
+    private UserRepository userRepository;
 
     @Test
     public void loginByEmailAndPasswordWithConfirmedEmail_Pass() {

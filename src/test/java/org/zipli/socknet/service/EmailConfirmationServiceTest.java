@@ -11,7 +11,8 @@ import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
 import org.zipli.socknet.service.email.EmailConfirmationService;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 class EmailConfirmationServiceTest {
@@ -28,7 +29,7 @@ class EmailConfirmationServiceTest {
     @Test
     void confirmAccount_AccountOfUserIsOk() {
         String token = "qwerty";
-        String username = new String();
+        String username = "";
 
         Mockito.doReturn(username)
                 .when(jwtUtils)
@@ -42,7 +43,7 @@ class EmailConfirmationServiceTest {
 
     @Test
     void confirmAccount_TokenIsInvalid() throws RuntimeException {
-        String username = new String();
+        String username = "";
 
         Mockito.doReturn(username)
                 .when(jwtUtils)
