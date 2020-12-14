@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
 class UserDetailsServiceImplTest {
 
-    private User user = new User("asdsda@asdasd.sad",
+    private final User user = new User("asdsda@asdasd.sad",
             "dsadasdasd",
             "asddd",
             "dsaaaaa");
@@ -34,7 +34,7 @@ class UserDetailsServiceImplTest {
     }
 
     @Test
-    void loadUserByUsernameFail(@Autowired UserRepository userRepository) throws NullPointerException{
+    void loadUserByUsernameFail(@Autowired UserRepository userRepository) throws NullPointerException {
 
         UserDetailsServiceImpl userDetailsService = new UserDetailsServiceImpl(userRepository);
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUserName());
@@ -42,7 +42,7 @@ class UserDetailsServiceImplTest {
         try {
             userDetails.getUsername();
             fail("NullPointerException must be thrown");
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             assertNull(e.getMessage());
         }
     }

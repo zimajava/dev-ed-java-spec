@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class UserDetailsImplTest {
 
-    private UserDetailsImpl userDetails = new UserDetailsImpl(
+    private final UserDetailsImpl userDetails = new UserDetailsImpl(
             new User("dsadasd",
                     "dsadsad",
                     "dasdasdasd",
