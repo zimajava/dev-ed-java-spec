@@ -18,6 +18,8 @@ public class EmailConfirmationService {
     private final JavaMailSender javaMailSender;
     private final JwtUtils jwtUtils;
     private final UserRepository userRepository;
+    @Value("${deploy.app}")
+    private String deploy;
 
     public EmailConfirmationService(JavaMailSender javaMailSender, JwtUtils jwtUtils, UserRepository userRepository) {
         this.javaMailSender = javaMailSender;
@@ -25,14 +27,11 @@ public class EmailConfirmationService {
         this.userRepository = userRepository;
     }
 
-    @Value("${deploy.app}")
-    private String deploy;
-
     @Async
-    public void sendEmail(SignupRequest signupRequest, String token) {
+    public void sendEmail(String email, String token) {
 
         SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setTo(signupRequest.getEmail());
+        mailMessage.setTo(email);
         mailMessage.setSubject("Complete Registration!");
         mailMessage.setFrom("zipli.socknet@gmail.com");
         mailMessage.setText("To confirm your account, please click here : "

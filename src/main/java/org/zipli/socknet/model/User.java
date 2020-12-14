@@ -1,9 +1,9 @@
 package org.zipli.socknet.model;
 
-import lombok.Setter;
 import lombok.Getter;
-import lombok.ToString;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -18,11 +18,11 @@ public class User {
     @Id
     private String id;
 
-    @Indexed(unique=true)
+    @Indexed(unique = true)
     private String email;
     private String password;
 
-    @Indexed(unique=true)
+    @Indexed(unique = true)
     private String userName;
     private String nickName;
     private boolean isConfirm;

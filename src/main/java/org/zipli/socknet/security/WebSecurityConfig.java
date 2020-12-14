@@ -37,7 +37,12 @@ public class WebSecurityConfig {
                 .authenticationManager(authTokenManager)
                 .securityContextRepository(securityContextRepository)
                 .authorizeExchange()
-                .pathMatchers("/zipli/auth/**").permitAll()
+                .pathMatchers("/zipli/auth/**", "/v2/api-docs",
+                        "/configuration/ui",
+                        "/swagger-resources/**",
+                        "/configuration/security",
+                        "/swagger-ui/**",
+                        "/webjars/**").permitAll()
                 .anyExchange().authenticated()
 //                .and().oauth2Client()
                 .and().build();
