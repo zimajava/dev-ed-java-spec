@@ -2,14 +2,10 @@ package org.zipli.socknet.controller;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.zipli.socknet.exception.AuthException;
 import org.zipli.socknet.exception.NotConfirmAccountException;
 import org.zipli.socknet.model.User;
-import org.springframework.web.bind.annotation.*;
 import org.zipli.socknet.payload.request.LoginRequest;
 import org.zipli.socknet.payload.request.SignupRequest;
 import org.zipli.socknet.service.auth.AuthService;
