@@ -1,10 +1,10 @@
 package org.zipli.socknet.model;
 
-import lombok.Setter;
-import lombok.Getter;
-import lombok.ToString;
-import lombok.NoArgsConstructor;
 import com.sun.mail.iap.ByteArray;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
