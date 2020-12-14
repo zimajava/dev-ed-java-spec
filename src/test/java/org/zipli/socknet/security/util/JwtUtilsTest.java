@@ -15,7 +15,7 @@ class JwtUtilsTest {
     @Autowired
     JwtUtils jwtUtils;
 
-    private UserDetailsImpl userDetails = new UserDetailsImpl(
+    private final UserDetailsImpl userDetails = new UserDetailsImpl(
             new User("dsadasd",
                     "dsadsad",
                     "dasdasdasd",

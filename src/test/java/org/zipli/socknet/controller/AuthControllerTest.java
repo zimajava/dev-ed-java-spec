@@ -20,27 +20,22 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class AuthControllerTest {
-    private LoginRequest loginRequest;
-    private SignupRequest signupRequest;
-    private SignupRequest signupRequest1;
-
     @Autowired
     AuthController authController;
-
     @MockBean
     EmailConfirmationService emailConfirmationService;
-
     @MockBean
     JavaMailSender javaMailSender;
-
     @MockBean
     UserRepository userRepository;
+    @MockBean
+    JwtUtils jwtUtils;
+    private LoginRequest loginRequest;
+    private SignupRequest signupRequest;
 
 //    @MockBean
 //    LoginRequest loginRequest1;
-
-    @MockBean
-    JwtUtils jwtUtils;
+    private SignupRequest signupRequest1;
 
     @BeforeEach
     public void init() {
@@ -78,7 +73,7 @@ class AuthControllerTest {
     @Test
     void emailConfirm_TokenIsValid() {
         String token = "qwerty";
-        String username = new String();
+        String username = "";
         Mockito.doReturn(username)
                 .when(jwtUtils)
                 .getUserNameFromJwtToken(token);
@@ -97,15 +92,15 @@ class AuthControllerTest {
         NotConfirmAccountException e = new NotConfirmAccountException("Error. The token is invalid or broken!");
 
         assertNotEquals(ResponseEntity
-                .badRequest()
-                .body(e),
-            authController.emailConfirm(null));
+                        .badRequest()
+                        .body(e),
+                authController.emailConfirm(null));
     }
 
     @Test
     void authenticateUser_shouldReturnStatusOk() {
         assertTrue(authController.authenticateUser(loginRequest)
-                                 .equals(ResponseEntity.ok("Here will be JwtResponse")));
+                .equals(ResponseEntity.ok("Here will be JwtResponse")));
 
     }
 }
