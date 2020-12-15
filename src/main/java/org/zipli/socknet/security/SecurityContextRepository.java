@@ -30,10 +30,19 @@ public class SecurityContextRepository implements ServerSecurityContextRepositor
                 .getHeaders()
                 .getFirst(HttpHeaders.AUTHORIZATION);
 
+        String authQueryParams = serverWebExchange.getRequest()
+                .getQueryParams()
+                .getFirst("token");
+
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String authToken = authHeader.substring(7);
 
             UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(authToken, authToken);
+            return authenticationManager
+                    .authenticate(auth)
+                    .map(SecurityContextImpl::new);
+        } else if (authQueryParams != null){
+            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(authQueryParams, authQueryParams);
             return authenticationManager
                     .authenticate(auth)
                     .map(SecurityContextImpl::new);
