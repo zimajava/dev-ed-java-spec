@@ -12,12 +12,6 @@ import org.zipli.socknet.model.User;
 import org.zipli.socknet.security.services.UserDetailsImpl;
 import org.zipli.socknet.security.services.UserDetailsServiceImpl;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -38,10 +32,10 @@ class AuthTokenManagerTest {
 
         UserDetails userDetails = new UserDetailsImpl(
                 new User(
-                "dsadasd",
-                "dsadsad",
-                "dasdasdasd",
-                "dsad"));
+                        "dsadasd",
+                        "dsadsad",
+                        "dasdasdasd",
+                        "dsad"));
 
         String jwtToken = jwtUtils.generateJwtToken(userDetails);
 
