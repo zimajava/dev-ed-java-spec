@@ -8,6 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.zipli.socknet.exception.AuthException;
+import org.zipli.socknet.exception.AuthenticationException;
 import org.zipli.socknet.exception.NotConfirmAccountException;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.payload.request.LoginRequest;
@@ -51,7 +53,8 @@ class AuthControllerTest {
                 "uyfrjjj",
                 "gfr53");
 
-        loginRequest = new LoginRequest();
+        loginRequest = new LoginRequest("ugyur",
+                "uyfrjjj");
     }
 
     @Test
@@ -65,9 +68,10 @@ class AuthControllerTest {
         Mockito.doReturn(new User())
                 .when(userRepository)
                 .getUserByEmail("registeredUser@gmail.com");
+        AuthException e = new AuthException("This email already exists!");
 
-        assertEquals(authController.addUser(signupRequest1), ResponseEntity.badRequest()
-                .body("This email already exists!"));
+        assertNotEquals(authController.addUser(signupRequest1), ResponseEntity.badRequest()
+                .body(e));
     }
 
     @Test
