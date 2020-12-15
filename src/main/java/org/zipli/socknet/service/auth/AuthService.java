@@ -1,10 +1,12 @@
 package org.zipli.socknet.service.auth;
 
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.zipli.socknet.exception.AuthException;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
+import org.zipli.socknet.security.services.UserDetailsImpl;
 import org.zipli.socknet.service.email.EmailConfirmationService;
 
 @Service
@@ -39,6 +41,14 @@ public class AuthService implements IAuthService {
 
     @Override
     public void registration(User user) {
-
+        User existingUser = userRepository.getUserByEmail(user.getEmail());
+        if (existingUser != null) {
+            throw new AuthException("This email already exists!");
+        } else {
+            userRepository.save(user);
+            UserDetails userDetails = new UserDetailsImpl(user);
+            String token = jwtUtils.generateJwtToken(userDetails);
+            emailConfirmationService.sendEmail(user.getEmail(), token);
+        }
     }
 }

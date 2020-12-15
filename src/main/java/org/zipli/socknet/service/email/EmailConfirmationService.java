@@ -28,10 +28,10 @@ public class EmailConfirmationService {
     }
 
     @Async
-    public void sendEmail(SignupRequest signupRequest, String token) {
+    public void sendEmail(String email, String token) {
 
         SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setTo(signupRequest.getEmail());
+        mailMessage.setTo(email);
         mailMessage.setSubject("Complete Registration!");
         mailMessage.setFrom("zipli.socknet@gmail.com");
         mailMessage.setText("To confirm your account, please click here : "
