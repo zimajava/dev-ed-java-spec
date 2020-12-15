@@ -11,14 +11,14 @@ import java.util.List;
 
 public interface IMessagerService {
 
-    Chat createGroupChat(WsMessage wsMessage) throws CreateChatException;//win
-    Chat createPrivateChat(WsMessage wsMessage) throws CreateChatException; //win
-    Chat updateChat(WsMessage wsMessage) throws UpdateChatException;//win
-    void removeChat(WsMessage wsMessage) throws RemoveChatException;//win
-    List<Chat> showChatsByUser(WsMessage wsMessage);//win
-    Chat leaveChat(WsMessage wsMessage);//win
-    Chat joinChat(WsMessage wsMessage);//win
-    List<Message> getMessages(WsMessage wsMessage);//test
-    Message sendMessage(WsMessage wsMessage);//win
+    Chat createGroupChat(WsMessage wsMessage) throws CreateChatException;
+    Chat createPrivateChat(WsMessage wsMessage) throws CreateChatException;
+    Chat updateChat(WsMessage wsMessage) throws UpdateChatException;
+    void removeChat(WsMessage wsMessage) throws RemoveChatException;
+    List<Chat> showChatsByUser(WsMessage wsMessage);
+    Chat leaveChat(WsMessage wsMessage);
+    Chat joinChat(WsMessage wsMessage);
+    List<Message> getMessages(WsMessage wsMessage);
+    Message sendMessage(WsMessage wsMessage);
 
 }

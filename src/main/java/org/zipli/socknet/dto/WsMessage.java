@@ -17,6 +17,4 @@ public class WsMessage {
     private String userName;
     private String nameChat;
 
-
-
 }
