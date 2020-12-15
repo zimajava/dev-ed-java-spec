@@ -75,6 +75,16 @@ class AuthControllerTest {
     }
 
     @Test
+    void addUser_NotValidValues() {
+        Mockito.doReturn(null)
+                .when(userRepository)
+                .getUserByEmail("registeredUser@gmail.com");
+
+        assertNotEquals(authController.addUser(signupRequest1), ResponseEntity.badRequest()
+                .body("Not valid values"));
+    }
+
+    @Test
     void emailConfirm_TokenIsValid() {
         String token = "qwerty";
         String username = "";
