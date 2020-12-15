@@ -1,4 +1,4 @@
-package org.zipli.socknet.ws;
+package org.zipli.socknet.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 @AllArgsConstructor
 public class Event {
-    private String command;
-    private String message;
+    private Command command;
+    private Message message;
 }
 

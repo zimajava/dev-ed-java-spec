@@ -6,36 +6,39 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketMessage;
 import org.springframework.web.reactive.socket.WebSocketSession;
+import org.zipli.socknet.dto.Command;
+import org.zipli.socknet.dto.Event;
+import org.zipli.socknet.dto.Message;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 
 @Component("ReactiveWebSocketHandler")
 public class ReactiveWebSocketHandler implements WebSocketHandler {
+    private static final ObjectMapper json = new ObjectMapper();
+
     private final Event event;
 
     public ReactiveWebSocketHandler(Event event) {
         this.event = event;
     }
 
-    private static final ObjectMapper json = new ObjectMapper();
+    private Flux<String> eventFlux(Command command, Message message){
 
-    private Flux<String> eventFlux = Flux.generate(sink -> {
-        Event event = new Event(getCommand().toString(), getMessage().toString());
-        try {
-            sink.next(json.writeValueAsString(event));
-        } catch (JsonProcessingException e) {
-            sink.error(e);
-        }
-    });
-
-//
-//    private Flux<String> intervalFlux = Flux.interval(Duration.ofMillis(1000L))
-//            .zipWith(eventFlux, (time, event) -> event);
+        Flux<String> flux = Flux.generate(sink -> {
+            Event event = new Event(command, message);
+            try {
+                sink.next(json.writeValueAsString(event));
+            } catch (JsonProcessingException e) {
+                sink.error(e);
+            }
+        });
+        return flux;
+    }
 
     @Override
     public Mono<Void> handle(WebSocketSession webSocketSession) {
-        return webSocketSession.send(/*intervalFlux*/eventFlux
+        return webSocketSession.send(eventFlux(event.getCommand(), event.getMessage())
                 .map(webSocketSession::textMessage))
                 .and(webSocketSession.receive()
                         .map(WebSocketMessage::getPayloadAsText)
