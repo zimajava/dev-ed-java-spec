@@ -13,20 +13,16 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 
-@Component("ReactiveWebSocketHandler")
-public class ReactiveWebSocketHandler implements WebSocketHandler {
+@Component
+public class WebFluxWebSocketHandler implements WebSocketHandler {
     private static final ObjectMapper json = new ObjectMapper();
 
-    private final Event event;
+    private Event event;
 
-    public ReactiveWebSocketHandler(Event event) {
-        this.event = event;
-    }
-
-    private Flux<String> eventFlux(Command command, Message message){
+    private Flux<String> eventFlux(Command command, Message message) {
 
         Flux<String> flux = Flux.generate(sink -> {
-            Event event = new Event(command, message);
+            event = new Event(command, message);
             try {
                 sink.next(json.writeValueAsString(event));
             } catch (JsonProcessingException e) {
@@ -44,4 +40,5 @@ public class ReactiveWebSocketHandler implements WebSocketHandler {
                         .map(WebSocketMessage::getPayloadAsText)
                         .log());
     }
+
 }

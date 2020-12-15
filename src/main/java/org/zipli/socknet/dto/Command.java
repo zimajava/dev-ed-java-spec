@@ -1,8 +1,5 @@
 package org.zipli.socknet.dto;
 
-import org.springframework.stereotype.Component;
-
-@Component
 public enum Command {
     CREATE_GROUP_CHAT,
     CREATE_PRIVATE_CHAT,

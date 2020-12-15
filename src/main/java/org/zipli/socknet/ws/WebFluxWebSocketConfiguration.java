@@ -13,12 +13,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
-public class ReactiveWebSocketConfiguration {
+public class WebFluxWebSocketConfiguration {
 
-    @Qualifier("ReactiveWebSocketHandler")
     private WebSocketHandler webSocketHandler;
 
-    public ReactiveWebSocketConfiguration(WebSocketHandler webSocketHandler) {
+    public WebFluxWebSocketConfiguration(WebSocketHandler webSocketHandler) {
         this.webSocketHandler = webSocketHandler;
     }
 
@@ -37,4 +36,5 @@ public class ReactiveWebSocketConfiguration {
     public WebSocketHandlerAdapter handlerAdapter() {
         return new WebSocketHandlerAdapter();
     }
+
 }
