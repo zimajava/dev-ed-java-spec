@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -29,6 +30,14 @@ public class Chat {
         this.isPrivate = isPrivate;
         this.idMessages = idMessages;
         this.idUsers = idUsers;
+        this.creatorUserId = creatorUserId;
+    }
+
+    public Chat(String chatName, boolean isPrivate, String creatorUserId) {
+        this.chatName = chatName;
+        this.isPrivate = isPrivate;
+        this.idMessages = new ArrayList<>();
+        this.idUsers = new ArrayList<>();
         this.creatorUserId = creatorUserId;
     }
 }

@@ -8,6 +8,8 @@ import com.sun.mail.iap.ByteArray;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.Date;
+
 @Getter
 @Setter
 @ToString
@@ -22,16 +24,19 @@ public class Message {
     private String chatId;
     private String textMessage;
     private ByteArray message;
+    private Date date;
 
-    public Message(String authorId, String chatId, String textMessage) {
+    public Message(String authorId, String chatId,Date date, String textMessage) {
         this.authorId = authorId;
         this.chatId = chatId;
+        this.date = date;
         this.textMessage = textMessage;
     }
 
-    public Message(String authorId, String chatId, ByteArray message) {
+    public Message(String authorId, String chatId,Date date, ByteArray message) {
         this.authorId = authorId;
         this.chatId = chatId;
+        this.date = date;
         this.message = message;
     }
 }
