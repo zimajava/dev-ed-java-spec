@@ -26,5 +26,6 @@ public interface UserRepository extends MongoRepository<User, String> {
     boolean existsByEmail(String email);
     Stream<User> streamUsersByIdIn(Collection<String> id);//не пашет!!!!!
     List<User> findUsersByIdIn(Collection<String> id);
-
+    User findUserByUserNameAndPassword(String userName, String password);
+    User findUserByEmailAndPassword(String email, String password);
 }
