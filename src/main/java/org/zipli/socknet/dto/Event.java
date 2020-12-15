@@ -9,4 +9,3 @@ public class Event {
     private Command command;
     private Message message;
 }
-

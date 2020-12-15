@@ -12,7 +12,6 @@ import org.zipli.socknet.dto.Message;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-
 @Component
 public class WebFluxWebSocketHandler implements WebSocketHandler {
     private static final ObjectMapper json = new ObjectMapper();
