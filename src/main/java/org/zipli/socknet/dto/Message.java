@@ -14,4 +14,5 @@ public class Message {
     private String message;
     private String authorId;
     private String chatId;
+
 }
