@@ -24,11 +24,11 @@ public class SignupRequest {
     private String password;
 
     @NotBlank(message = "User name can't be empty")
-    @Pattern(regexp = "^[a-zA-Z0-9]{8,16}$")
+    @Pattern(regexp = "^[a-zA-Z0-9_-]{8,16}$")
     private String userName;
 
     @NotBlank(message = "Nickname can't be empty")
-    @Pattern(regexp = "^[a-zA-Z0-9]{8,16}$")
+    @Pattern(regexp = "^[a-zA-Z0-9_ .-]{8,16}$")
     private String nickName;
 
     public SignupRequest(String email, String password, String userName, String nickName) {

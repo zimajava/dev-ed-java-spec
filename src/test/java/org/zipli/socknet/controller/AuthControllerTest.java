@@ -9,7 +9,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.zipli.socknet.exception.AuthException;
-import org.zipli.socknet.exception.AuthenticationException;
 import org.zipli.socknet.exception.NotConfirmAccountException;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.payload.request.LoginRequest;
@@ -35,7 +34,7 @@ class AuthControllerTest {
     private LoginRequest loginRequest;
     private SignupRequest signupRequest;
 
-//    @MockBean
+    //    @MockBean
 //    LoginRequest loginRequest1;
     private SignupRequest signupRequest1;
 
@@ -66,22 +65,22 @@ class AuthControllerTest {
     @Test
     void addUser_UserHasAlreadyRegistered() {
         Mockito.doReturn(new User())
-                .when(userRepository)
-                .getUserByEmail("registeredUser@gmail.com");
+               .when(userRepository)
+               .getUserByEmail("registeredUser@gmail.com");
         AuthException e = new AuthException("This email already exists!");
 
         assertNotEquals(authController.addUser(signupRequest1), ResponseEntity.badRequest()
-                .body(e));
+                                                                              .body(e));
     }
 
     @Test
     void addUser_NotValidValues() {
         Mockito.doReturn(null)
-                .when(userRepository)
-                .getUserByEmail("registeredUser@gmail.com");
+               .when(userRepository)
+               .getUserByEmail("registeredUser@gmail.com");
 
         assertNotEquals(authController.addUser(signupRequest1), ResponseEntity.badRequest()
-                .body("Not valid values"));
+                                                                              .body("Not valid values"));
     }
 
     @Test
@@ -89,11 +88,11 @@ class AuthControllerTest {
         String token = "qwerty";
         String username = "";
         Mockito.doReturn(username)
-                .when(jwtUtils)
-                .getUserNameFromJwtToken(token);
+               .when(jwtUtils)
+               .getUserNameFromJwtToken(token);
         Mockito.doReturn(new User())
-                .when(userRepository)
-                .getByUserName(username);
+               .when(userRepository)
+               .getByUserName(username);
 
         assertEquals(authController.emailConfirm(token), ResponseEntity.ok("Account verified"));
     }
@@ -101,8 +100,8 @@ class AuthControllerTest {
     @Test
     void emailConfirm_TokenIsInvalid() {
         Mockito.doThrow(new NotConfirmAccountException("Error. The token is invalid or broken!"))
-                .when(emailConfirmationService)
-                .confirmAccount(null);
+               .when(emailConfirmationService)
+               .confirmAccount(null);
         NotConfirmAccountException e = new NotConfirmAccountException("Error. The token is invalid or broken!");
 
         assertNotEquals(ResponseEntity
@@ -114,7 +113,6 @@ class AuthControllerTest {
     @Test
     void authenticateUser_shouldReturnStatusOk() {
         assertTrue(authController.authenticateUser(loginRequest)
-                .equals(ResponseEntity.ok("Here will be JwtResponse")));
-
+                                 .equals(ResponseEntity.ok("Here will be JwtResponse")));
     }
 }
