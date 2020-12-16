@@ -14,8 +14,8 @@ import org.zipli.socknet.model.User;
 import org.zipli.socknet.repository.ChatRepository;
 import org.zipli.socknet.repository.MessageRepository;
 import org.zipli.socknet.repository.UserRepository;
+import org.zipli.socknet.security.jwt.JwtUtils;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -29,7 +29,7 @@ class MessageServiceTest {
     private User user;
     private Chat chat;
     private WsMessage wsMessage;
-    private MessagerService messageService;
+    private MessageService messageService;
 
     @Autowired
     UserRepository userRepository;
@@ -41,7 +41,7 @@ class MessageServiceTest {
     @BeforeEach
     void setUp() {
 
-        messageService = new MessagerService(userRepository, chatRepository, messageRepository);
+        messageService = new MessageService(userRepository, chatRepository, messageRepository, new JwtUtils());
 
         user = new User("Email@com", "password", "Username", "MoiNik");
         user = userRepository.save(user);
@@ -131,7 +131,6 @@ class MessageServiceTest {
         }
     }
 
-
     @Test
     void joinChat() {
 
@@ -180,13 +179,13 @@ class MessageServiceTest {
         Chat chat = new Chat("ChatBuGetMessage", false, user.getId());
         chat = chatRepository.save(chat);
 
-        Message messageOne = new Message(user.getId(),chat.getId(),new Date(),"dasdfs");
-        Message messageTwo = new Message(user.getId(),chat.getId(),new Date(),"dsadgbv");
-        Message messageTree = new Message(user.getId(),chat.getId(),new Date(),"bvbvbvvc");
+        Message messageOne = new Message(user.getId(), chat.getId(), new Date(), "dasdfs");
+        Message messageTwo = new Message(user.getId(), chat.getId(), new Date(), "dsadgbv");
+        Message messageTree = new Message(user.getId(), chat.getId(), new Date(), "bvbvbvvc");
 
         messageOne = messageRepository.save(messageOne);
         messageTwo = messageRepository.save(messageTwo);
-        messageTree =messageRepository.save(messageTree);
+        messageTree = messageRepository.save(messageTree);
 
         chat.getIdMessages().add(messageOne.getId());
         chat.getIdMessages().add(messageTwo.getId());
@@ -197,11 +196,11 @@ class MessageServiceTest {
         wsMessage.setChatId(chat.getId());
         List<Message> messages = messageService.getMessages(wsMessage);
 
-        assertEquals(messages.size(),3);
+        assertEquals(messages.size(), 3);
 
-        assertEquals(messages.get(0).getMessage(),messageOne.getMessage());
-        assertEquals(messages.get(1).getMessage(),messageTwo.getMessage());
-        assertEquals(messages.get(2).getMessage(),messageTree.getMessage());
+        assertEquals(messages.get(0).getMessage(), messageOne.getMessage());
+        assertEquals(messages.get(1).getMessage(), messageTwo.getMessage());
+        assertEquals(messages.get(2).getMessage(), messageTree.getMessage());
 
     }
 }
