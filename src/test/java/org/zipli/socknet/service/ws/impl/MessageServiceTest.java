@@ -199,5 +199,9 @@ class MessageServiceTest {
 
         assertEquals(messages.size(),3);
 
+        assertEquals(messages.get(0).getMessage(),messageOne.getMessage());
+        assertEquals(messages.get(1).getMessage(),messageTwo.getMessage());
+        assertEquals(messages.get(2).getMessage(),messageTree.getMessage());
+
     }
 }

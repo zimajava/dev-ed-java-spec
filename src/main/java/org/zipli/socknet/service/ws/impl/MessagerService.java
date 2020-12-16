@@ -75,27 +75,23 @@ public class MessagerService implements IMessagerService {
 
         if (!chatRepository.existsByChatName(wsMessage.getNameChat())) {
 
-            User userOne = userRepository.getUserById(wsMessage.getUserId());
-            User userTwo = userRepository.getByUserName(wsMessage.getUserName());
+            User creatorUser = userRepository.getUserById(wsMessage.getUserId());
+            User user = userRepository.getByUserName(wsMessage.getUserName());
 
             Chat chat = new Chat(wsMessage.getNameChat(),
                     true,
                     wsMessage.getUserId());
 
-
-            List<String> usersId = new ArrayList<>();
-            usersId.add(userOne.getId());
-            usersId.add(userTwo.getId());
-
-            chat.getIdUsers().addAll(usersId);
+            chat.getIdUsers().add(creatorUser.getId());
+            chat.getIdUsers().add(user.getId());
             chat = chatRepository.save(chat);
 
-            userOne.getChatsId().add(chat.getId());
-            userTwo.getChatsId().add(chat.getId());
+            creatorUser.getChatsId().add(chat.getId());
+            user.getChatsId().add(chat.getId());
 
             List<User> users = new ArrayList<>();
-            users.add(userOne);
-            users.add(userTwo);
+            users.add(creatorUser);
+            users.add(user);
 
             userRepository.saveAll(users);
 
@@ -115,7 +111,10 @@ public class MessagerService implements IMessagerService {
             Collection<String> listIdUsers = chat.getIdUsers();
 
             userRepository.saveAll(userRepository.findUsersByIdIn(listIdUsers).stream()
-                    .peek(user -> user.getChatsId().remove(wsMessage.getChatId()))
+                    .map(user -> {
+                        user.getChatsId().remove(wsMessage.getChatId());
+                        return user;
+                    })
                     .collect(Collectors.toList()));
             messageRepository.deleteAllByChatId(wsMessage.getChatId());
             chatRepository.deleteById(wsMessage.getChatId());
