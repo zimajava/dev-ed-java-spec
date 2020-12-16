@@ -14,7 +14,7 @@ import org.zipli.socknet.service.email.EmailConfirmationService;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping(value = "/zipli/auth", consumes = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/zipli/auth", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AuthController {
 
     private final EmailConfirmationService emailConfirmationService;
@@ -50,7 +50,7 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/confirm-account")
+    @GetMapping("/confirm-account")
     public ResponseEntity<?> emailConfirm(@Valid @RequestParam("token") String token) {
         try {
             emailConfirmationService.confirmAccount(token);
