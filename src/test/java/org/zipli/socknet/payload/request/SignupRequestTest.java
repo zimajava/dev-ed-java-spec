@@ -111,18 +111,18 @@ class SignupRequestTest {
 
         System.out.println("email is valid : " + fieldsWithoutUpperCase.getEmail());
         assertTrue(fieldsWithoutUpperCase.getEmail()
-                                  .matches(String.valueOf(emailPattern)));
+                                         .matches(String.valueOf(emailPattern)));
 
         System.out.println("email is valid : " + fieldsWithSpecificChars.getEmail());
         assertTrue(fieldsWithSpecificChars.getEmail()
-                                         .matches(String.valueOf(emailPattern)));
+                                          .matches(String.valueOf(emailPattern)));
     }
 
     @Test
     public void email_ShouldNotPassValidation() {
         System.out.println("email contains two @ characters : " + fieldsWithTwoDogs.getEmail());
         assertFalse(fieldsWithTwoDogs.getEmail()
-                                    .matches(String.valueOf(emailPattern)));
+                                     .matches(String.valueOf(emailPattern)));
 
         System.out.println("email should not contain spaces : " + fieldsWithSpaces.getEmail());
         assertFalse(fieldsWithSpaces.getEmail()
@@ -134,7 +134,7 @@ class SignupRequestTest {
 
         System.out.println("email should contain at least two characters after . : " + fieldsLessThan8.getEmail());
         assertFalse(fieldsLessThan8.getEmail()
-                                    .matches(String.valueOf(emailPattern)));
+                                   .matches(String.valueOf(emailPattern)));
     }
 
     @Test
@@ -183,7 +183,7 @@ class SignupRequestTest {
 
         System.out.println("userName is valid : " + fieldsWithSpecificChars.getUserName());
         assertTrue(fieldsWithSpecificChars.getUserName()
-                                         .matches(String.valueOf(userNamePattern)));
+                                          .matches(String.valueOf(userNamePattern)));
     }
 
     @Test
@@ -217,7 +217,7 @@ class SignupRequestTest {
 
         System.out.println("nickName is valid : " + fieldsWithSpecificChars.getNickName());
         assertTrue(fieldsWithSpecificChars.getNickName()
-                                         .matches(String.valueOf(nickNamePattern)));
+                                          .matches(String.valueOf(nickNamePattern)));
     }
 
     @Test
