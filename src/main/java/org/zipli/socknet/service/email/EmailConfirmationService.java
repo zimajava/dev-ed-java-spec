@@ -35,7 +35,7 @@ public class EmailConfirmationService {
         mailMessage.setSubject("Complete Registration!");
         mailMessage.setFrom("zipli.socknet@gmail.com");
         mailMessage.setText("To confirm your account, please click here : "
-                + deploy + "/confirm-account?token=" + token);
+                + deploy + "/zipli/auth/confirm-account?token=" + token);
         javaMailSender.send(mailMessage);
     }
 

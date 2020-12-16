@@ -2,6 +2,8 @@ package org.zipli.socknet.payload.request;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotBlank;
@@ -11,6 +13,8 @@ import javax.validation.constraints.Size;
 @Getter
 @Setter
 @Validated
+@NoArgsConstructor
+@AllArgsConstructor
 public class LoginRequest {
     @NotBlank(message = "Login can't be empty")
     private String login;
@@ -19,9 +23,4 @@ public class LoginRequest {
     @Size(min = 8, max = 16)
     @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,16}$")
     private String password;
-
-    public LoginRequest(@NotBlank String login, @NotBlank String password) {
-        this.login = login;
-        this.password = password;
-    }
 }
