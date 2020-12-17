@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class EventResponse {
+public class WsMessageResponse {
     private Command command;
     private Object message;
 }

@@ -1,6 +1,6 @@
 package org.zipli.socknet.service.ws;
 
-import org.zipli.socknet.dto.WsMessage;
+import org.zipli.socknet.dto.Data;
 import org.zipli.socknet.exception.CreateChatException;
 import org.zipli.socknet.exception.CreateSocketException;
 import org.zipli.socknet.exception.RemoveChatException;
@@ -13,23 +13,23 @@ import java.util.List;
 
 public interface IMessagerService {
 
-    Chat createGroupChat(WsMessage wsMessage) throws CreateChatException;
+    Chat createGroupChat(Data data) throws CreateChatException;
 
-    Chat createPrivateChat(WsMessage wsMessage) throws CreateChatException;
+    Chat createPrivateChat(Data data) throws CreateChatException;
 
-    Chat updateChat(WsMessage wsMessage) throws UpdateChatException;
+    Chat updateChat(Data data) throws UpdateChatException;
 
-    void removeChat(WsMessage wsMessage) throws RemoveChatException;
+    void removeChat(Data data) throws RemoveChatException;
 
-    List<Chat> showChatsByUser(WsMessage wsMessage);
+    List<Chat> showChatsByUser(Data data);
 
-    Chat leaveChat(WsMessage wsMessage);
+    Chat leaveChat(Data data);
 
-    Chat joinChat(WsMessage wsMessage);
+    Chat joinChat(Data data);
 
-    List<Message> getMessages(WsMessage wsMessage);
+    List<Message> getMessages(Data data);
 
-    Message sendMessage(WsMessage wsMessage);
+    Message sendMessage(Data data);
 
     void addMessageEmitterByToken(String token, Sinks.Many<String> emitter) throws CreateSocketException;
 }

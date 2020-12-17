@@ -5,7 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
-import org.zipli.socknet.dto.WsMessage;
+import org.zipli.socknet.dto.Data;
 import org.zipli.socknet.exception.CreateChatException;
 import org.zipli.socknet.exception.RemoveChatException;
 import org.zipli.socknet.model.Chat;
@@ -28,7 +28,7 @@ class MessageServiceTest {
 
     private User user;
     private Chat chat;
-    private WsMessage wsMessage;
+    private Data data;
     private MessageService messageService;
 
     @Autowired
@@ -50,23 +50,23 @@ class MessageServiceTest {
 
         chat = chatRepository.save(chat);
 
-        wsMessage = new WsMessage("textMessage", user.getId(), chat.getId(), "", "ChatName");
+        data = new Data("textMessage", user.getId(), chat.getId(), "", "ChatName");
     }
 
     @Test
     void sendMessage() {
 
-        Message message = messageService.sendMessage(wsMessage);
+        Message message = messageService.sendMessage(data);
 
-        assertEquals(wsMessage.getTextMessage(), message.getTextMessage());
-        assertEquals(wsMessage.getUserId(), message.getAuthorId());
-        assertEquals(wsMessage.getChatId(), message.getChatId());
+        assertEquals(data.getTextMessage(), message.getTextMessage());
+        assertEquals(data.getUserId(), message.getAuthorId());
+        assertEquals(data.getChatId(), message.getChatId());
     }
 
     @Test
     void createGroupChatPass() {
 
-        Chat chat = messageService.createGroupChat(wsMessage);
+        Chat chat = messageService.createGroupChat(data);
 
         assertTrue(chatRepository.existsByChatName(chat.getChatName()));
         chatRepository.deleteAll();
@@ -76,8 +76,8 @@ class MessageServiceTest {
     void createGroupChatFail() {
 
         try {
-            Chat chatOne = messageService.createGroupChat(wsMessage);
-            Chat chatTwo = messageService.createGroupChat(wsMessage);
+            Chat chatOne = messageService.createGroupChat(data);
+            Chat chatTwo = messageService.createGroupChat(data);
         } catch (CreateChatException e) {
             assertEquals(e.getMessage(), "Such a chat already exists");
         }
@@ -88,8 +88,8 @@ class MessageServiceTest {
     void createPrivateChatPass() {
 
         userRepository.save(new User("kkkk@gma.vv", "ghjk", "teaama", "morgen"));
-        wsMessage.setUserName("teaama");
-        Chat chat = messageService.createPrivateChat(wsMessage);
+        data.setUserName("teaama");
+        Chat chat = messageService.createPrivateChat(data);
 
         assertTrue(chatRepository.existsByChatName(chat.getChatName()));
         assertEquals(chat.getIdUsers().size(), 2);
@@ -109,9 +109,9 @@ class MessageServiceTest {
         userOne.setChatsId(Collections.singletonList(chat.getId()));
         userOne = userRepository.save(userOne);
 
-        WsMessage wsMessageTree = new WsMessage("textMessage", userOne.getId(), chat.getId(), "", chat.getChatName());
+        Data dataTree = new Data("textMessage", userOne.getId(), chat.getId(), "", chat.getChatName());
 
-        messageService.removeChat(wsMessageTree);
+        messageService.removeChat(dataTree);
 
         assertFalse(chatRepository.existsByChatName(chat.getChatName()));
         assertFalse(messageRepository.existsByChatId(chat.getId()));
@@ -122,10 +122,10 @@ class MessageServiceTest {
     @Test
     void removeChatFail() {
 
-        WsMessage wsMessageTree = new WsMessage("textMessage", "kakoitoId", chat.getId(), "", chat.getChatName());
+        Data dataTree = new Data("textMessage", "kakoitoId", chat.getId(), "", chat.getChatName());
 
         try {
-            messageService.removeChat(wsMessageTree);
+            messageService.removeChat(dataTree);
         } catch (RemoveChatException e) {
             assertEquals(e.getMessage(), "Only the creator can delete");
         }
@@ -134,26 +134,26 @@ class MessageServiceTest {
     @Test
     void joinChat() {
 
-        Chat chat = messageService.joinChat(wsMessage);
+        Chat chat = messageService.joinChat(data);
         User userUpdate = userRepository.getUserById(user.getId());
 
-        assertTrue(chat.getIdUsers().contains(wsMessage.getUserId()));
+        assertTrue(chat.getIdUsers().contains(data.getUserId()));
         assertTrue(userUpdate.getChatsId().contains(chat.getId()));
     }
 
     @Test
     void updateChat() {
 
-        WsMessage wsMessage = new WsMessage("textMessage", user.getId(), chat.getId(), "", "NewChatName");
-        Chat chat = messageService.updateChat(wsMessage);
+        Data data = new Data("textMessage", user.getId(), chat.getId(), "", "NewChatName");
+        Chat chat = messageService.updateChat(data);
 
-        assertEquals(chat.getChatName(), wsMessage.getNameChat());
+        assertEquals(chat.getChatName(), data.getNameChat());
     }
 
     @Test
     void showChatsByUser() {
 
-        List<Chat> chats = messageService.showChatsByUser(wsMessage);
+        List<Chat> chats = messageService.showChatsByUser(data);
 
         assertEquals(user.getChatsId().size(), chats.size());
     }
@@ -165,9 +165,9 @@ class MessageServiceTest {
         chat.getIdUsers().add(user.getId());
         chat = chatRepository.save(chat);
 
-        wsMessage.setChatId(chat.getId());
+        data.setChatId(chat.getId());
 
-        Chat newChat = messageService.leaveChat(wsMessage);
+        Chat newChat = messageService.leaveChat(data);
 
         assertEquals(chat.getIdUsers().size() - 1, newChat.getIdUsers().size());
 
@@ -193,8 +193,8 @@ class MessageServiceTest {
 
         chat = chatRepository.save(chat);
 
-        wsMessage.setChatId(chat.getId());
-        List<Message> messages = messageService.getMessages(wsMessage);
+        data.setChatId(chat.getId());
+        List<Message> messages = messageService.getMessages(data);
 
         assertEquals(messages.size(), 3);
 
