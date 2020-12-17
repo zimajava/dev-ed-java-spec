@@ -8,15 +8,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.zipli.socknet.exception.AuthException;
-import org.zipli.socknet.exception.AuthenticationException;
-import org.zipli.socknet.exception.NotConfirmAccountException;
+import org.zipli.socknet.exception.*;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.payload.request.LoginRequest;
 import org.zipli.socknet.payload.request.SignupRequest;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
 import org.zipli.socknet.service.email.EmailConfirmationService;
+import org.zipli.socknet.service.password.ResetPasswordService;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -26,6 +25,8 @@ class AuthControllerTest {
     AuthController authController;
     @MockBean
     EmailConfirmationService emailConfirmationService;
+    @MockBean
+    ResetPasswordService resetPasswordService;
     @MockBean
     JavaMailSender javaMailSender;
     @MockBean
@@ -110,6 +111,61 @@ class AuthControllerTest {
                         .body(e),
                 authController.emailConfirm(null));
     }
+
+    @Test
+    void processForgotPassword_UserIsRegisteredInDatabase(){
+      String email = "registeredUser@gmail.com";
+      String token = new String();
+        Mockito.doReturn(token)
+                .when(resetPasswordService)
+                .generateResetPasswordToken(email);
+
+        assertEquals(authController.processForgotPassword(email),
+                ResponseEntity.ok("Password can be changed"));
+    }
+
+    @Test
+    void processForgotPassword_UserIsNotFound(){
+        String email = "kh;uifyd";
+        Mockito.doThrow(new UserNotFoundException("Error. User is not founded."))
+                .when(resetPasswordService)
+                .generateResetPasswordToken(email);
+        UserNotFoundException e = new UserNotFoundException("Error. User is not founded.");
+
+        assertNotEquals(ResponseEntity
+                        .badRequest()
+                        .body(e),
+                authController.processForgotPassword(email));
+    }
+
+    @Test
+    void processResetPassword_TokenIsValid(){
+        String newPassword = "jvtiyd4218";
+        String changedPassword = new String();
+        String token = "hjvftf";
+        Mockito.doReturn(changedPassword)
+                .when(resetPasswordService)
+                .resetPassword(newPassword,token);
+
+        assertEquals(authController.processResetPassword(token, newPassword),
+                ResponseEntity.ok("Password successfully changed"));
+    }
+
+    @Test
+    void processResetPassword_TokenIsInvalid(){
+        String newPassword = "jvtiyd4218";
+        String token = "hjvftf";
+        Mockito.doThrow(new InvalidTokenException("Error. Token is invalid or broken"))
+                .when(resetPasswordService)
+                .resetPassword(newPassword,token);
+        InvalidTokenException e = new InvalidTokenException("Error. Token is invalid or broken");
+
+        assertNotEquals(ResponseEntity
+                        .badRequest()
+                        .body(e),
+                authController.processResetPassword(token, newPassword));
+    }
+
 
     @Test
     void authenticateUser_shouldReturnStatusOk() {

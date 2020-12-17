@@ -7,7 +7,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.zipli.socknet.exception.NotConfirmAccountException;
 import org.zipli.socknet.model.User;
-import org.zipli.socknet.payload.request.SignupRequest;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
 
@@ -34,8 +33,8 @@ public class EmailConfirmationService {
         mailMessage.setTo(email);
         mailMessage.setSubject("Complete Registration!");
         mailMessage.setFrom("zipli.socknet@gmail.com");
-        mailMessage.setText("To confirm your account, please click here : "
-                + deploy + "/confirm-account?token=" + token);
+        mailMessage.setText("To confirm your account, please click here : " +
+                 deploy + "/zipli/auth/confirm-account?token=" + token);
         javaMailSender.send(mailMessage);
     }
 
