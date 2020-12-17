@@ -128,7 +128,7 @@ class SignupRequestTest {
         assertFalse(fieldsWithSpaces.getEmail()
                                     .matches(String.valueOf(emailPattern)));
 
-        System.out.println("email should contain at least one LowerCase character : " + fieldsWithoutLowerCase.getEmail());
+        System.out.println("email should not starts from specific character : " + fieldsWithoutLowerCase.getEmail());
         assertFalse(fieldsWithoutLowerCase.getEmail()
                                           .matches(String.valueOf(emailPattern)));
 

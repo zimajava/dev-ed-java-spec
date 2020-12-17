@@ -37,7 +37,4 @@ public class SignupRequest {
         this.userName = userName;
         this.nickName = nickName;
     }
-
-    public SignupRequest() {
-    }
 }
