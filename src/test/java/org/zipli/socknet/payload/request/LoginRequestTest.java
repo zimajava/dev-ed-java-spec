@@ -126,31 +126,24 @@ class LoginRequestTest {
 
     @Test
     public void login_ShouldPassValidation() {
-        System.out.println("email is valid : " + validParametersEmail.getLogin());
         assertTrue(validParametersEmail.getLogin()
                                        .matches(String.valueOf(emailPattern)));
 
-        System.out.println("email is valid : " + fieldsWithoutUpperCaseEmail.getLogin());
         assertTrue(fieldsWithoutUpperCaseEmail.getLogin()
                                               .matches(String.valueOf(emailPattern)));
 
-        System.out.println("email is valid : " + fieldsWithSpecificCharsEmail.getLogin());
         assertTrue(fieldsWithSpecificCharsEmail.getLogin()
                                                .matches(String.valueOf(emailPattern)));
 
-        System.out.println("userName is valid : " + validParametersUserName.getLogin());
         assertTrue(validParametersUserName.getLogin()
                                           .matches(String.valueOf(userNamePattern)));
 
-        System.out.println("userName is valid : " + fieldsWithoutLowerCaseUserName.getLogin());
         assertTrue(fieldsWithoutLowerCaseUserName.getLogin()
                                                  .matches(String.valueOf(userNamePattern)));
 
-        System.out.println("userName is valid : " + fieldsWithoutUpperCaseUserName.getLogin());
         assertTrue(fieldsWithoutUpperCaseUserName.getLogin()
                                                  .matches(String.valueOf(userNamePattern)));
 
-        System.out.println("userName is valid : " + fieldsWithSpecificCharsUserName.getLogin());
         assertTrue(fieldsWithSpecificCharsUserName.getLogin()
                                                   .matches(String.valueOf(userNamePattern)));
     }
@@ -158,61 +151,48 @@ class LoginRequestTest {
 
     @Test
     public void login_ShouldNotPassValidation() {
-        System.out.println("email contains two @ characters : " + fieldsWithTwoDogs.getLogin());
         assertFalse(fieldsWithTwoDogs.getLogin()
                                      .matches(String.valueOf(emailPattern)));
 
-        System.out.println("email should not contain spaces : " + fieldsWithSpacesEmail.getLogin());
         assertFalse(fieldsWithSpacesEmail.getLogin()
                                          .matches(String.valueOf(emailPattern)));
 
-        System.out.println("email should contain at least two characters after . : " + fieldsLessThan8Email.getLogin());
         assertFalse(fieldsLessThan8Email.getLogin()
                                         .matches(String.valueOf(emailPattern)));
 
-        System.out.println("userName size is less than 8 characters : " + fieldsLessThan8UserName.getLogin());
         assertFalse(fieldsLessThan8UserName.getLogin()
                                            .matches(String.valueOf(userNamePattern)));
 
-        System.out.println("userName size is more than 16 characters : " + fieldsMoreThan16UserName.getLogin());
         assertFalse(fieldsMoreThan16UserName.getLogin()
                                             .matches(String.valueOf(userNamePattern)));
 
-        System.out.println("userName should not contain spaces : " + fieldsWithSpacesUserName.getLogin());
         assertFalse(fieldsWithSpacesUserName.getLogin()
                                             .matches(String.valueOf(userNamePattern)));
     }
 
     @Test
     public void password_ShouldPassValidation() {
-        System.out.println("password is valid (login = email) : " + validParametersEmail.getPassword());
         assertTrue(validParametersEmail.getPassword()
                                        .matches(String.valueOf(passwordPattern)));
 
-        System.out.println("password is valid (login = username) : " + validParametersUserName.getPassword());
         assertTrue(validParametersUserName.getPassword()
                                           .matches(String.valueOf(passwordPattern)));
     }
 
     @Test
     public void password_ShouldNotPassValidation() {
-        System.out.println("password size is less than 8 characters : " + fieldsLessThan8Email.getPassword());
         assertFalse(fieldsLessThan8Email.getPassword()
                                         .matches(String.valueOf(passwordPattern)));
 
-        System.out.println("password size is more than 16 characters : " + fieldsMoreThan16Email.getPassword());
         assertFalse(fieldsMoreThan16Email.getPassword()
                                          .matches(String.valueOf(passwordPattern)));
 
-        System.out.println("password should contain at least one UpperCase character : " + fieldsWithoutUpperCaseEmail.getPassword());
         assertFalse(fieldsWithoutUpperCaseEmail.getPassword()
                                                .matches(String.valueOf(passwordPattern)));
 
-        System.out.println("password should not contain spaces : " + fieldsWithSpacesEmail.getPassword());
         assertFalse(fieldsWithSpacesEmail.getPassword()
                                          .matches(String.valueOf(passwordPattern)));
 
-        System.out.println("password should contain at least one LowerCase character : " + fieldsWithoutLowerCaseEmail.getPassword());
         assertFalse(fieldsWithoutLowerCaseEmail.getPassword()
                                                .matches(String.valueOf(passwordPattern)));
     }

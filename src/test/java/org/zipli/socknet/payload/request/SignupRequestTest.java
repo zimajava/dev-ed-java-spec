@@ -105,128 +105,102 @@ class SignupRequestTest {
 
     @Test
     public void email_ShouldPassValidation() {
-        System.out.println("email is valid : " + validParameters.getEmail());
         assertTrue(validParameters.getEmail()
                                   .matches(String.valueOf(emailPattern)));
 
-        System.out.println("email is valid : " + fieldsWithoutUpperCase.getEmail());
         assertTrue(fieldsWithoutUpperCase.getEmail()
                                          .matches(String.valueOf(emailPattern)));
 
-        System.out.println("email is valid : " + fieldsWithSpecificChars.getEmail());
         assertTrue(fieldsWithSpecificChars.getEmail()
                                           .matches(String.valueOf(emailPattern)));
     }
 
     @Test
     public void email_ShouldNotPassValidation() {
-        System.out.println("email contains two @ characters : " + fieldsWithTwoDogs.getEmail());
         assertFalse(fieldsWithTwoDogs.getEmail()
                                      .matches(String.valueOf(emailPattern)));
 
-        System.out.println("email should not contain spaces : " + fieldsWithSpaces.getEmail());
         assertFalse(fieldsWithSpaces.getEmail()
                                     .matches(String.valueOf(emailPattern)));
 
-        System.out.println("email should not starts from specific character : " + fieldsWithoutLowerCase.getEmail());
         assertFalse(fieldsWithoutLowerCase.getEmail()
                                           .matches(String.valueOf(emailPattern)));
 
-        System.out.println("email should contain at least two characters after . : " + fieldsLessThan8.getEmail());
         assertFalse(fieldsLessThan8.getEmail()
                                    .matches(String.valueOf(emailPattern)));
     }
 
     @Test
     public void password_ShouldPassValidation() {
-        System.out.println("password is valid : " + validParameters.getPassword());
         assertTrue(validParameters.getPassword()
                                   .matches(String.valueOf(passwordPattern)));
     }
 
     @Test
     public void password_ShouldNotPassValidation() {
-        System.out.println("password size is less than 8 characters : " + fieldsLessThan8.getPassword());
         assertFalse(fieldsLessThan8.getPassword()
                                    .matches(String.valueOf(passwordPattern)));
 
-        System.out.println("password size is more than 16 characters : " + fieldsMoreThan16.getPassword());
         assertFalse(fieldsMoreThan16.getPassword()
                                     .matches(String.valueOf(passwordPattern)));
 
-        System.out.println("password should contain at least one UpperCase character : " + fieldsWithoutUpperCase.getPassword());
         assertFalse(fieldsWithoutUpperCase.getPassword()
                                           .matches(String.valueOf(passwordPattern)));
 
-        System.out.println("password should not contain spaces : " + fieldsWithSpaces.getPassword());
         assertFalse(fieldsWithSpaces.getPassword()
                                     .matches(String.valueOf(passwordPattern)));
 
-        System.out.println("password should contain at least one LowerCase character : " + fieldsWithoutLowerCase.getPassword());
         assertFalse(fieldsWithoutLowerCase.getPassword()
                                           .matches(String.valueOf(passwordPattern)));
     }
 
     @Test
     public void userName_ShouldPassValidation() {
-        System.out.println("userName is valid : " + validParameters.getUserName());
         assertTrue(validParameters.getUserName()
                                   .matches(String.valueOf(userNamePattern)));
 
-        System.out.println("userName is valid : " + fieldsWithoutLowerCase.getUserName());
         assertTrue(fieldsWithoutLowerCase.getUserName()
                                          .matches(String.valueOf(userNamePattern)));
 
-        System.out.println("userName is valid : " + fieldsWithoutUpperCase.getUserName());
         assertTrue(fieldsWithoutUpperCase.getUserName()
                                          .matches(String.valueOf(userNamePattern)));
 
-        System.out.println("userName is valid : " + fieldsWithSpecificChars.getUserName());
         assertTrue(fieldsWithSpecificChars.getUserName()
                                           .matches(String.valueOf(userNamePattern)));
     }
 
     @Test
     public void userName_ShouldNotPassValidation() {
-        System.out.println("userName size is less than 8 characters : " + fieldsLessThan8.getUserName());
         assertFalse(fieldsLessThan8.getUserName()
                                    .matches(String.valueOf(userNamePattern)));
 
-        System.out.println("userName size is more than 16 characters : " + fieldsMoreThan16.getUserName());
         assertFalse(fieldsMoreThan16.getUserName()
                                     .matches(String.valueOf(userNamePattern)));
 
-        System.out.println("userName should not contain spaces : " + fieldsWithSpaces.getUserName());
         assertFalse(fieldsWithSpaces.getUserName()
                                     .matches(String.valueOf(userNamePattern)));
     }
 
     @Test
     public void nickName_ShouldPassValidation() {
-        System.out.println("nickName is valid : " + validParameters.getNickName());
         assertTrue(validParameters.getNickName()
                                   .matches(String.valueOf(nickNamePattern)));
 
-        System.out.println("nickName is valid : " + fieldsWithoutLowerCase.getNickName());
         assertTrue(fieldsWithoutLowerCase.getNickName()
                                          .matches(String.valueOf(nickNamePattern)));
 
-        System.out.println("nickName is valid : " + fieldsWithoutUpperCase.getNickName());
         assertTrue(fieldsWithoutUpperCase.getNickName()
                                          .matches(String.valueOf(nickNamePattern)));
 
-        System.out.println("nickName is valid : " + fieldsWithSpecificChars.getNickName());
         assertTrue(fieldsWithSpecificChars.getNickName()
                                           .matches(String.valueOf(nickNamePattern)));
     }
 
     @Test
     public void nickName_ShouldNotPassValidation() {
-        System.out.println("nickName size is less than 8 characters : " + fieldsLessThan8.getNickName());
         assertFalse(fieldsLessThan8.getNickName()
                                    .matches(String.valueOf(nickNamePattern)));
 
-        System.out.println("nickName size is more than 16 characters : " + fieldsMoreThan16.getNickName());
         assertFalse(fieldsMoreThan16.getNickName()
                                     .matches(String.valueOf(nickNamePattern)));
     }
