@@ -73,9 +73,11 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                             new WsMessageResponse(eventCommand, e.getMessage()))
                     );
                 }
+                break;
             case CHAT_JOIN:
                 messageService.joinChat(wsMessage.getData());
                 emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand, new Data())));
+                break;
         }
     }
 
