@@ -6,8 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.regex.Pattern;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class LoginRequestTest {
@@ -32,6 +31,7 @@ class LoginRequestTest {
     private LoginRequest fieldsWithSpecificCharsEmail;
     private LoginRequest fieldsWithSpecificCharsUserName;
     private LoginRequest fieldsWithTwoDogs;
+    private LoginRequest nullParameters;
 
     @BeforeEach
     public void init() {
@@ -46,6 +46,8 @@ class LoginRequestTest {
         emptyLoginRequestEmail = new LoginRequest("", "");
 
         emptyLoginRequestUserName = new LoginRequest("", "");
+
+        nullParameters = new LoginRequest(null, null);
 
         fieldsLessThan8Email = new LoginRequest(
                 "newUser2@gmail.c",
@@ -98,6 +100,12 @@ class LoginRequestTest {
         fieldsWithTwoDogs = new LoginRequest(
                 "new@User2@gmail.com",
                 "ugyur2Wa4");
+    }
+
+    @Test
+    public void null_ShouldThrowsNullPointer() {
+        assertThrows(NullPointerException.class, () -> nullParameters.getLogin()
+                                 .matches(String.valueOf(emailPattern)));
     }
 
     @Test
