@@ -10,7 +10,6 @@ import org.zipli.socknet.exception.UserNotFoundException;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
-import org.zipli.socknet.security.services.UserDetailsServiceImpl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -25,9 +24,6 @@ class ResetPasswordServiceTest {
 
     @MockBean
     UserRepository userRepository;
-
-    @MockBean
-    UserDetailsServiceImpl userDetailsService;
 
     @MockBean
     User user;
@@ -59,8 +55,30 @@ class ResetPasswordServiceTest {
     void resetPassword_TokenIsValid() {
         String newPassword = "yrxxW245";
         String token = "gfhrkxr";
+        String userName = "ygbuiui";
+                Mockito.doReturn(userName)
+                .when(jwtUtils)
+                .getUserNameFromJwtToken(token);
+        Mockito.doReturn(new User("hgboi","yrvr7", "ygbuiui","uin"))
+                .when(userRepository)
+                .getByUserName(userName);
 
         assertEquals("Password successfully changed", resetPasswordService.resetPassword(newPassword, token));
+    }
+
+    @Test
+    void resetPassword_UserInNotInADB() {
+        String newPassword = "yrxxW245";
+        String token = "gfhrkxr";
+        String userName = new String();
+        Mockito.doReturn(userName)
+                .when(jwtUtils)
+                .getUserNameFromJwtToken(token);
+        Mockito.doReturn(null)
+                .when(userRepository)
+                .getUserByEmail(userName);
+
+        assertEquals(null, resetPasswordService.resetPassword(newPassword, token));
     }
 
     @Test

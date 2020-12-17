@@ -1,11 +1,10 @@
 package org.zipli.socknet.service.password;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.zipli.socknet.exception.InvalidTokenException;
 import org.zipli.socknet.exception.UserNotFoundException;
 import org.zipli.socknet.model.User;
@@ -39,8 +38,7 @@ public class ResetPasswordService {
                 + "<p>You have requested to reset your password.</p>"
                 + "<p>Click the link below to change your password:</p>"
                 + deploy + "/zipli/auth/reset_password?token=" + token + "<p>Change my password</p>"
-                + "<br>"
-                + "<p>Ignore this email if you do remember your password, "
+                + "<br>" + "<p>Ignore this email if you do remember your password, "
                 + "or you have not made the request.</p>");
         javaMailSender.send(mailMessage);
     }
@@ -57,21 +55,22 @@ public class ResetPasswordService {
         }
     }
 
+    @Transactional
     public String resetPassword(String newPassword, String token) {
 
         if (token != null) {
             String userName = jwtUtils.getUserNameFromJwtToken(token);
             User user = userRepository.getByUserName(userName);
-            String password = user.getPassword();
-//            user = mongoTemplate.findOne(
-//                    Query.query(Criteria.where("password").is(password)), User.class);
-//            user.setPassword(newPassword);
-//            mongoTemplate.save(user, "user");
-            //тут нужно старый пароль поменять на новый
-
-            // String query = ">db.mycol.update({'password':'" + password + "'},{$set:{'password':'" + newPassword + "'}})";
-            // ^ Сменить название бд и коллекции
-            return "Password successfully changed";
+            if (user == null) {
+                return null;
+            } else {
+                String password = user.getPassword();
+                if (!password.isEmpty()) {
+                    user.setPassword(newPassword);
+                }
+                userRepository.save(user);
+                return "Password successfully changed";
+            }
         } else {
             throw new InvalidTokenException("Error. Token is invalid or broken");
         }

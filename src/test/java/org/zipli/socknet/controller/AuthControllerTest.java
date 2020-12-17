@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class AuthControllerTest {
+
     @Autowired
     AuthController authController;
     @MockBean
@@ -36,8 +37,6 @@ class AuthControllerTest {
     private LoginRequest loginRequest;
     private SignupRequest signupRequest;
 
-//    @MockBean
-//    LoginRequest loginRequest1;
     private SignupRequest signupRequest1;
 
     @BeforeEach
