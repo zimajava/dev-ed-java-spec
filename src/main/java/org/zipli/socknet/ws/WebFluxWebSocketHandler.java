@@ -8,9 +8,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketSession;
 import org.zipli.socknet.dto.Command;
-import org.zipli.socknet.dto.Event;
-import org.zipli.socknet.dto.EventResponse;
 import org.zipli.socknet.dto.WsMessage;
+import org.zipli.socknet.dto.WsMessageResponse;
+import org.zipli.socknet.dto.Data;
 import org.zipli.socknet.exception.CreateChatException;
 import org.zipli.socknet.exception.CreateSocketException;
 import org.zipli.socknet.model.Chat;
@@ -39,15 +39,15 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
         try {
             messageService.addMessageEmitterByToken(token, emitter);
         } catch (CreateSocketException e) {
-            String response = json.writeValueAsString(new EventResponse(ERROR_CREATE_CONNECT, e.getMessage()));
+            String response = json.writeValueAsString(new WsMessageResponse(ERROR_CREATE_CONNECT, e.getMessage()));
             return webSocketSession.send(Mono.just(webSocketSession.textMessage(response)));
         }
 
         Mono<Void> input = webSocketSession.receive()
                 .doOnNext(message -> {
                     try {
-                        Event event = json.readValue(message.getPayloadAsText(), Event.class);
-                        eventProcessor(emitter, event);
+                        WsMessage wsMessage = json.readValue(message.getPayloadAsText(), WsMessage.class);
+                        eventProcessor(emitter, wsMessage);
                     } catch (Exception e) {
                         log.error("Error get message {}", e.getMessage());
                     }
@@ -59,23 +59,23 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
         return Mono.zip(input, output).then();
     }
 
-    private void eventProcessor(Sinks.Many<String> emitter, Event event) throws JsonProcessingException {
-        Command eventCommand = event.getCommand();
+    private void eventProcessor(Sinks.Many<String> emitter, WsMessage wsMessage) throws JsonProcessingException {
+        Command eventCommand = wsMessage.getCommand();
         switch (eventCommand) {
-            case CREATE_GROUP_CHAT:
+            case CHAT_GROUP_CREATE:
                 try {
-                    Chat groupChat = messageService.createGroupChat(event.getMessage());
+                    Chat groupChat = messageService.createGroupChat(wsMessage.getData());
                     emitter.tryEmitNext(json.writeValueAsString(
-                            new Event(eventCommand, new WsMessage(groupChat.getId(), groupChat.getChatName())))
+                            new WsMessage(eventCommand, new Data(groupChat.getId(), groupChat.getChatName())))
                     );
                 } catch (CreateChatException e) {
                     emitter.tryEmitNext(json.writeValueAsString(
-                            new EventResponse(eventCommand, e.getMessage()))
+                            new WsMessageResponse(eventCommand, e.getMessage()))
                     );
                 }
-            case JOIN_CHAT:
-                messageService.joinChat(event.getMessage());
-                emitter.tryEmitNext(json.writeValueAsString(new Event(eventCommand, new WsMessage())));
+            case CHAT_JOIN:
+                messageService.joinChat(wsMessage.getData());
+                emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand, new Data())));
         }
     }
 

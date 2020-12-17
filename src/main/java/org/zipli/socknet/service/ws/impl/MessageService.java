@@ -2,7 +2,7 @@ package org.zipli.socknet.service.ws.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.zipli.socknet.dto.WsMessage;
+import org.zipli.socknet.dto.Data;
 import org.zipli.socknet.exception.CreateChatException;
 import org.zipli.socknet.exception.CreateSocketException;
 import org.zipli.socknet.exception.RemoveChatException;
@@ -38,12 +38,12 @@ public class MessageService implements IMessagerService {
     }
 
     @Override
-    public Message sendMessage(WsMessage wsMessage) {
+    public Message sendMessage(Data data) {
 
-        Message message = new Message(wsMessage.getUserId(), wsMessage.getChatId(), new Date(), wsMessage.getTextMessage());
+        Message message = new Message(data.getUserId(), data.getChatId(), new Date(), data.getTextMessage());
         message = messageRepository.save(message);
 
-        Chat chat = chatRepository.findChatById(wsMessage.getChatId());
+        Chat chat = chatRepository.findChatById(data.getChatId());
         chat.getIdMessages().add(message.getId());
         chatRepository.save(chat);
 
@@ -51,19 +51,19 @@ public class MessageService implements IMessagerService {
     }
 
     @Override
-    public Chat createGroupChat(WsMessage wsMessage) throws CreateChatException {
+    public Chat createGroupChat(Data data) throws CreateChatException {
 
-        if (!chatRepository.existsByChatName(wsMessage.getNameChat())) {
+        if (!chatRepository.existsByChatName(data.getNameChat())) {
 
-            Chat chat = new Chat(wsMessage.getNameChat(),
+            Chat chat = new Chat(data.getNameChat(),
                     false,
                     null,
-                    Collections.singletonList(wsMessage.getUserId()),
-                    wsMessage.getUserId());
+                    Collections.singletonList(data.getUserId()),
+                    data.getUserId());
 
             chat = chatRepository.save(chat);
 
-            User user = userRepository.getUserById(wsMessage.getUserId());
+            User user = userRepository.getUserById(data.getUserId());
             user.getChatsId().add(chat.getId());
             userRepository.save(user);
 
@@ -75,16 +75,16 @@ public class MessageService implements IMessagerService {
     }
 
     @Override
-    public Chat createPrivateChat(WsMessage wsMessage) throws CreateChatException {
+    public Chat createPrivateChat(Data data) throws CreateChatException {
 
-        if (!chatRepository.existsByChatName(wsMessage.getNameChat())) {
+        if (!chatRepository.existsByChatName(data.getNameChat())) {
 
-            User creatorUser = userRepository.getUserById(wsMessage.getUserId());
-            User user = userRepository.getByUserName(wsMessage.getUserName());
+            User creatorUser = userRepository.getUserById(data.getUserId());
+            User user = userRepository.getByUserName(data.getUserName());
 
-            Chat chat = new Chat(wsMessage.getNameChat(),
+            Chat chat = new Chat(data.getNameChat(),
                     true,
-                    wsMessage.getUserId());
+                    data.getUserId());
 
             chat.getIdUsers().add(creatorUser.getId());
             chat.getIdUsers().add(user.getId());
@@ -106,9 +106,9 @@ public class MessageService implements IMessagerService {
     }
 
     @Override
-    public void removeChat(WsMessage wsMessage) throws RemoveChatException {
+    public void removeChat(Data data) throws RemoveChatException {
 
-        Chat chat = chatRepository.getByChatNameAndCreatorUserId(wsMessage.getNameChat(), wsMessage.getUserId());
+        Chat chat = chatRepository.getByChatNameAndCreatorUserId(data.getNameChat(), data.getUserId());
 
         if (chat != null) {
 
@@ -116,12 +116,12 @@ public class MessageService implements IMessagerService {
 
             userRepository.saveAll(userRepository.findUsersByIdIn(listIdUsers).stream()
                     .map(user -> {
-                        user.getChatsId().remove(wsMessage.getChatId());
+                        user.getChatsId().remove(data.getChatId());
                         return user;
                     })
                     .collect(Collectors.toList()));
-            messageRepository.deleteAllByChatId(wsMessage.getChatId());
-            chatRepository.deleteById(wsMessage.getChatId());
+            messageRepository.deleteAllByChatId(data.getChatId());
+            chatRepository.deleteById(data.getChatId());
 
         } else {
             throw new RemoveChatException("Only the creator can delete");
@@ -129,13 +129,13 @@ public class MessageService implements IMessagerService {
     }
 
     @Override
-    public Chat leaveChat(WsMessage wsMessage) {
+    public Chat leaveChat(Data data) {
 
-        Chat chat = chatRepository.findChatById(wsMessage.getChatId());
-        chat.getIdUsers().remove(wsMessage.getUserId());
+        Chat chat = chatRepository.findChatById(data.getChatId());
+        chat.getIdUsers().remove(data.getUserId());
         chat = chatRepository.save(chat);
 
-        User user = userRepository.getUserById(wsMessage.getUserId());
+        User user = userRepository.getUserById(data.getUserId());
         user.getChatsId().remove(chat.getId());
         userRepository.save(user);
 
@@ -143,18 +143,18 @@ public class MessageService implements IMessagerService {
     }
 
     @Override
-    public Chat joinChat(WsMessage wsMessage) {
+    public Chat joinChat(Data data) {
 
-        Chat chat = chatRepository.findChatById(wsMessage.getChatId());
+        Chat chat = chatRepository.findChatById(data.getChatId());
         List<String> listIdUsers = chat.getIdUsers();
 
-        if (!listIdUsers.contains(wsMessage.getUserId())) {
+        if (!listIdUsers.contains(data.getUserId())) {
 
-            User user = userRepository.getUserById(wsMessage.getUserId());
-            user.getChatsId().add(wsMessage.getChatId());
+            User user = userRepository.getUserById(data.getUserId());
+            user.getChatsId().add(data.getChatId());
             userRepository.save(user);
 
-            listIdUsers.add(wsMessage.getUserId());
+            listIdUsers.add(data.getUserId());
             chat = chatRepository.save(chat);
         }
 
@@ -162,9 +162,9 @@ public class MessageService implements IMessagerService {
     }
 
     @Override
-    public List<Message> getMessages(WsMessage wsMessage) {
+    public List<Message> getMessages(Data data) {
 
-        Chat chat = chatRepository.findChatById(wsMessage.getChatId());
+        Chat chat = chatRepository.findChatById(data.getChatId());
 
         List<String> listIdMessages = chat.getIdMessages();
         List<Message> messages = new ArrayList<>();
@@ -177,12 +177,12 @@ public class MessageService implements IMessagerService {
     }
 
     @Override
-    public Chat updateChat(WsMessage wsMessage) {
+    public Chat updateChat(Data data) {
 
-        if (!chatRepository.existsByChatNameAndCreatorUserId(wsMessage.getNameChat(), wsMessage.getUserId())) {
+        if (!chatRepository.existsByChatNameAndCreatorUserId(data.getNameChat(), data.getUserId())) {
 
-            Chat chat = chatRepository.findChatById(wsMessage.getChatId());
-            chat.setChatName(wsMessage.getNameChat());
+            Chat chat = chatRepository.findChatById(data.getChatId());
+            chat.setChatName(data.getNameChat());
             chat = chatRepository.save(chat);
 
             return chat;
@@ -192,9 +192,9 @@ public class MessageService implements IMessagerService {
     }
 
     @Override
-    public List<Chat> showChatsByUser(WsMessage wsMessage) {
+    public List<Chat> showChatsByUser(Data data) {
 
-        User user = userRepository.getUserById(wsMessage.getUserId());
+        User user = userRepository.getUserById(data.getUserId());
 
         return chatRepository.getChatsByIdIn(user.getChatsId());
     }
