@@ -12,8 +12,8 @@ import org.zipli.socknet.repository.UserRepository;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DataMongoTest
 @Slf4j
+@DataMongoTest
 @ExtendWith(SpringExtension.class)
 class UserDetailsServiceImplTest {
 

@@ -1,6 +1,5 @@
 package org.zipli.socknet.security.jwt;
 
-
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
@@ -11,12 +10,12 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
-@Component
 @Slf4j
+@Component
 public class JwtUtils {
-
     @Value("${app.jwtSecret}")
     private String jwtSecret;
+
     @Value("${app.jwtExpirationMs}")
     private int jwtExpirationMs;
 

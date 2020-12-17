@@ -72,7 +72,7 @@ class AuthControllerTest {
         AuthException e = new AuthException("This email already exists!");
 
         assertNotEquals(authController.addUser(signupRequest1), ResponseEntity.badRequest()
-                .body(e));
+                                                                              .body(e));
     }
 
     @Test
@@ -82,7 +82,7 @@ class AuthControllerTest {
                 .getUserByEmail("registeredUser@gmail.com");
 
         assertNotEquals(authController.addUser(signupRequest1), ResponseEntity.badRequest()
-                .body("Not valid values"));
+                                                                              .body("Not valid values"));
     }
 
     @Test

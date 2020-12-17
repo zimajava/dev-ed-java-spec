@@ -11,4 +11,6 @@ public interface MessageRepository extends MongoRepository<Message, String> {
     Message getMessageById(String id);
 
     List<Message> getMessagesByAuthorId(String authorId);
+    void deleteAllByChatId(String chatId);
+    boolean existsByChatId(String chatId);
 }
