@@ -17,4 +17,8 @@ public class WsMessage {
     private String userName;
     private String nameChat;
 
+    public WsMessage(String chatId, String nameChat) {
+        this.chatId = chatId;
+        this.nameChat = nameChat;
+    }
 }

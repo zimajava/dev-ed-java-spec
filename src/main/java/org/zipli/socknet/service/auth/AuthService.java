@@ -48,7 +48,8 @@ public class AuthService implements IAuthService {
             userRepository.save(user);
             UserDetails userDetails = new UserDetailsImpl(user);
             String token = jwtUtils.generateJwtToken(userDetails);
-            emailConfirmationService.sendEmail(user.getEmail(), token);
+            new Thread(() -> emailConfirmationService.sendEmail(user.getEmail(), token)).start();
         }
     }
+
 }
