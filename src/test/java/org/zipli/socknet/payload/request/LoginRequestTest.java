@@ -19,17 +19,17 @@ class LoginRequestTest {
     private LoginRequest validParametersUserName;
     private LoginRequest emptyLoginRequestEmail;
     private LoginRequest emptyLoginRequestUserName;
-    private LoginRequest fieldsLessThan8;
+    private LoginRequest fieldsLessThan8Email;
     private LoginRequest fieldsLessThan8UserName;
-    private LoginRequest fieldsMoreThan16;
+    private LoginRequest fieldsMoreThan16Email;
     private LoginRequest fieldsMoreThan16UserName;
-    private LoginRequest fieldsWithoutUpperCase;
+    private LoginRequest fieldsWithoutUpperCaseEmail;
     private LoginRequest fieldsWithoutUpperCaseUserName;
-    private LoginRequest fieldsWithoutLowerCase;
+    private LoginRequest fieldsWithoutLowerCaseEmail;
     private LoginRequest fieldsWithoutLowerCaseUserName;
-    private LoginRequest fieldsWithSpaces;
+    private LoginRequest fieldsWithSpacesEmail;
     private LoginRequest fieldsWithSpacesUserName;
-    private LoginRequest fieldsWithSpecificChars;
+    private LoginRequest fieldsWithSpecificCharsEmail;
     private LoginRequest fieldsWithSpecificCharsUserName;
     private LoginRequest fieldsWithTwoDogs;
 
@@ -47,7 +47,7 @@ class LoginRequestTest {
 
         emptyLoginRequestUserName = new LoginRequest("", "");
 
-        fieldsLessThan8 = new LoginRequest(
+        fieldsLessThan8Email = new LoginRequest(
                 "newUser2@gmail.c",
                 "ugyur3H");
 
@@ -55,7 +55,7 @@ class LoginRequestTest {
                 "uyHrjj5",
                 "ugyur3H");
 
-        fieldsMoreThan16 = new LoginRequest(
+        fieldsMoreThan16Email = new LoginRequest(
                 "ewUnjnoe899249mlfser2@gmail.com",
                 "ugyur2Wa4sdjkfjkskllsllj");
 
@@ -63,7 +63,7 @@ class LoginRequestTest {
                 "uyfrjjj3Jk8sfkdkjjgdjgdl",
                 "ugyur2Wa4sdjkfjkskllsllj");
 
-        fieldsWithSpaces = new LoginRequest(
+        fieldsWithSpacesEmail = new LoginRequest(
                 "new User2@gmail.com",
                 "ugyur 2Wa4");
 
@@ -71,7 +71,7 @@ class LoginRequestTest {
                 "uyfrj jj3Jk8",
                 "ugyur 2Wa4");
 
-        fieldsWithoutUpperCase = new LoginRequest(
+        fieldsWithoutUpperCaseEmail = new LoginRequest(
                 "newuser2@gmail.com",
                 "ugyur2wa4");
 
@@ -79,7 +79,7 @@ class LoginRequestTest {
                 "kjfdk87dfkl",
                 "ugyur2wa4");
 
-        fieldsWithoutLowerCase = new LoginRequest(
+        fieldsWithoutLowerCaseEmail = new LoginRequest(
                 "NEWUSER2@GMAIL.COM",
                 "UGHSK2WGKK4");
 
@@ -87,7 +87,7 @@ class LoginRequestTest {
                 "UGHSK2WGKK4",
                 "UGHSK2WGKK4");
 
-        fieldsWithSpecificChars = new LoginRequest(
+        fieldsWithSpecificCharsEmail = new LoginRequest(
                 "n_ew.j-ser2@gmail.com",
                 "ugyur2Wa4");
 
@@ -130,13 +130,13 @@ class LoginRequestTest {
         assertTrue(validParametersEmail.getLogin()
                                        .matches(String.valueOf(emailPattern)));
 
-        System.out.println("email is valid : " + fieldsWithoutUpperCase.getLogin());
-        assertTrue(fieldsWithoutUpperCase.getLogin()
-                                         .matches(String.valueOf(emailPattern)));
+        System.out.println("email is valid : " + fieldsWithoutUpperCaseEmail.getLogin());
+        assertTrue(fieldsWithoutUpperCaseEmail.getLogin()
+                                              .matches(String.valueOf(emailPattern)));
 
-        System.out.println("email is valid : " + fieldsWithSpecificChars.getLogin());
-        assertTrue(fieldsWithSpecificChars.getLogin()
-                                          .matches(String.valueOf(emailPattern)));
+        System.out.println("email is valid : " + fieldsWithSpecificCharsEmail.getLogin());
+        assertTrue(fieldsWithSpecificCharsEmail.getLogin()
+                                               .matches(String.valueOf(emailPattern)));
 
         System.out.println("userName is valid : " + validParametersUserName.getLogin());
         assertTrue(validParametersUserName.getLogin()
@@ -162,13 +162,13 @@ class LoginRequestTest {
         assertFalse(fieldsWithTwoDogs.getLogin()
                                      .matches(String.valueOf(emailPattern)));
 
-        System.out.println("email should not contain spaces : " + fieldsWithSpaces.getLogin());
-        assertFalse(fieldsWithSpaces.getLogin()
-                                    .matches(String.valueOf(emailPattern)));
+        System.out.println("email should not contain spaces : " + fieldsWithSpacesEmail.getLogin());
+        assertFalse(fieldsWithSpacesEmail.getLogin()
+                                         .matches(String.valueOf(emailPattern)));
 
-        System.out.println("email should contain at least two characters after . : " + fieldsLessThan8.getLogin());
-        assertFalse(fieldsLessThan8.getLogin()
-                                   .matches(String.valueOf(emailPattern)));
+        System.out.println("email should contain at least two characters after . : " + fieldsLessThan8Email.getLogin());
+        assertFalse(fieldsLessThan8Email.getLogin()
+                                        .matches(String.valueOf(emailPattern)));
 
         System.out.println("userName size is less than 8 characters : " + fieldsLessThan8UserName.getLogin());
         assertFalse(fieldsLessThan8UserName.getLogin()
@@ -196,24 +196,24 @@ class LoginRequestTest {
 
     @Test
     public void password_ShouldNotPassValidation() {
-        System.out.println("password size is less than 8 characters : " + fieldsLessThan8.getPassword());
-        assertFalse(fieldsLessThan8.getPassword()
-                                   .matches(String.valueOf(passwordPattern)));
+        System.out.println("password size is less than 8 characters : " + fieldsLessThan8Email.getPassword());
+        assertFalse(fieldsLessThan8Email.getPassword()
+                                        .matches(String.valueOf(passwordPattern)));
 
-        System.out.println("password size is more than 16 characters : " + fieldsMoreThan16.getPassword());
-        assertFalse(fieldsMoreThan16.getPassword()
-                                    .matches(String.valueOf(passwordPattern)));
+        System.out.println("password size is more than 16 characters : " + fieldsMoreThan16Email.getPassword());
+        assertFalse(fieldsMoreThan16Email.getPassword()
+                                         .matches(String.valueOf(passwordPattern)));
 
-        System.out.println("password should contain at least one UpperCase character : " + fieldsWithoutUpperCase.getPassword());
-        assertFalse(fieldsWithoutUpperCase.getPassword()
-                                          .matches(String.valueOf(passwordPattern)));
+        System.out.println("password should contain at least one UpperCase character : " + fieldsWithoutUpperCaseEmail.getPassword());
+        assertFalse(fieldsWithoutUpperCaseEmail.getPassword()
+                                               .matches(String.valueOf(passwordPattern)));
 
-        System.out.println("password should not contain spaces : " + fieldsWithSpaces.getPassword());
-        assertFalse(fieldsWithSpaces.getPassword()
-                                    .matches(String.valueOf(passwordPattern)));
+        System.out.println("password should not contain spaces : " + fieldsWithSpacesEmail.getPassword());
+        assertFalse(fieldsWithSpacesEmail.getPassword()
+                                         .matches(String.valueOf(passwordPattern)));
 
-        System.out.println("password should contain at least one LowerCase character : " + fieldsWithoutLowerCase.getPassword());
-        assertFalse(fieldsWithoutLowerCase.getPassword()
-                                          .matches(String.valueOf(passwordPattern)));
+        System.out.println("password should contain at least one LowerCase character : " + fieldsWithoutLowerCaseEmail.getPassword());
+        assertFalse(fieldsWithoutLowerCaseEmail.getPassword()
+                                               .matches(String.valueOf(passwordPattern)));
     }
 }
