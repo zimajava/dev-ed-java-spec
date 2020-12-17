@@ -36,17 +36,17 @@ public class SecurityContextRepository implements ServerSecurityContextRepositor
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String authToken = authHeader.substring(7);
-
-            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(authToken, authToken);
-            return authenticationManager
-                    .authenticate(auth)
-                    .map(SecurityContextImpl::new);
-        } else if (authQueryParams != null){
-            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(authQueryParams, authQueryParams);
-            return authenticationManager
-                    .authenticate(auth)
-                    .map(SecurityContextImpl::new);
+            return getSecurityContext(authToken);
+        } else if (authQueryParams != null) {
+            return getSecurityContext(authQueryParams);
         }
         return Mono.empty();
+    }
+
+    private Mono<SecurityContext> getSecurityContext(String authToken) {
+        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(authToken, authToken);
+        return authenticationManager
+                .authenticate(auth)
+                .map(SecurityContextImpl::new);
     }
 }

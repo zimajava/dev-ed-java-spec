@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.zipli.socknet.dto.WsMessage;
 import org.zipli.socknet.exception.CreateChatException;
+import org.zipli.socknet.exception.CreateSocketException;
 import org.zipli.socknet.exception.RemoveChatException;
 import org.zipli.socknet.exception.UpdateChatException;
 import org.zipli.socknet.model.Chat;
@@ -12,25 +13,28 @@ import org.zipli.socknet.model.User;
 import org.zipli.socknet.repository.ChatRepository;
 import org.zipli.socknet.repository.MessageRepository;
 import org.zipli.socknet.repository.UserRepository;
+import org.zipli.socknet.security.jwt.JwtUtils;
 import org.zipli.socknet.service.ws.IMessagerService;
+import reactor.core.publisher.Sinks;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class MessagerService implements IMessagerService {
+public class MessageService implements IMessagerService {
+    private final UserRepository userRepository;
+    private final ChatRepository chatRepository;
+    private final MessageRepository messageRepository;
+    private final JwtUtils jwtUtils;
+    private final Map<String, Sinks.Many<String>> messageEmitterByUserId = new ConcurrentHashMap<>();
 
-    final UserRepository userRepository;
-
-    final ChatRepository chatRepository;
-
-    final MessageRepository messageRepository;
-
-    public MessagerService(UserRepository userRepository, ChatRepository chatRepository, MessageRepository messageRepository) {
+    public MessageService(UserRepository userRepository, ChatRepository chatRepository, MessageRepository messageRepository, JwtUtils jwtUtils) {
         this.userRepository = userRepository;
         this.chatRepository = chatRepository;
         this.messageRepository = messageRepository;
+        this.jwtUtils = jwtUtils;
     }
 
     @Override
@@ -195,4 +199,14 @@ public class MessagerService implements IMessagerService {
         return chatRepository.getChatsByIdIn(user.getChatsId());
     }
 
+    @Override
+    public void addMessageEmitterByToken(String token, Sinks.Many<String> emitter) throws CreateSocketException {
+        try {
+            String username = jwtUtils.getUserNameFromJwtToken(token);
+            User user = userRepository.findUserByUserName(username);
+            messageEmitterByUserId.put(user.getId(), emitter);
+        } catch (Exception e) {
+            throw new CreateSocketException("Can't create connect to user, Exception cause: " + e.getMessage() + " on class " + e.getClass().getSimpleName());
+        }
+    }
 }
