@@ -22,7 +22,7 @@ public class ResetPasswordService {
     @Value("${deploy.app}")
     private String deploy;
 
-    public ResetPasswordService(JavaMailSender javaMailSender, JwtUtils jwtUtils, UserRepository userRepository, User user, UserDetailsServiceImpl userDetailsService) {
+    public ResetPasswordService(JavaMailSender javaMailSender, JwtUtils jwtUtils, UserRepository userRepository, UserDetailsServiceImpl userDetailsService) {
         this.javaMailSender = javaMailSender;
         this.jwtUtils = jwtUtils;
         this.userRepository = userRepository;
