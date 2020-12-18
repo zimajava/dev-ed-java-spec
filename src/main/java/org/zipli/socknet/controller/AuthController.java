@@ -4,12 +4,15 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.zipli.socknet.exception.AuthException;
+import org.zipli.socknet.exception.InvalidTokenException;
 import org.zipli.socknet.exception.NotConfirmAccountException;
+import org.zipli.socknet.exception.UserNotFoundException;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.payload.request.LoginRequest;
 import org.zipli.socknet.payload.request.SignupRequest;
 import org.zipli.socknet.service.auth.AuthService;
 import org.zipli.socknet.service.email.EmailConfirmationService;
+import org.zipli.socknet.service.password.ResetPasswordService;
 
 import javax.validation.Valid;
 
@@ -18,10 +21,12 @@ import javax.validation.Valid;
 public class AuthController {
 
     private final EmailConfirmationService emailConfirmationService;
+    private final ResetPasswordService resetPasswordService;
     private final AuthService authService;
 
-    public AuthController(EmailConfirmationService emailConfirmationService, AuthService authService) {
+    public AuthController(EmailConfirmationService emailConfirmationService, ResetPasswordService resetPasswordService, AuthService authService) {
         this.emailConfirmationService = emailConfirmationService;
+        this.resetPasswordService = resetPasswordService;
         this.authService = authService;
     }
 
@@ -60,6 +65,41 @@ public class AuthController {
                     .body(e);
         }
         return ResponseEntity.ok("Account verified");
+    }
+
+    @PostMapping("/forgot_password")
+    public ResponseEntity<?> processForgotPassword(@Valid @RequestParam("email") String email) throws UserNotFoundException {
+        if (email == null) {
+            throw new UserNotFoundException("Error. User is not found");
+        } else {
+            try {
+                resetPasswordService.generateResetPasswordToken(email);
+            } catch (UserNotFoundException e) {
+                return ResponseEntity
+                        .badRequest()
+                        .body(e);
+            }
+            resetPasswordService.sendEmailForChangingPassword(email);
+            return ResponseEntity.ok("Password can be changed");
+        }
+    }
+
+    @PostMapping("/reset_password")
+    public ResponseEntity<?> processResetPassword(@Valid @RequestParam("token") String token, String newPassword) {
+        if (token == null) {
+            throw new UserNotFoundException("Error. User is not found");
+        } else if (newPassword == null) {
+            throw new UserNotFoundException("Error. Password can't be null");
+        } else {
+//            try {
+                resetPasswordService.resetPassword(token, newPassword);
+//            } catch (UserNotFoundException e) {
+//                return ResponseEntity
+//                        .badRequest()
+//                        .body(e);
+//            }
+            return ResponseEntity.ok("Password successfully changed");
+        }
     }
 
     @PostMapping("/signin")
