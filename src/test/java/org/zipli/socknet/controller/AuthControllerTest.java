@@ -36,8 +36,10 @@ class AuthControllerTest {
     JwtUtils jwtUtils;
     private LoginRequest loginRequest;
     private SignupRequest signupRequest;
-
     private SignupRequest signupRequest1;
+    private String newPassword;
+    private String token;
+    private String email;
 
     @BeforeEach
     public void init() {
@@ -55,6 +57,10 @@ class AuthControllerTest {
 
         loginRequest = new LoginRequest("ugyur",
                 "uyfrjjj");
+
+        String newPassword = "jvtiyd4218";
+        String token = "hjvftf";
+        String email = "registeredUser@gmail.com";
     }
 
     @Test
@@ -86,7 +92,6 @@ class AuthControllerTest {
 
     @Test
     void emailConfirm_TokenIsValid() {
-        String token = "qwerty";
         String username = "";
         Mockito.doReturn(username)
                 .when(jwtUtils)
@@ -113,7 +118,6 @@ class AuthControllerTest {
 
     @Test
     void processForgotPassword_UserIsRegisteredInDatabase(){
-      String email = "registeredUser@gmail.com";
       String token = new String();
         Mockito.doReturn(token)
                 .when(resetPasswordService)
@@ -125,7 +129,6 @@ class AuthControllerTest {
 
     @Test
     void processForgotPassword_UserIsNotFound(){
-        String email = "kh;uifyd";
         Mockito.doThrow(new UserNotFoundException("Error. User is not founded."))
                 .when(resetPasswordService)
                 .generateResetPasswordToken(email);
@@ -139,9 +142,7 @@ class AuthControllerTest {
 
     @Test
     void processResetPassword_TokenIsValid(){
-        String newPassword = "jvtiyd4218";
         String changedPassword = new String();
-        String token = "hjvftf";
         Mockito.doReturn(changedPassword)
                 .when(resetPasswordService)
                 .resetPassword(newPassword,token);
@@ -152,8 +153,6 @@ class AuthControllerTest {
 
     @Test
     void processResetPassword_TokenIsInvalid(){
-        String newPassword = "jvtiyd4218";
-        String token = "hjvftf";
         Mockito.doThrow(new InvalidTokenException("Error. Token is invalid or broken"))
                 .when(resetPasswordService)
                 .resetPassword(newPassword,token);
@@ -165,11 +164,10 @@ class AuthControllerTest {
                 authController.processResetPassword(token, newPassword));
     }
 
-
     @Test
     void authenticateUser_shouldReturnStatusOk() {
+
         assertTrue(authController.authenticateUser(loginRequest)
                 .equals(ResponseEntity.ok("Here will be JwtResponse")));
-
     }
 }

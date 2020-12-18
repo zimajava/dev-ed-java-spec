@@ -1,5 +1,6 @@
 package org.zipli.socknet.service.password;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +29,17 @@ class ResetPasswordServiceTest {
     @MockBean
     User user;
 
+    private String email;
+    private String newPassword;
+
+    @BeforeEach
+    public void init() {
+        String email = "registeredUser@gmail.com";
+        String newPassword = "yrxxW245";
+    }
+
     @Test
     void generateResetPasswordToken_UserIsRegisteredInDatabase() {
-        String email = "registeredUser@gmail.com";
         String token = null;
         Mockito.doReturn(true)
                 .when(userRepository)
@@ -44,7 +53,6 @@ class ResetPasswordServiceTest {
 
     @Test
     void generateResetPasswordToken_UserIsNotFound() {
-        String email = "registeredUser@gmail.com";
 
         assertThrows(UserNotFoundException.class, () -> {
             resetPasswordService.generateResetPasswordToken(email);
@@ -53,13 +61,12 @@ class ResetPasswordServiceTest {
 
     @Test
     void resetPassword_TokenIsValid() {
-        String newPassword = "yrxxW245";
         String token = "gfhrkxr";
         String userName = "ygbuiui";
-                Mockito.doReturn(userName)
+        Mockito.doReturn(userName)
                 .when(jwtUtils)
                 .getUserNameFromJwtToken(token);
-        Mockito.doReturn(new User("hgboi","yrvr7", "ygbuiui","uin"))
+        Mockito.doReturn(new User("hgboi", "yrvr7", "ygbuiui", "uin"))
                 .when(userRepository)
                 .getByUserName(userName);
 
@@ -68,7 +75,6 @@ class ResetPasswordServiceTest {
 
     @Test
     void resetPassword_UserInNotInADB() {
-        String newPassword = "yrxxW245";
         String token = "gfhrkxr";
         String userName = new String();
         Mockito.doReturn(userName)
@@ -83,7 +89,6 @@ class ResetPasswordServiceTest {
 
     @Test
     void resetPassword_TokenIsInvalid() {
-        String newPassword = "yrxxW245";
         String token = null;
 
         assertThrows(InvalidTokenException.class, () -> {
