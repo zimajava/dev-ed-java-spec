@@ -6,7 +6,6 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.zipli.socknet.exception.InvalidTokenException;
 import org.zipli.socknet.exception.UserNotFoundException;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.repository.UserRepository;
@@ -41,9 +40,6 @@ class ResetPasswordServiceTest {
     @Test
     void generateResetPasswordToken_UserIsRegisteredInDatabase() {
         String token = null;
-        Mockito.doReturn(true)
-                .when(userRepository)
-                .existsByEmail(email);
         Mockito.doReturn(new User())
                 .when(userRepository)
                 .getUserByEmail(email);
@@ -71,28 +67,5 @@ class ResetPasswordServiceTest {
                 .getByUserName(userName);
 
         assertEquals("Password successfully changed", resetPasswordService.resetPassword(newPassword, token));
-    }
-
-    @Test
-    void resetPassword_UserInNotInADB() {
-        String token = "gfhrkxr";
-        String userName = new String();
-        Mockito.doReturn(userName)
-                .when(jwtUtils)
-                .getUserNameFromJwtToken(token);
-        Mockito.doReturn(null)
-                .when(userRepository)
-                .getUserByEmail(userName);
-
-        assertEquals(null, resetPasswordService.resetPassword(newPassword, token));
-    }
-
-    @Test
-    void resetPassword_TokenIsInvalid() {
-        String token = null;
-
-        assertThrows(InvalidTokenException.class, () -> {
-            resetPasswordService.resetPassword(newPassword, token);
-        });
     }
 }

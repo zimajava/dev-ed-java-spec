@@ -68,28 +68,38 @@ public class AuthController {
     }
 
     @PostMapping("/forgot_password")
-    public ResponseEntity<?> processForgotPassword(@Valid @RequestParam("email") String email) {
-        try {
-            resetPasswordService.generateResetPasswordToken(email);
-        } catch (UserNotFoundException e) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(e);
+    public ResponseEntity<?> processForgotPassword(@Valid @RequestParam("email") String email) throws UserNotFoundException {
+        if (email == null) {
+            throw new UserNotFoundException("Error. User is not found");
+        } else {
+            try {
+                resetPasswordService.generateResetPasswordToken(email);
+            } catch (UserNotFoundException e) {
+                return ResponseEntity
+                        .badRequest()
+                        .body(e);
+            }
+            resetPasswordService.sendEmailForChangingPassword(email);
+            return ResponseEntity.ok("Password can be changed");
         }
-        resetPasswordService.sendEmailForChangingPassword(email);
-        return ResponseEntity.ok("Password can be changed");
     }
 
     @PostMapping("/reset_password")
     public ResponseEntity<?> processResetPassword(@Valid @RequestParam("token") String token, String newPassword) {
-        try {
-            resetPasswordService.resetPassword(token, newPassword);
-        } catch (InvalidTokenException e) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(e);
+        if (token == null) {
+            throw new UserNotFoundException("Error. User is not found");
+        } else if (newPassword == null) {
+            throw new UserNotFoundException("Error. Password can't be null");
+        } else {
+//            try {
+                resetPasswordService.resetPassword(token, newPassword);
+//            } catch (UserNotFoundException e) {
+//                return ResponseEntity
+//                        .badRequest()
+//                        .body(e);
+//            }
+            return ResponseEntity.ok("Password successfully changed");
         }
-        return ResponseEntity.ok("Password successfully changed");
     }
 
     @PostMapping("/signin")

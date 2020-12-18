@@ -5,7 +5,6 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.zipli.socknet.exception.InvalidTokenException;
 import org.zipli.socknet.exception.UserNotFoundException;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.repository.UserRepository;
@@ -60,21 +59,13 @@ public class ResetPasswordService {
     @Transactional
     public String resetPassword(String newPassword, String token) {
 
-        if (token != null) {
             String userName = jwtUtils.getUserNameFromJwtToken(token);
             User user = userRepository.getByUserName(userName);
-            if (user == null) {
-                return null;
-            } else {
-                String password = user.getPassword();
-                if (!password.isEmpty()) {
-                    user.setPassword(newPassword);
-                }
-                userRepository.save(user);
-                return "Password successfully changed";
+            String password = user.getPassword();
+            if (!password.isEmpty()) {
+                user.setPassword(newPassword);
             }
-        } else {
-            throw new InvalidTokenException("Error. Token is invalid or broken");
-        }
+            userRepository.save(user);
+            return "Password successfully changed";
     }
 }

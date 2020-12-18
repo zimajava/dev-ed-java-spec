@@ -57,10 +57,6 @@ class AuthControllerTest {
 
         loginRequest = new LoginRequest("ugyur",
                 "uyfrjjj");
-
-        String newPassword = "jvtiyd4218";
-        String token = "hjvftf";
-        String email = "registeredUser@gmail.com";
     }
 
     @Test
@@ -118,10 +114,7 @@ class AuthControllerTest {
 
     @Test
     void processForgotPassword_UserIsRegisteredInDatabase(){
-      String token = new String();
-        Mockito.doReturn(token)
-                .when(resetPasswordService)
-                .generateResetPasswordToken(email);
+        String email = "registeredUser@gmail.com";
 
         assertEquals(authController.processForgotPassword(email),
                 ResponseEntity.ok("Password can be changed"));
@@ -129,39 +122,27 @@ class AuthControllerTest {
 
     @Test
     void processForgotPassword_UserIsNotFound(){
-        Mockito.doThrow(new UserNotFoundException("Error. User is not founded."))
-                .when(resetPasswordService)
-                .generateResetPasswordToken(email);
-        UserNotFoundException e = new UserNotFoundException("Error. User is not founded.");
 
-        assertNotEquals(ResponseEntity
-                        .badRequest()
-                        .body(e),
-                authController.processForgotPassword(email));
+        assertThrows(UserNotFoundException.class, ()-> {
+            authController.processForgotPassword(email);
+        });
     }
 
     @Test
     void processResetPassword_TokenIsValid(){
-        String changedPassword = new String();
-        Mockito.doReturn(changedPassword)
-                .when(resetPasswordService)
-                .resetPassword(newPassword,token);
+        String newPassword = "jvtiyd4218";
+        String token = "hjvftf";
 
         assertEquals(authController.processResetPassword(token, newPassword),
                 ResponseEntity.ok("Password successfully changed"));
     }
 
     @Test
-    void processResetPassword_TokenIsInvalid(){
-        Mockito.doThrow(new InvalidTokenException("Error. Token is invalid or broken"))
-                .when(resetPasswordService)
-                .resetPassword(newPassword,token);
-        InvalidTokenException e = new InvalidTokenException("Error. Token is invalid or broken");
+    void processResetPassword_NullParameters(){
 
-        assertNotEquals(ResponseEntity
-                        .badRequest()
-                        .body(e),
-                authController.processResetPassword(token, newPassword));
+        assertThrows(UserNotFoundException.class, ()-> {
+            authController.processResetPassword(token, newPassword);
+        });
     }
 
     @Test
