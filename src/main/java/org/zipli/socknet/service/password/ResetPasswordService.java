@@ -18,13 +18,16 @@ public class ResetPasswordService {
     private final JavaMailSender javaMailSender;
     private final JwtUtils jwtUtils;
     private final UserRepository userRepository;
+    private final UserDetailsServiceImpl userDetailsService;
+
     @Value("${deploy.app}")
     private String deploy;
 
-    public ResetPasswordService(JavaMailSender javaMailSender, JwtUtils jwtUtils, UserRepository userRepository) {
+    public ResetPasswordService(JavaMailSender javaMailSender, JwtUtils jwtUtils, UserRepository userRepository, User user, UserDetailsServiceImpl userDetailsService) {
         this.javaMailSender = javaMailSender;
         this.jwtUtils = jwtUtils;
         this.userRepository = userRepository;
+        this.userDetailsService = userDetailsService;
     }
 
     public void sendEmailForChangingPassword(String email) {
@@ -45,10 +48,9 @@ public class ResetPasswordService {
 
     public String generateResetPasswordToken(String email) {
 
-        if (userRepository.existsByEmail(email)) {
-            User user = userRepository.getUserByEmail(email);
+        User user = userRepository.getUserByEmail(email);
+        if (user != null) {
             String userName = user.getUserName();
-            UserDetailsServiceImpl userDetailsService = new UserDetailsServiceImpl(userRepository);
             return jwtUtils.generateJwtToken(userDetailsService.loadUserByUsername(userName));
         } else {
             throw new UserNotFoundException("Error. User is not founded.");
