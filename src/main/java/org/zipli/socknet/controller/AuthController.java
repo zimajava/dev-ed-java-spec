@@ -92,7 +92,7 @@ public class AuthController {
             throw new UserNotFoundException("Error. Password can't be null");
         } else {
 //            try {
-                resetPasswordService.resetPassword(token, newPassword);
+            resetPasswordService.resetPassword(token, newPassword);
 //            } catch (UserNotFoundException e) {
 //                return ResponseEntity
 //                        .badRequest()
@@ -104,7 +104,13 @@ public class AuthController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-        //method realization
-        return ResponseEntity.ok("Here will be JwtResponse");
+        try {
+            User login = authService.login(loginRequest.getLogin(), loginRequest.getPassword());
+            return ResponseEntity.ok(login);
+        } catch (AuthException e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(e);
+        }
     }
 }
