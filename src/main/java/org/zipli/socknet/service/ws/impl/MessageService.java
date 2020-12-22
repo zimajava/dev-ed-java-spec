@@ -3,10 +3,7 @@ package org.zipli.socknet.service.ws.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.zipli.socknet.dto.Data;
-import org.zipli.socknet.exception.CreateChatException;
-import org.zipli.socknet.exception.CreateSocketException;
-import org.zipli.socknet.exception.RemoveChatException;
-import org.zipli.socknet.exception.UpdateChatException;
+import org.zipli.socknet.exception.*;
 import org.zipli.socknet.model.Chat;
 import org.zipli.socknet.model.Message;
 import org.zipli.socknet.model.User;
@@ -14,7 +11,7 @@ import org.zipli.socknet.repository.ChatRepository;
 import org.zipli.socknet.repository.MessageRepository;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
-import org.zipli.socknet.service.ws.IMessagerService;
+import org.zipli.socknet.service.ws.IMessageService;
 import reactor.core.publisher.Sinks;
 
 import java.util.*;
@@ -23,7 +20,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class MessageService implements IMessagerService {
+public class MessageService implements IMessageService {
     private final UserRepository userRepository;
     private final ChatRepository chatRepository;
     private final MessageRepository messageRepository;
@@ -47,6 +44,13 @@ public class MessageService implements IMessagerService {
         chat.getIdMessages().add(message.getId());
         chatRepository.save(chat);
 
+        return message;
+    }
+
+    @Override
+    public Message readMessage(Data data) throws MessageReadException {
+        Message message = new Message(data.getUserId(), data.getChatId(), new Date(), data.getTextMessage());
+        //method realization
         return message;
     }
 

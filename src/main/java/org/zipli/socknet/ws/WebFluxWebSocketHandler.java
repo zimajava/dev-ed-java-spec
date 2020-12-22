@@ -14,7 +14,7 @@ import org.zipli.socknet.dto.Data;
 import org.zipli.socknet.exception.CreateChatException;
 import org.zipli.socknet.exception.CreateSocketException;
 import org.zipli.socknet.model.Chat;
-import org.zipli.socknet.service.ws.IMessagerService;
+import org.zipli.socknet.service.ws.IMessageService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
@@ -24,10 +24,10 @@ import static org.zipli.socknet.dto.Command.ERROR_CREATE_CONNECT;
 @Slf4j
 @Component
 public class WebFluxWebSocketHandler implements WebSocketHandler {
-    private final IMessagerService messageService;
+    private final IMessageService messageService;
     private static final ObjectMapper json = new ObjectMapper();
 
-    public WebFluxWebSocketHandler(IMessagerService messageService) {
+    public WebFluxWebSocketHandler(IMessageService messageService) {
         this.messageService = messageService;
     }
 
