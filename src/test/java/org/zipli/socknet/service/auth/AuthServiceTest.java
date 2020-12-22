@@ -1,4 +1,4 @@
-package org.zipli.socknet.service;
+package org.zipli.socknet.service.auth;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -8,11 +8,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.zipli.socknet.exception.AuthException;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.repository.UserRepository;
-import org.zipli.socknet.service.auth.AuthService;
+import org.zipli.socknet.security.jwt.JwtUtils;
+import org.zipli.socknet.security.services.UserDetailsImpl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.times;
 
 @SpringBootTest
@@ -25,15 +25,18 @@ public class AuthServiceTest {
     private AuthService authService;
     @MockBean
     private UserRepository userRepository;
+    @MockBean
+    private JwtUtils jwtUtils;
 
     @Test
     public void loginByEmailAndPasswordWithConfirmedEmail_Pass() {
         User user = new User(email, password, userName, "Cat");
+        String expected = jwtUtils.generateJwtToken(new UserDetailsImpl(user));
         user.setConfirm(true);
 
         Mockito.when(userRepository.findUserByEmailAndPassword(email, password)).thenReturn(user);
 
-        assertEquals(user, authService.login(email, password));
+        assertEquals(expected, authService.login(email, password));
     }
 
     @Test
@@ -49,11 +52,12 @@ public class AuthServiceTest {
     @Test
     public void loginByUsernameAndPasswordWithConfirmedEmail_Pass() {
         User user = new User(email, password, userName, "Cat");
+        String expected = jwtUtils.generateJwtToken(new UserDetailsImpl(user));
         user.setConfirm(true);
 
         Mockito.when(userRepository.findUserByUserNameAndPassword(userName, password)).thenReturn(user);
 
-        assertEquals(user, authService.login(userName, password));
+        assertEquals(expected, authService.login(userName, password));
     }
 
     @Test

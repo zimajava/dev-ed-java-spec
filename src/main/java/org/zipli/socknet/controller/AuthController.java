@@ -104,13 +104,14 @@ public class AuthController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+        String token;
         try {
-            User login = authService.login(loginRequest.getLogin(), loginRequest.getPassword());
-            return ResponseEntity.ok(login);
+            token = authService.login(loginRequest.getLogin(), loginRequest.getPassword());
         } catch (AuthException e) {
             return ResponseEntity
                     .badRequest()
                     .body(e);
         }
+        return ResponseEntity.ok(token);
     }
 }
