@@ -42,7 +42,7 @@ public class EmailConfirmationService {
         if (token != null) {
             String userName = jwtUtils.getUserNameFromJwtToken(token);
             User user = userRepository.getByUserName(userName);
-            user.isConfirm();
+            user.setConfirm(true);
             userRepository.save(user);
             return "Account verified";
         } else {
