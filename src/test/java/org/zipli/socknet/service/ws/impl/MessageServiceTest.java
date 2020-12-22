@@ -217,22 +217,7 @@ class MessageServiceTest {
     }
 
     @Test
-    void updateMessageFailOne() {
-
-        message = messageRepository.save(message);
-
-        Data data = new Data("newMessage", "2313ds1sds1", chat.getId(), message.getId(), user.getUserName(), chat.getChatName());
-
-        try {
-            messageService.updateMessage(data);
-        } catch (MessageUpdateException e) {
-            assertEquals(e.getMessage(), "Exception while updating message");
-        }
-
-    }
-
-    @Test
-    void updateMessageFailTwo() {
+    void updateMessageFail() {
 
         message = messageRepository.save(message);
 

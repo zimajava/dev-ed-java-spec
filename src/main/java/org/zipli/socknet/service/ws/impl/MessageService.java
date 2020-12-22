@@ -208,8 +208,8 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public Message updateMessage(Data data) {
-        try {
+    public Message updateMessage(Data data) throws MessageUpdateException{
+
             Message message = messageRepository.getMessageById(data.getMessageId());
 
             if (message.getAuthorId().equals(data.getUserId())) {
@@ -218,10 +218,7 @@ public class MessageService implements IMessageService {
 
                 return message;
             } else {
-                throw new MessageUpdateException("");
+                throw new MessageUpdateException("Exception while updating message");
             }
-        }catch (Exception e){
-            throw new MessageUpdateException("Exception while updating message");
-        }
     }
 }
