@@ -33,6 +33,7 @@ public class WebSecurityConfig {
                         )
                 )
                 .and()
+                .cors().and()
                 .csrf().disable()
                 .authenticationManager(authTokenManager)
                 .securityContextRepository(securityContextRepository)
