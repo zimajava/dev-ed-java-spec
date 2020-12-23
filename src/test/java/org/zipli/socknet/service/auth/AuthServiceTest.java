@@ -5,6 +5,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.zipli.socknet.dto.UserData;
 import org.zipli.socknet.exception.AuthException;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.repository.UserRepository;
@@ -32,11 +33,16 @@ public class AuthServiceTest {
     public void loginByEmailAndPasswordWithConfirmedEmail_Pass() {
         User user = new User(email, password, userName, "Cat");
         String expected = jwtUtils.generateJwtToken(new UserDetailsImpl(user));
+        UserData expectedUserData = new UserData(user.getId(), expected, expected);
         user.setConfirm(true);
 
         Mockito.when(userRepository.findUserByEmailAndPassword(email, password)).thenReturn(user);
+        UserData actualUserData = authService.login(email, password);
 
-        assertEquals(expected, authService.login(email, password));
+
+        assertEquals(expectedUserData.getUserId(), actualUserData.getUserId());
+        assertEquals(expectedUserData.getAccessToken(), actualUserData.getAccessToken());
+        assertEquals(expectedUserData.getRefreshToken(), actualUserData.getRefreshToken());
     }
 
     @Test
@@ -53,11 +59,16 @@ public class AuthServiceTest {
     public void loginByUsernameAndPasswordWithConfirmedEmail_Pass() {
         User user = new User(email, password, userName, "Cat");
         String expected = jwtUtils.generateJwtToken(new UserDetailsImpl(user));
+        UserData expectedUserData = new UserData(user.getId(), expected, expected);
         user.setConfirm(true);
 
         Mockito.when(userRepository.findUserByUserNameAndPassword(userName, password)).thenReturn(user);
+        UserData actualUserData = authService.login(userName, password);
 
-        assertEquals(expected, authService.login(userName, password));
+
+        assertEquals(expectedUserData.getUserId(), actualUserData.getUserId());
+        assertEquals(expectedUserData.getAccessToken(), actualUserData.getAccessToken());
+        assertEquals(expectedUserData.getRefreshToken(), actualUserData.getRefreshToken());
     }
 
     @Test
