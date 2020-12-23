@@ -5,6 +5,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.zipli.socknet.dto.response.LoginResponse;
 import org.zipli.socknet.exception.AuthException;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.repository.UserRepository;
@@ -32,11 +33,16 @@ public class AuthServiceTest {
     public void loginByEmailAndPasswordWithConfirmedEmail_Pass() {
         User user = new User(email, password, userName, "Cat");
         String expected = jwtUtils.generateJwtToken(new UserDetailsImpl(user));
+        LoginResponse expectedLoginResponse = new LoginResponse(user.getId(), expected, expected);
         user.setConfirm(true);
 
         Mockito.when(userRepository.findUserByEmailAndPassword(email, password)).thenReturn(user);
+        LoginResponse actualLoginResponse = authService.login(email, password);
 
-        assertEquals(expected, authService.login(email, password));
+
+        assertEquals(expectedLoginResponse.getUserId(), actualLoginResponse.getUserId());
+        assertEquals(expectedLoginResponse.getAccessToken(), actualLoginResponse.getAccessToken());
+        assertEquals(expectedLoginResponse.getRefreshToken(), actualLoginResponse.getRefreshToken());
     }
 
     @Test
@@ -53,11 +59,16 @@ public class AuthServiceTest {
     public void loginByUsernameAndPasswordWithConfirmedEmail_Pass() {
         User user = new User(email, password, userName, "Cat");
         String expected = jwtUtils.generateJwtToken(new UserDetailsImpl(user));
+        LoginResponse expectedLoginResponse = new LoginResponse(user.getId(), expected, expected);
         user.setConfirm(true);
 
         Mockito.when(userRepository.findUserByUserNameAndPassword(userName, password)).thenReturn(user);
+        LoginResponse actualLoginResponse = authService.login(userName, password);
 
-        assertEquals(expected, authService.login(userName, password));
+
+        assertEquals(expectedLoginResponse.getUserId(), actualLoginResponse.getUserId());
+        assertEquals(expectedLoginResponse.getAccessToken(), actualLoginResponse.getAccessToken());
+        assertEquals(expectedLoginResponse.getRefreshToken(), actualLoginResponse.getRefreshToken());
     }
 
     @Test

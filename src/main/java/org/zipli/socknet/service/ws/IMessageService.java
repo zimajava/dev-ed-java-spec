@@ -1,10 +1,7 @@
 package org.zipli.socknet.service.ws;
 
 import org.zipli.socknet.dto.Data;
-import org.zipli.socknet.exception.CreateChatException;
-import org.zipli.socknet.exception.CreateSocketException;
-import org.zipli.socknet.exception.RemoveChatException;
-import org.zipli.socknet.exception.UpdateChatException;
+import org.zipli.socknet.exception.*;
 import org.zipli.socknet.model.Chat;
 import org.zipli.socknet.model.Message;
 import reactor.core.publisher.Sinks;
@@ -34,4 +31,6 @@ public interface IMessageService {
     void addMessageEmitterByToken(String token, Sinks.Many<String> emitter) throws CreateSocketException;
 
     Message updateMessage(Data data) throws UpdateChatException;
+
+    void deleteMessage(Data data) throws MessageDeleteException, UpdateChatException;
 }
