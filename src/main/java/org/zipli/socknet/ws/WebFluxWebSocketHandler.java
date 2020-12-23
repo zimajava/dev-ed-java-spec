@@ -13,11 +13,16 @@ import org.zipli.socknet.dto.WsMessageResponse;
 import org.zipli.socknet.dto.Data;
 import org.zipli.socknet.exception.CreateChatException;
 import org.zipli.socknet.exception.CreateSocketException;
+import org.zipli.socknet.exception.RemoveChatException;
+import org.zipli.socknet.exception.UpdateChatException;
 import org.zipli.socknet.model.Chat;
+import org.zipli.socknet.model.Message;
 import org.zipli.socknet.service.ws.IMessagerService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
+
+import java.util.Date;
 
 import static org.zipli.socknet.dto.Command.ERROR_CREATE_CONNECT;
 
@@ -74,11 +79,76 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                     );
                 }
                 break;
+
+            case CHAT_PRIVATE_CREATE:
+                try {
+                    Chat privateChat = messageService.createPrivateChat(wsMessage.getData());
+                    emitter.tryEmitNext(json.writeValueAsString(
+                            new WsMessage(eventCommand, new Data(privateChat.getChatName(), privateChat.getId()))));
+                } catch (CreateChatException e) {
+                    emitter.tryEmitNext(json.writeValueAsString(
+                            new WsMessageResponse(eventCommand, e.getMessage()))
+                    );
+                }
+                break;
+
+            case CHAT_UPDATE:
+                try {
+                    Chat updatedChat = messageService.updateChat(wsMessage.getData());
+                    emitter.tryEmitNext(json.writeValueAsString(
+                            new WsMessage(eventCommand, new Data(updatedChat.getChatName(), updatedChat.getId()))));
+                } catch (UpdateChatException e) {
+                    emitter.tryEmitNext(json.writeValueAsString(
+                            new WsMessageResponse(eventCommand, e.getMessage()))
+                    );
+                }
+                break;
+
+            case CHAT_DELETE:
+                try {
+                    messageService.removeChat(wsMessage.getData());
+                    emitter.tryEmitNext(json.writeValueAsString(
+                            new WsMessage(eventCommand, new Data())));
+                } catch (RemoveChatException e) {
+                    emitter.tryEmitNext(json.writeValueAsString(
+                            new WsMessageResponse(eventCommand, e.getMessage()))
+                    );
+                }
+                break;
+
+            case CHAT_LEAVE:
+                messageService.leaveChat(wsMessage.getData());
+                emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand, new Data())));
+                break;
+
             case CHAT_JOIN:
                 messageService.joinChat(wsMessage.getData());
                 emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand, new Data())));
                 break;
+
+            case CHATS_GET_BY_USER_ID:
+                messageService.showChatsByUser(wsMessage.getData());
+                emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand, new Data())));
+                break;
+
+            case MESSAGE_SEND:
+                messageService.sendMessage(wsMessage.getData());
+                emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand, new Data())));
+                break;
+
+            case MESSAGE_READ:
+                break;
+
+            case MESSAGE_UPDATE:
+                break;
+
+            case MESSAGE_DELETE:
+                break;
+
+            case MESSAGES_GET_BY_CHAT_ID:
+                messageService.getMessages(wsMessage.getData());
+                emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand, new Data())));
+                break;
         }
     }
-
 }
