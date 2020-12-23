@@ -15,8 +15,7 @@ import java.util.List;
 public class DataChat extends DataBase{
     private String chatName;
     private String secondUserId;
-//    private String id;
-    List<Chat> chats;
+    private List<Chat> chats;
 
     public DataChat(String userId, String idChat, String chatName, List<Chat> chats, String secondUserId) {
         super(userId, idChat);
@@ -25,14 +24,17 @@ public class DataChat extends DataBase{
         this.secondUserId = secondUserId;
     }
 
-    public DataChat(String id, String chatName) {
-//        this.id = id;
-        this.chatName = chatName;
-    }
     public DataChat(String userId, String idChat, String chatName) {
         super(userId, idChat);
         this.chatName = chatName;
+    }
+
+    public DataChat( String idChat, String chatName) {
+        super(null, idChat);
+        this.chatName = chatName;
+    }
+
+    public DataChat(List<Chat> chats) {
         this.chats = chats;
-        this.secondUserId = secondUserId;
     }
 }

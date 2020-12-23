@@ -17,4 +17,8 @@ public class DataBase {
 
     private String idUser;
     private String idChat;
+
+    public DataBase(String idUser) {
+        this.idUser = idUser;
+    }
 }

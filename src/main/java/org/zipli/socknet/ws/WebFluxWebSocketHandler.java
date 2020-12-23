@@ -168,9 +168,9 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
             case MESSAGE_UPDATE:
                 try {
                     Message updatedMessage = messageService.updateMessage((DataMessage) wsMessage.getData());
-                    DataChat dataBase = new DataChat(null, updatedMessage.getId());
+                    DataMessage dataMessage = new DataMessage(Collections.singletonList(updatedMessage));
                     emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand,
-                            dataBase)));
+                            dataMessage)));
                 } catch (MessageUpdateException e) {
                     emitter.tryEmitNext(json.writeValueAsString(
                             new WsMessageResponse(eventCommand, e.getMessage()))
