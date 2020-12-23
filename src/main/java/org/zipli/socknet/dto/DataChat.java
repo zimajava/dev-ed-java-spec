@@ -1,13 +1,17 @@
 package org.zipli.socknet.dto;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.zipli.socknet.model.Chat;
 
 import java.util.List;
 
 @Getter
 @Setter
+@ToString
+@NoArgsConstructor
 public class DataChat extends DataBase{
     private String chatName;
     private String secondUserId;
@@ -20,31 +24,9 @@ public class DataChat extends DataBase{
         this.chats = chats;
         this.secondUserId = secondUserId;
     }
-//
-//    public DataChat(String chatName) {
-//        super(chatId);
-//        this.chatName = chatName;
-//        this.chatId = chatId;
-//    }
 
     public DataChat(String id, String chatName) {
 //        this.id = id;
         this.chatName = chatName;
-    }
-
-    public String getChatName() {
-        return chatName;
-    }
-
-    public List<Chat> getChats() {
-        return chats;
-    }
-
-    @Override
-    public String toString() {
-        return "DataChat{" +
-                ", chatName='" + chatName + '\'' +
-                ", chats=" + chats +
-                '}';
     }
 }

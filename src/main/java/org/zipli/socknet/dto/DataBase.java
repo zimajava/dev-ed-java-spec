@@ -15,6 +15,6 @@ import java.util.List;
 @NoArgsConstructor
 public class DataBase {
 
-    private String id;
+    private String idUser;
     private String idChat;
 }
