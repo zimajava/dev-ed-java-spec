@@ -2,7 +2,9 @@ package org.zipli.socknet.service.ws.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.zipli.socknet.dto.Data;
+import org.zipli.socknet.dto.DataBase;
+import org.zipli.socknet.dto.DataChat;
+import org.zipli.socknet.dto.DataMessage;
 import org.zipli.socknet.exception.*;
 import org.zipli.socknet.model.Chat;
 import org.zipli.socknet.model.Message;
@@ -35,7 +37,7 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public Message sendMessage(Data data) {
+    public Message sendMessage(DataMessage data) {
 
         Message message = new Message(data.getUserId(), data.getChatId(), new Date(), data.getTextMessage());
         message = messageRepository.save(message);
@@ -48,7 +50,7 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public Chat createGroupChat(Data data) throws CreateChatException {
+    public Chat createGroupChat(DataChat data) throws CreateChatException {
 
         if (!chatRepository.existsByChatName(data.getNameChat())) {
 
@@ -72,7 +74,7 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public Chat createPrivateChat(Data data) throws CreateChatException {
+    public Chat createPrivateChat(DataChat data) throws CreateChatException {
 
         if (!chatRepository.existsByChatName(data.getNameChat())) {
 
@@ -103,7 +105,12 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public void removeChat(Data data) throws RemoveChatException {
+    public Chat updateChat(DataChat data) throws UpdateChatException {
+        return null;
+    }
+
+    @Override
+    public void removeChat(DataChat data) throws RemoveChatException {
 
         Chat chat = chatRepository.getByChatNameAndCreatorUserId(data.getNameChat(), data.getUserId());
 
@@ -126,7 +133,7 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public Chat leaveChat(Data data) {
+    public Chat leaveChat(DataChat data) {
 
         Chat chat = chatRepository.findChatById(data.getChatId());
         chat.getIdUsers().remove(data.getUserId());
@@ -140,7 +147,7 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public Chat joinChat(Data data) {
+    public Chat joinChat(DataChat data) {
 
         Chat chat = chatRepository.findChatById(data.getChatId());
         List<String> listIdUsers = chat.getIdUsers();
@@ -159,7 +166,7 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public List<Message> getMessages(Data data) {
+    public List<Message> getMessages(DataMessage data) {
 
         Chat chat = chatRepository.findChatById(data.getChatId());
 
@@ -174,7 +181,7 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public Chat updateChat(Data data) {
+    public Chat updateChat(DataMessage data) {
 
         if (!chatRepository.existsByChatNameAndCreatorUserId(data.getNameChat(), data.getUserId())) {
 
@@ -189,7 +196,7 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public List<Chat> showChatsByUser(Data data) {
+    public List<Chat> showChatsByUser(DataChat data) {
 
         User user = userRepository.getUserById(data.getUserId());
 
@@ -208,7 +215,7 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public Message updateMessage(Data data) throws MessageUpdateException {
+    public Message updateMessage(DataMessage data) throws MessageUpdateException {
 
         Message message = messageRepository.getMessageById(data.getMessageId());
 
@@ -223,7 +230,7 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public void deleteMessage(Data data) throws MessageDeleteException, UpdateChatException {
+    public void deleteMessage(DataMessage data) throws MessageDeleteException, UpdateChatException {
 
         Message message = messageRepository.getMessageById(data.getMessageId());
 

@@ -207,7 +207,7 @@ class MessageServiceTest {
 
         message = messageRepository.save(message);
 
-        Data data = new Data("newMessage", user.getId(), chat.getId(), message.getId(), user.getUserName(), chat.getChatName());
+        Data data = new Data("newMessage", user.getId(), chat.getId(), message.getId(), user.getUserName(), chat.getChatName(), null, null);
         Message updateMessage = messageService.updateMessage(data);
 
         assertEquals(updateMessage.getTextMessage(), data.getTextMessage());
@@ -220,7 +220,7 @@ class MessageServiceTest {
         message = messageRepository.save(message);
 
         User usernew = userRepository.save(new User("akkka@fsa.cas", "dsadasd", "akkka", "brrrr"));
-        Data data = new Data("newMessage", usernew.getId(), chat.getId(), message.getId(), user.getUserName(), chat.getChatName());
+        Data data = new Data("newMessage", usernew.getId(), chat.getId(), message.getId(), user.getUserName(), chat.getChatName(), null, null);
 
         try {
             messageService.updateMessage(data);
@@ -234,7 +234,7 @@ class MessageServiceTest {
         Message messageDelete = new Message(user.getId(), chat.getId(), new Date(), "dsadsadsadsads");
         messageDelete = messageRepository.save(messageDelete);
 
-        Data data = new Data("newMessage", user.getId(), chat.getId(), messageDelete.getId(), user.getUserName(), chat.getChatName());
+        Data data = new Data("newMessage", user.getId(), chat.getId(), messageDelete.getId(), user.getUserName(), chat.getChatName(), null, null);
         messageService.deleteMessage(data);
 
         assertFalse(messageRepository.existsById(messageDelete.getId()));
@@ -249,7 +249,7 @@ class MessageServiceTest {
         Message messageDelete = new Message(user.getId(), chat.getId(), new Date(), "dsadsadsadsads");
         messageDelete = messageRepository.save(messageDelete);
 
-        Data data = new Data("newMessage", "", chat.getId(), messageDelete.getId(), user.getUserName(), chat.getChatName());
+        Data data = new Data("newMessage", "", chat.getId(), messageDelete.getId(), user.getUserName(), chat.getChatName(), null, null);
 
         try {
             messageService.deleteMessage(data);
@@ -263,7 +263,7 @@ class MessageServiceTest {
         Message messageDelete = new Message(user.getId(), chat.getId(), new Date(), "dsadsadsadsads");
         messageDelete = messageRepository.save(messageDelete);
 
-        Data data = new Data("newMessage", user.getId(), "", messageDelete.getId(), user.getUserName(), chat.getChatName());
+        Data data = new Data("newMessage", user.getId(), "", messageDelete.getId(), user.getUserName(), chat.getChatName(), null, null);
 
         try {
             messageService.deleteMessage(data);

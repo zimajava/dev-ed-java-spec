@@ -1,6 +1,7 @@
 package org.zipli.socknet.service.ws;
 
-import org.zipli.socknet.dto.Data;
+import org.zipli.socknet.dto.DataChat;
+import org.zipli.socknet.dto.DataMessage;
 import org.zipli.socknet.exception.*;
 import org.zipli.socknet.model.Chat;
 import org.zipli.socknet.model.Message;
@@ -10,27 +11,27 @@ import java.util.List;
 
 public interface IMessageService {
 
-    Chat createGroupChat(Data data) throws CreateChatException;
+    Chat createGroupChat(DataChat data) throws CreateChatException;
 
-    Chat createPrivateChat(Data data) throws CreateChatException;
+    Chat createPrivateChat(DataChat data) throws CreateChatException;
 
-    Chat updateChat(Data data) throws UpdateChatException;
+    Chat updateChat(DataChat data) throws UpdateChatException;
 
-    void removeChat(Data data) throws RemoveChatException;
+    void removeChat(DataChat data) throws RemoveChatException;
 
-    List<Chat> showChatsByUser(Data data);
+    List<Chat> showChatsByUser(DataChat data);
 
-    Chat leaveChat(Data data);
+    Chat leaveChat(DataChat data);
 
-    Chat joinChat(Data data);
+    Chat joinChat(DataChat data);
 
-    List<Message> getMessages(Data data);
+    List<Message> getMessages(DataMessage data);
 
-    Message sendMessage(Data data);
+    Message sendMessage(DataMessage data);
 
     void addMessageEmitterByToken(String token, Sinks.Many<String> emitter) throws CreateSocketException;
 
-    Message updateMessage(Data data) throws UpdateChatException;
+    Message updateMessage(DataMessage data) throws UpdateChatException;
 
-    void deleteMessage(Data data) throws MessageDeleteException, UpdateChatException;
+    void deleteMessage(DataMessage data) throws MessageDeleteException, UpdateChatException;
 }

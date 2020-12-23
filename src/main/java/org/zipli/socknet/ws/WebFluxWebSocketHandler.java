@@ -7,18 +7,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketSession;
-import org.zipli.socknet.dto.Command;
-import org.zipli.socknet.dto.WsMessage;
-import org.zipli.socknet.dto.WsMessageResponse;
-import org.zipli.socknet.dto.Data;
+import org.zipli.socknet.dto.*;
 import org.zipli.socknet.exception.*;
 import org.zipli.socknet.model.Chat;
+import org.zipli.socknet.model.Message;
 import org.zipli.socknet.service.ws.IMessageService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
 
 
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.zipli.socknet.dto.Command.ERROR_CREATE_CONNECT;
 
@@ -65,10 +65,9 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
         switch (eventCommand) {
             case CHAT_GROUP_CREATE:
                 try {
-                    Chat groupChat = messageService.createGroupChat(wsMessage.getData());
-                    emitter.tryEmitNext(json.writeValueAsString(
-                            new WsMessage(eventCommand, new Data(groupChat.getId(), groupChat.getChatName())))
-                    );
+                    Chat groupChat = messageService.createGroupChat(wsMessage.getDataChat());
+                    emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand,
+                            new DataChat(groupChat.getId(), groupChat.getChatName()), null, null)));
                 } catch (CreateChatException e) {
                     emitter.tryEmitNext(json.writeValueAsString(
                             new WsMessageResponse(eventCommand, e.getMessage()))
@@ -78,9 +77,9 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
 
             case CHAT_PRIVATE_CREATE:
                 try {
-                    Chat privateChat = messageService.createPrivateChat(wsMessage.getData());
-                    emitter.tryEmitNext(json.writeValueAsString(
-                            new WsMessage(eventCommand, new Data(privateChat.getChatName(), privateChat.getId()))));
+                    Chat privateChat = messageService.createPrivateChat(wsMessage.getDataChat());
+                    emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand,
+                            new DataChat(privateChat.getId(), privateChat.getChatName()), null, null)));
                 } catch (CreateChatException e) {
                     emitter.tryEmitNext(json.writeValueAsString(
                             new WsMessageResponse(eventCommand, e.getMessage()))
@@ -90,9 +89,9 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
 
             case CHAT_UPDATE:
                 try {
-                    Chat updatedChat = messageService.updateChat(wsMessage.getData());
-                    emitter.tryEmitNext(json.writeValueAsString(
-                            new WsMessage(eventCommand, new Data(updatedChat.getChatName(), updatedChat.getId()))));
+                    Chat updatedChat = messageService.updateChat(wsMessage.getDataChat());
+                    emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand,
+                            new DataChat(updatedChat.getId(), updatedChat.getChatName()), null, null)));
                 } catch (UpdateChatException e) {
                     emitter.tryEmitNext(json.writeValueAsString(
                             new WsMessageResponse(eventCommand, e.getMessage()))
@@ -100,11 +99,11 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                 }
                 break;
 
-            case CHAT_DELETE:
+            case CHAT_DELETE://data?
                 try {
-                    messageService.removeChat(wsMessage.getData());
+                    messageService.removeChat(wsMessage.getDataChat());
                     emitter.tryEmitNext(json.writeValueAsString(
-                            new WsMessage(eventCommand, new Data())));
+                            new WsMessage(eventCommand, new DataChat())));
                 } catch (RemoveChatException e) {
                     emitter.tryEmitNext(json.writeValueAsString(
                             new WsMessageResponse(eventCommand, e.getMessage()))
@@ -113,23 +112,51 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                 break;
 
             case CHAT_LEAVE:
-                messageService.leaveChat(wsMessage.getData());
-                emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand, new Data())));
+                try {
+                    Chat leavedChat = messageService.leaveChat(wsMessage.getDataChat());
+                    emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand,
+                                    new DataChat(leavedChat.getId(),null, null, null, null))));
+                } catch (Exception e) {
+                    emitter.tryEmitNext(json.writeValueAsString(
+                            new WsMessageResponse(eventCommand, e.getMessage()))
+                    );
+                }
                 break;
 
             case CHAT_JOIN:
-                messageService.joinChat(wsMessage.getData());
-                emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand, new Data())));
+                try {
+                    Chat joinedChat = messageService.joinChat(wsMessage.getData());
+                    emitter.tryEmitNext(json.writeValueAsString(
+                            new WsMessage(eventCommand, new Data(joinedChat.getId()))));
+                } catch (Exception e) {
+                    emitter.tryEmitNext(json.writeValueAsString(
+                            new WsMessageResponse(eventCommand, e.getMessage()))
+                    );
+                }
                 break;
 
             case CHATS_GET_BY_USER_ID:
-                messageService.showChatsByUser(wsMessage.getData());
-                emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand, new Data())));
+                try {
+                    List<Chat> chatsByUserId = messageService.showChatsByUser(wsMessage.getData());
+                    emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand,
+                            new Data()))));
+                } catch (Exception e) {
+                    emitter.tryEmitNext(json.writeValueAsString(
+                            new WsMessageResponse(eventCommand, e.getMessage()))
+                    );
+                }
                 break;
 
             case MESSAGE_SEND:
-                messageService.sendMessage(wsMessage.getData());
-                emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand, new Data())));
+                try {
+                    Message newMessage = messageService.sendMessage(wsMessage.getData());
+                    emitter.tryEmitNext(json.writeValueAsString(
+                            new WsMessage(eventCommand, new Data(newMessage.getId()))));
+                } catch (Exception e) {
+                    emitter.tryEmitNext(json.writeValueAsString(
+                            new WsMessageResponse(eventCommand, e.getMessage()))
+                    );
+                }
                 break;
 
             case MESSAGE_READ:
@@ -137,9 +164,9 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
 
             case MESSAGE_UPDATE:
                 try {
-                    messageService.updateMessage(wsMessage.getData());
+                    Message updatedMessage = messageService.updateMessage(wsMessage.getData());
                     emitter.tryEmitNext(json.writeValueAsString(
-                            new WsMessage(eventCommand, new Data())));
+                            new WsMessage(eventCommand, new Data(updatedMessage.getId()))));
                 } catch (MessageUpdateException e) {
                     emitter.tryEmitNext(json.writeValueAsString(
                             new WsMessageResponse(eventCommand, e.getMessage()))
@@ -147,12 +174,28 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                 }
                 break;
 
-            case MESSAGE_DELETE:
+            case MESSAGE_DELETE://data?
+                try {
+                    messageService.deleteMessage(wsMessage.getData());
+                    emitter.tryEmitNext(json.writeValueAsString(
+                            new WsMessage(eventCommand, new Data())));
+                } catch (MessageDeleteException e) {
+                    emitter.tryEmitNext(json.writeValueAsString(
+                            new WsMessageResponse(eventCommand, e.getMessage()))
+                    );
+                }
                 break;
 
             case MESSAGES_GET_BY_CHAT_ID:
-                messageService.getMessages(wsMessage.getData());
-                emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand, new Data())));
+                try {
+                    List<Message> messagesByChatId = messageService.getMessages(wsMessage.getData());
+                    emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand,
+                            new Data()))));
+                } catch (Exception e) {
+                    emitter.tryEmitNext(json.writeValueAsString(
+                            new WsMessageResponse(eventCommand, e.getMessage()))
+                    );
+                }
                 break;
         }
     }
