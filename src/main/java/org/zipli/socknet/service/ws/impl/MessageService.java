@@ -223,17 +223,21 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public void deleteMessage(Data data) throws MessageDeleteException {
+    public void deleteMessage(Data data) throws MessageDeleteException, UpdateChatException {
 
         Message message = messageRepository.getMessageById(data.getMessageId());
 
         if (message.getAuthorId().equals(data.getUserId())) {
             Chat chat = chatRepository.findChatById(data.getChatId());
-            chat.getIdMessages().remove(message.getId());
-            chatRepository.save(chat);
+            if (chat != null) {
+                chat.getIdMessages().remove(message.getId());
+                chatRepository.save(chat);
+            } else {
+                throw new UpdateChatException("There is no such chat");
+            }
             messageRepository.delete(message);
         } else {
-            throw new MessageDeleteException("Exception while delete message");
+            throw new MessageDeleteException("Only the author can delete message");
         }
     }
 }

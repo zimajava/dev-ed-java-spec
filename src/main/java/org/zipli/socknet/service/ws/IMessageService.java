@@ -32,5 +32,5 @@ public interface IMessageService {
 
     Message updateMessage(Data data) throws UpdateChatException;
 
-    void deleteMessage(Data data) throws MessageDeleteException;
+    void deleteMessage(Data data) throws MessageDeleteException, UpdateChatException;
 }

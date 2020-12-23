@@ -6,10 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.zipli.socknet.dto.Data;
-import org.zipli.socknet.exception.CreateChatException;
-import org.zipli.socknet.exception.MessageDeleteException;
-import org.zipli.socknet.exception.MessageUpdateException;
-import org.zipli.socknet.exception.RemoveChatException;
+import org.zipli.socknet.exception.*;
 import org.zipli.socknet.model.Chat;
 import org.zipli.socknet.model.Message;
 import org.zipli.socknet.model.User;
@@ -65,7 +62,7 @@ class MessageServiceTest {
     }
 
     @Test
-    void createGroupChatPass() {
+    void createGroupChat_Pass() {
 
         Chat chat = messageService.createGroupChat(data);
 
@@ -74,7 +71,7 @@ class MessageServiceTest {
     }
 
     @Test
-    void createGroupChatFail() {
+    void createGroupChat_Fail() {
 
         try {
             Chat chatOne = messageService.createGroupChat(data);
@@ -86,7 +83,7 @@ class MessageServiceTest {
     }
 
     @Test
-    void createPrivateChatPass() {
+    void createPrivateChat_Pass() {
 
         userRepository.save(new User("kkkk@gma.vv", "ghjk", "teaama", "morgen"));
         data.setUserName("teaama");
@@ -98,7 +95,7 @@ class MessageServiceTest {
     }
 
     @Test
-    void removeChatPass() {
+    void removeChat_Pass() {
 
         User userOne = new User("dddddddd@com", "password", "dsadsadas", "MoiNik");
         userOne = userRepository.save(userOne);
@@ -121,7 +118,7 @@ class MessageServiceTest {
     }
 
     @Test
-    void removeChatFail() {
+    void removeChat_Fail() {
 
         Data dataTree = new Data("textMessage", "kakoitoId", chat.getId(), "", chat.getChatName());
 
@@ -206,7 +203,7 @@ class MessageServiceTest {
     }
 
     @Test
-    void updateMessagePass() {
+    void updateMessage_Pass() {
 
         message = messageRepository.save(message);
 
@@ -218,11 +215,11 @@ class MessageServiceTest {
     }
 
     @Test
-    void updateMessageFail() {
+    void updateMessage_Fail() {
 
         message = messageRepository.save(message);
 
-        User usernew = userRepository.save(new User("akkka@fsa.cas","dsadasd","akkka","brrrr"));
+        User usernew = userRepository.save(new User("akkka@fsa.cas", "dsadasd", "akkka", "brrrr"));
         Data data = new Data("newMessage", usernew.getId(), chat.getId(), message.getId(), user.getUserName(), chat.getChatName());
 
         try {
@@ -233,7 +230,7 @@ class MessageServiceTest {
     }
 
     @Test
-    void DeleteMessagePass() {
+    void deleteMessage_Pass() {
         Message messageDelete = new Message(user.getId(), chat.getId(), new Date(), "dsadsadsadsads");
         messageDelete = messageRepository.save(messageDelete);
 
@@ -248,7 +245,7 @@ class MessageServiceTest {
     }
 
     @Test
-    void DeleteMessageFail() {
+    void deleteMessage_FailOne() {
         Message messageDelete = new Message(user.getId(), chat.getId(), new Date(), "dsadsadsadsads");
         messageDelete = messageRepository.save(messageDelete);
 
@@ -257,7 +254,21 @@ class MessageServiceTest {
         try {
             messageService.deleteMessage(data);
         } catch (MessageDeleteException e) {
-            assertEquals(e.getMessage(), "Exception while delete message");
+            assertEquals(e.getMessage(), "Only the author can delete message");
+        }
+    }
+
+    @Test
+    void deleteMessage_FailTwo() {
+        Message messageDelete = new Message(user.getId(), chat.getId(), new Date(), "dsadsadsadsads");
+        messageDelete = messageRepository.save(messageDelete);
+
+        Data data = new Data("newMessage", user.getId(), "", messageDelete.getId(), user.getUserName(), chat.getChatName());
+
+        try {
+            messageService.deleteMessage(data);
+        } catch (UpdateChatException e) {
+            assertEquals(e.getMessage(), "There is no such chat");
         }
     }
 
