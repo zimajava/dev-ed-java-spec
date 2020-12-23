@@ -18,7 +18,7 @@ public class BaseData {
     private String idUser;
     private String idChat;
 
-    public DataBase(String idUser) {
+    public BaseData(String idUser) {
         this.idUser = idUser;
     }
 }

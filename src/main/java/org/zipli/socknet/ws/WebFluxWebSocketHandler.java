@@ -19,7 +19,6 @@ import reactor.core.publisher.Sinks;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.zipli.socknet.dto.Command.ERROR_CREATE_CONNECT;
 
@@ -67,9 +66,9 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
             case CHAT_GROUP_CREATE:
                 try {
                     Chat groupChat = messageService.createGroupChat((DataChat) wsMessage.getData());
-                    DataChat dataBase = new DataChat(groupChat.getId(), groupChat.getChatName());
+                    DataChat baseData = new DataChat(groupChat.getId(), groupChat.getChatName());
                     emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand,
-                            dataBase)));
+                            baseData)));
                 } catch (CreateChatException e) {
                     emitter.tryEmitNext(json.writeValueAsString(
                             new WsMessageResponse(eventCommand, e.getMessage()))
@@ -80,9 +79,9 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
             case CHAT_PRIVATE_CREATE:
                 try {
                     Chat privateChat = messageService.createPrivateChat((DataChat) wsMessage.getData());
-                    DataChat dataBase = new DataChat(privateChat.getId(), privateChat.getChatName());
+                    DataChat baseData = new DataChat(privateChat.getId(), privateChat.getChatName());
                     emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand,
-                            dataBase)));
+                            baseData)));
                 } catch (CreateChatException e) {
                     emitter.tryEmitNext(json.writeValueAsString(
                             new WsMessageResponse(eventCommand, e.getMessage()))
@@ -93,9 +92,9 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
             case CHAT_UPDATE:
                 try {
                     Chat updatedChat = messageService.updateChat((DataChat) wsMessage.getData());
-                    DataChat dataBase = new DataChat(updatedChat.getId(), updatedChat.getChatName());
+                    DataChat baseData = new DataChat(updatedChat.getId(), updatedChat.getChatName());
                     emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand,
-                            dataBase)));
+                            baseData)));
                 } catch (UpdateChatException e) {
                     emitter.tryEmitNext(json.writeValueAsString(
                             new WsMessageResponse(eventCommand, e.getMessage()))
@@ -107,7 +106,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                 try {
                     messageService.removeChat((DataChat) wsMessage.getData());
                     emitter.tryEmitNext(json.writeValueAsString(
-                            new WsMessage(eventCommand,"Chat is successfully deleted")));
+                            new WsMessage(eventCommand, "Chat is successfully deleted")));
                 } catch (RemoveChatException e) {
                     emitter.tryEmitNext(json.writeValueAsString(
                             new WsMessageResponse(eventCommand, e.getMessage()))
@@ -118,9 +117,9 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
             case CHAT_LEAVE:
                 try {
                     Chat leavedChat = messageService.leaveChat((DataChat) wsMessage.getData());
-                    DataChat dataBase = new DataChat(leavedChat.getId(), leavedChat.getChatName());
+                    DataChat baseData = new DataChat(leavedChat.getId(), leavedChat.getChatName());
                     emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand,
-                            dataBase)));
+                            baseData)));
                 } catch (Exception e) {
                     emitter.tryEmitNext(json.writeValueAsString(
                             new WsMessageResponse(eventCommand, e.getMessage()))
@@ -131,9 +130,9 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
             case CHAT_JOIN:
                 try {
                     Chat joinedChat = messageService.joinChat((DataChat) wsMessage.getData());
-                    DataChat dataBase = new DataChat(joinedChat.getId(), joinedChat.getChatName());
+                    DataChat baseData = new DataChat(joinedChat.getId(), joinedChat.getChatName());
                     emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand,
-                            dataBase)));
+                            baseData)));
                 } catch (Exception e) {
                     emitter.tryEmitNext(json.writeValueAsString(
                             new WsMessageResponse(eventCommand, e.getMessage()))
@@ -156,8 +155,8 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
             case MESSAGE_SEND:
                 try {
                     Message newMessage = messageService.sendMessage((DataMessage) wsMessage.getData());
-                    DataMessage dataBase = new DataMessage(Collections.singletonList(newMessage));
-                    emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand, dataBase)));
+                    DataMessage baseData = new DataMessage(Collections.singletonList(newMessage));
+                    emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand, baseData)));
                 } catch (Exception e) {
                     emitter.tryEmitNext(json.writeValueAsString(
                             new WsMessageResponse(eventCommand, e.getMessage()))
