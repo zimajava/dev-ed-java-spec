@@ -24,7 +24,13 @@ public class DataChat extends BaseData {
         this.secondUserId = secondUserId;
     }
 
-    public DataChat(String id, String chatName) {
+    public DataChat(String userId, String idChat, String chatName) {
+        super(userId, idChat);
+        this.chatName = chatName;
+    }
+
+    public DataChat( String idChat, String chatName) {
+        super(null, idChat);
         this.chatName = chatName;
     }
 

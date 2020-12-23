@@ -14,22 +14,25 @@ import java.util.List;
 @NoArgsConstructor
 public class DataMessage extends BaseData {
     private String messageId;
-    private String messageName;
+
     private String textMessage;
     private List<Message> messages;
 
-    public DataMessage(String id, String userName, String messageId, String messageName, String textMessage, List<Message> messages) {
-        super(id, userName);
+    public DataMessage(String idUser, String chatId, String messageId, String textMessage, List<Message> messages) {
+        super(idUser, chatId);
         this.messageId = messageId;
-        this.messageName = messageName;
         this.textMessage = textMessage;
         this.messages = messages;
     }
-    public DataMessage(String messageName) {
-        this.messageName = messageName;
-    }
+
 
     public DataMessage(List <Message> messages){
         this.messages = messages;
+    }
+
+    public DataMessage(String idUser, String chatId, String messageId, String textMessage) {
+        super(idUser, chatId);
+        this.messageId = messageId;
+        this.textMessage = textMessage;
     }
 }
