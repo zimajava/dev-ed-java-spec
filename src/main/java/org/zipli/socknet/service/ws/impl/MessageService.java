@@ -48,13 +48,6 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public Message readMessage(Data data) throws MessageReadException {
-        Message message = new Message(data.getUserId(), data.getChatId(), new Date(), data.getTextMessage());
-        //method realization
-        return message;
-    }
-
-    @Override
     public Chat createGroupChat(Data data) throws CreateChatException {
 
         if (!chatRepository.existsByChatName(data.getNameChat())) {
