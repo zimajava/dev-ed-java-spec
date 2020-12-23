@@ -12,11 +12,10 @@ import java.util.List;
 @Setter
 @ToString
 @NoArgsConstructor
-public class DataChat extends DataBase{
+public class DataChat extends DataBase {
     private String chatName;
     private String secondUserId;
-//    private String id;
-    List<Chat> chats;
+    private List<Chat> chats;
 
     public DataChat(String userId, String idChat, String chatName, List<Chat> chats, String secondUserId) {
         super(userId, idChat);
@@ -26,7 +25,10 @@ public class DataChat extends DataBase{
     }
 
     public DataChat(String id, String chatName) {
-//        this.id = id;
         this.chatName = chatName;
+    }
+
+    public DataChat(List<Chat> chats) {
+        this.chats = chats;
     }
 }

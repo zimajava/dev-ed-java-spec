@@ -16,13 +16,20 @@ public class DataMessage extends DataBase {
     private String messageId;
     private String messageName;
     private String textMessage;
-    List<Message> messages;
+    private List<Message> messages;
 
     public DataMessage(String id, String userName, String messageId, String messageName, String textMessage, List<Message> messages) {
         super(id, userName);
         this.messageId = messageId;
         this.messageName = messageName;
         this.textMessage = textMessage;
+        this.messages = messages;
+    }
+    public DataMessage(String messageName) {
+        this.messageName = messageName;
+    }
+
+    public DataMessage(List <Message> messages){
         this.messages = messages;
     }
 }
