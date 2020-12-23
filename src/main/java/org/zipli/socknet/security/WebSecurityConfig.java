@@ -1,19 +1,28 @@
 package org.zipli.socknet.security;
 
+import io.netty.handler.codec.http.HttpMethod;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.reactive.CorsConfigurationSource;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import org.zipli.socknet.security.jwt.AuthTokenManager;
 import reactor.core.publisher.Mono;
+
+import java.util.Arrays;
 
 @Configuration
 @EnableWebFluxSecurity
 //@PropertySource("")
 public class WebSecurityConfig {
 
+    private static final String FRONTEND_LOCALHOST = "http://localhost:3000";
+    private static final String FRONTEND_STAGING = "https://dev-ed-messenger-develop.herokuapp.com";
+    private static final String FRONTEND_PROD = "https://dev-ed-messenger.herokuapp.com";
     private final AuthTokenManager authTokenManager;
     private final SecurityContextRepository securityContextRepository;
 
@@ -37,7 +46,7 @@ public class WebSecurityConfig {
                 .authenticationManager(authTokenManager)
                 .securityContextRepository(securityContextRepository)
                 .authorizeExchange()
-                .pathMatchers("/zipli/auth/**", "/v2/api-docs",
+                .pathMatchers("/zipli/auth/**", "/zipli/auth/**", "/v2/api-docs",
                         "/configuration/ui",
                         "/swagger-resources/**",
                         "/configuration/security",
@@ -48,4 +57,16 @@ public class WebSecurityConfig {
                 .and().build();
     }
 
+    @Bean
+    CorsConfigurationSource corsConfiguration() {
+        CorsConfiguration corsConfig = new CorsConfiguration();
+        corsConfig.applyPermitDefaultValues();
+        corsConfig.addAllowedMethod(String.valueOf(HttpMethod.PUT));
+        corsConfig.addAllowedMethod(String.valueOf(HttpMethod.DELETE));
+        corsConfig.setAllowedOrigins(Arrays.asList(FRONTEND_LOCALHOST, FRONTEND_STAGING, FRONTEND_PROD));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", corsConfig);
+        return source;
+    }
 }

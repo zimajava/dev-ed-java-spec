@@ -23,7 +23,7 @@ public class AuthService implements IAuthService {
     }
 
     @Override
-    public User login(String emailOrUsername, String password) {
+    public String login(String emailOrUsername, String password) {
         User result;
         if (emailOrUsername.contains("@")) {
             result = userRepository.findUserByEmailAndPassword(emailOrUsername, password);
@@ -35,7 +35,8 @@ public class AuthService implements IAuthService {
         } else if (!result.isConfirm()) {
             throw new AuthException("User does not pass email confirmation!");
         } else {
-            return result;
+            UserDetails userDetails = new UserDetailsImpl(result);
+            return jwtUtils.generateJwtToken(userDetails);
         }
     }
 
