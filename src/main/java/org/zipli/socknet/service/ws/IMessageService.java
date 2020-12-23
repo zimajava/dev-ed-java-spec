@@ -11,7 +11,7 @@ import reactor.core.publisher.Sinks;
 
 import java.util.List;
 
-public interface IMessagerService {
+public interface IMessageService {
 
     Chat createGroupChat(Data data) throws CreateChatException;
 
@@ -32,4 +32,6 @@ public interface IMessagerService {
     Message sendMessage(Data data);
 
     void addMessageEmitterByToken(String token, Sinks.Many<String> emitter) throws CreateSocketException;
+
+    Message updateMessage(Data data) throws UpdateChatException;
 }
