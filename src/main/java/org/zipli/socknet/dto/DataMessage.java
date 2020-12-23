@@ -12,7 +12,7 @@ import java.util.List;
 @Setter
 @ToString
 @NoArgsConstructor
-public class DataMessage extends DataBase {
+public class DataMessage extends BaseData {
     private String messageId;
     private String messageName;
     private String textMessage;

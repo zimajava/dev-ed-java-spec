@@ -13,7 +13,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class DataBase {
+public class BaseData {
 
     private String idUser;
     private String idChat;

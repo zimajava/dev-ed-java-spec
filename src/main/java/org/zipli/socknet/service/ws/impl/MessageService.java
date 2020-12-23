@@ -2,7 +2,6 @@ package org.zipli.socknet.service.ws.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.zipli.socknet.dto.DataBase;
 import org.zipli.socknet.dto.DataChat;
 import org.zipli.socknet.dto.DataMessage;
 import org.zipli.socknet.exception.*;

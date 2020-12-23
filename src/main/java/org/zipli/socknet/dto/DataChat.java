@@ -12,7 +12,7 @@ import java.util.List;
 @Setter
 @ToString
 @NoArgsConstructor
-public class DataChat extends DataBase {
+public class DataChat extends BaseData {
     private String chatName;
     private String secondUserId;
     private List<Chat> chats;
