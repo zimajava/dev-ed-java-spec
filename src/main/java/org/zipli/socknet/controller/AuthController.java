@@ -56,7 +56,7 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/confirm-mail")
+    @GetMapping("/confirm-mail")
     public ResponseEntity<?> emailConfirm(@Valid @RequestParam("token") String token) {
         try {
             emailConfirmationService.confirmAccount(token);
