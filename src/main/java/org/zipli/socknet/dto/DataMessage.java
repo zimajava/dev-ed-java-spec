@@ -14,8 +14,9 @@ import java.util.List;
 @NoArgsConstructor
 public class DataMessage extends DataBase {
     private String messageId;
+
     private String textMessage;
-    List<Message> messages;
+    private List<Message> messages;
 
     public DataMessage(String idUser, String chatId, String messageId, String textMessage, List<Message> messages) {
         super(idUser, chatId);
@@ -23,6 +24,12 @@ public class DataMessage extends DataBase {
         this.textMessage = textMessage;
         this.messages = messages;
     }
+
+
+    public DataMessage(List <Message> messages){
+        this.messages = messages;
+    }
+
     public DataMessage(String idUser, String chatId, String messageId, String textMessage) {
         super(idUser, chatId);
         this.messageId = messageId;
