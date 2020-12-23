@@ -16,23 +16,24 @@ import org.zipli.socknet.exception.CreateSocketException;
 import org.zipli.socknet.exception.RemoveChatException;
 import org.zipli.socknet.exception.UpdateChatException;
 import org.zipli.socknet.model.Chat;
+import org.zipli.socknet.service.ws.IMessageService;
 import org.zipli.socknet.model.Message;
 import org.zipli.socknet.service.ws.IMessagerService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
 
-import java.util.Date;
+
 
 import static org.zipli.socknet.dto.Command.ERROR_CREATE_CONNECT;
 
 @Slf4j
 @Component
 public class WebFluxWebSocketHandler implements WebSocketHandler {
-    private final IMessagerService messageService;
+    private final IMessageService messageService;
     private static final ObjectMapper json = new ObjectMapper();
 
-    public WebFluxWebSocketHandler(IMessagerService messageService) {
+    public WebFluxWebSocketHandler(IMessageService messageService) {
         this.messageService = messageService;
     }
 
@@ -125,30 +126,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                 messageService.joinChat(wsMessage.getData());
                 emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand, new Data())));
                 break;
-
-            case CHATS_GET_BY_USER_ID:
-                messageService.showChatsByUser(wsMessage.getData());
-                emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand, new Data())));
-                break;
-
-            case MESSAGE_SEND:
-                messageService.sendMessage(wsMessage.getData());
-                emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand, new Data())));
-                break;
-
-            case MESSAGE_READ:
-                break;
-
-            case MESSAGE_UPDATE:
-                break;
-
-            case MESSAGE_DELETE:
-                break;
-
-            case MESSAGES_GET_BY_CHAT_ID:
-                messageService.getMessages(wsMessage.getData());
-                emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand, new Data())));
-                break;
         }
     }
+
 }
