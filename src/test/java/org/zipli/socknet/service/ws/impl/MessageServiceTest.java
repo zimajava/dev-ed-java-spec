@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.zipli.socknet.dto.Data;
 import org.zipli.socknet.exception.CreateChatException;
+import org.zipli.socknet.exception.MessageUpdateException;
 import org.zipli.socknet.exception.RemoveChatException;
 import org.zipli.socknet.model.Chat;
 import org.zipli.socknet.model.Message;
@@ -30,6 +31,7 @@ class MessageServiceTest {
     private Chat chat;
     private Data data;
     private MessageService messageService;
+    private Message message;
 
     @Autowired
     UserRepository userRepository;
@@ -42,15 +44,13 @@ class MessageServiceTest {
     void setUp() {
 
         messageService = new MessageService(userRepository, chatRepository, messageRepository, new JwtUtils());
-
         user = new User("Email@com", "password", "Username", "MoiNik");
         user = userRepository.save(user);
 
         chat = new Chat("NameGroupChat", true, user.getId());
-
         chat = chatRepository.save(chat);
-
         data = new Data("textMessage", user.getId(), chat.getId(), "", "ChatName");
+        message = new Message(user.getId(), chat.getId(), new Date(), "dsadsadsadsads");
     }
 
     @Test
@@ -203,4 +203,32 @@ class MessageServiceTest {
         assertEquals(messages.get(2).getMessage(), messageTree.getMessage());
 
     }
+
+    @Test
+    void updateMessagePass() {
+
+        message = messageRepository.save(message);
+
+        Data data = new Data("newMessage", user.getId(), chat.getId(), message.getId(), user.getUserName(), chat.getChatName());
+        Message updateMessage = messageService.updateMessage(data);
+
+        assertEquals(updateMessage.getTextMessage(), data.getTextMessage());
+        assertEquals(updateMessage.getId(), data.getMessageId());
+    }
+
+    @Test
+    void updateMessageFail() {
+
+        message = messageRepository.save(message);
+
+        User usernew = userRepository.save(new User("akkka@fsa.cas","dsadasd","akkka","brrrr"));
+        Data data = new Data("newMessage", usernew.getId(), chat.getId(), message.getId(), user.getUserName(), chat.getChatName());
+
+        try {
+            messageService.updateMessage(data);
+        } catch (MessageUpdateException e) {
+            assertEquals(e.getMessage(), "Exception while updating message");
+        }
+    }
+
 }

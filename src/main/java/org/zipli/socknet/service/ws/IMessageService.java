@@ -31,4 +31,6 @@ public interface IMessageService {
     Message readMessage(Data data) throws MessageReadException;
 
     void addMessageEmitterByToken(String token, Sinks.Many<String> emitter) throws CreateSocketException;
+
+    Message updateMessage(Data data) throws UpdateChatException;
 }

@@ -213,4 +213,19 @@ public class MessageService implements IMessageService {
             throw new CreateSocketException("Can't create connect to user, Exception cause: " + e.getMessage() + " on class " + e.getClass().getSimpleName());
         }
     }
+
+    @Override
+    public Message updateMessage(Data data) throws MessageUpdateException{
+
+            Message message = messageRepository.getMessageById(data.getMessageId());
+
+            if (message.getAuthorId().equals(data.getUserId())) {
+                message.setTextMessage(data.getTextMessage());
+                message = messageRepository.save(message);
+
+                return message;
+            } else {
+                throw new MessageUpdateException("Exception while updating message");
+            }
+    }
 }
