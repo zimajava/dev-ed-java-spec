@@ -230,6 +230,7 @@ public class MessageService implements IMessageService {
         if (message.getAuthorId().equals(data.getUserId())) {
             Chat chat = chatRepository.findChatById(data.getChatId());
             chat.getIdMessages().remove(message.getId());
+            chatRepository.save(chat);
             messageRepository.delete(message);
         } else {
             throw new MessageDeleteException("Exception while delete message");
