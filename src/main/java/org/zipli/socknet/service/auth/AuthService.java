@@ -2,6 +2,7 @@ package org.zipli.socknet.service.auth;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.zipli.socknet.dto.response.LoginResponse;
 import org.zipli.socknet.exception.AuthException;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.repository.UserRepository;
@@ -25,7 +26,7 @@ public class AuthService implements IAuthService {
     }
 
     @Override
-    public String login(String emailOrUsername, String password) {
+    public LoginResponse login(String emailOrUsername, String password) {
         User result;
         if (emailOrUsername.contains("@")) {
             result = userRepository.findUserByEmailAndPassword(emailOrUsername, password);
@@ -37,8 +38,8 @@ public class AuthService implements IAuthService {
         } else if (!result.isConfirm()) {
             throw new AuthException("User does not pass email confirmation!");
         } else {
-            UserDetails userDetails = new UserDetailsImpl(result);
-            return jwtUtils.generateJwtToken(userDetails);
+            String token = jwtUtils.generateJwtToken(new UserDetailsImpl(result));
+            return new LoginResponse(result.getId(), token, token);
         }
     }
 
