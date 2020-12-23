@@ -3,9 +3,8 @@ package org.zipli.socknet.controller;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.zipli.socknet.dto.UserData;
+import org.zipli.socknet.dto.response.LoginResponse;
 import org.zipli.socknet.exception.AuthException;
-import org.zipli.socknet.exception.InvalidTokenException;
 import org.zipli.socknet.exception.NotConfirmAccountException;
 import org.zipli.socknet.exception.UserNotFoundException;
 import org.zipli.socknet.model.User;
@@ -33,15 +32,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> addUser(@Valid @RequestBody SignupRequest signupRequest) {
-        if (signupRequest.getEmail() == null
-                || signupRequest.getNickName() == null
-                || signupRequest.getPassword() == null
-                || signupRequest.getUserName() == null) {
-            return ResponseEntity
-                    .badRequest()
-                    .body("Not valid values");
-        } else {
-            User user = new User(signupRequest.getEmail(),
+                    User user = new User(signupRequest.getEmail(),
                     signupRequest.getPassword(),
                     signupRequest.getUserName(),
                     signupRequest.getNickName());
@@ -53,10 +44,9 @@ public class AuthController {
                         .body(e);
             }
             return ResponseEntity.ok("User registered successfully!");
-        }
     }
 
-    @GetMapping("/confirm-mail")
+    @PostMapping("/confirm-mail")
     public ResponseEntity<?> emailConfirm(@Valid @RequestParam("token") String token) {
         try {
             emailConfirmationService.confirmAccount(token);
@@ -110,15 +100,15 @@ public class AuthController {
                     .badRequest()
                     .body("Not valid values");
         } else {
-            UserData userData;
+            LoginResponse loginResponse;
             try {
-                userData = authService.login(loginRequest.getLogin(), loginRequest.getPassword());
+                loginResponse = authService.login(loginRequest.getLogin(), loginRequest.getPassword());
             } catch (AuthException e) {
                 return ResponseEntity
                         .badRequest()
                         .body(e);
             }
-            return ResponseEntity.ok(userData);
+            return ResponseEntity.ok(loginResponse);
         }
     }
 }
