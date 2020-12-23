@@ -11,10 +11,7 @@ import org.zipli.socknet.dto.Command;
 import org.zipli.socknet.dto.WsMessage;
 import org.zipli.socknet.dto.WsMessageResponse;
 import org.zipli.socknet.dto.Data;
-import org.zipli.socknet.exception.CreateChatException;
-import org.zipli.socknet.exception.CreateSocketException;
-import org.zipli.socknet.exception.RemoveChatException;
-import org.zipli.socknet.exception.UpdateChatException;
+import org.zipli.socknet.exception.*;
 import org.zipli.socknet.model.Chat;
 import org.zipli.socknet.service.ws.IMessageService;
 import reactor.core.publisher.Flux;
@@ -124,7 +121,39 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                 messageService.joinChat(wsMessage.getData());
                 emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand, new Data())));
                 break;
+
+            case CHATS_GET_BY_USER_ID:
+                messageService.showChatsByUser(wsMessage.getData());
+                emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand, new Data())));
+                break;
+
+            case MESSAGE_SEND:
+                messageService.sendMessage(wsMessage.getData());
+                emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand, new Data())));
+                break;
+
+            case MESSAGE_READ:
+                break;
+
+            case MESSAGE_UPDATE:
+                try {
+                    messageService.updateMessage(wsMessage.getData());
+                    emitter.tryEmitNext(json.writeValueAsString(
+                            new WsMessage(eventCommand, new Data())));
+                } catch (MessageUpdateException e) {
+                    emitter.tryEmitNext(json.writeValueAsString(
+                            new WsMessageResponse(eventCommand, e.getMessage()))
+                    );
+                }
+                break;
+
+            case MESSAGE_DELETE:
+                break;
+
+            case MESSAGES_GET_BY_CHAT_ID:
+                messageService.getMessages(wsMessage.getData());
+                emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand, new Data())));
+                break;
         }
     }
-
 }
