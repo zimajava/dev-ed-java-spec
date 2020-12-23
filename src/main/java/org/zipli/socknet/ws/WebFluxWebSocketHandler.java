@@ -17,8 +17,6 @@ import org.zipli.socknet.exception.RemoveChatException;
 import org.zipli.socknet.exception.UpdateChatException;
 import org.zipli.socknet.model.Chat;
 import org.zipli.socknet.service.ws.IMessageService;
-import org.zipli.socknet.model.Message;
-import org.zipli.socknet.service.ws.IMessagerService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
