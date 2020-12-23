@@ -95,11 +95,6 @@ public class AuthController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-        if (loginRequest.getLogin() == null || loginRequest.getPassword() == null) {
-            return ResponseEntity
-                    .badRequest()
-                    .body("Not valid values");
-        } else {
             LoginResponse loginResponse;
             try {
                 loginResponse = authService.login(loginRequest.getLogin(), loginRequest.getPassword());
@@ -110,5 +105,4 @@ public class AuthController {
             }
             return ResponseEntity.ok(loginResponse);
         }
-    }
 }
