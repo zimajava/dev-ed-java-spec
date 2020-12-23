@@ -61,142 +61,142 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
     }
 
     private void eventProcessor(Sinks.Many<String> emitter, WsMessage wsMessage) throws JsonProcessingException {
-        Command eventCommand = wsMessage.getCommand();
-        switch (eventCommand) {
-            case CHAT_GROUP_CREATE:
-                try {
-                    Chat groupChat = messageService.createGroupChat(wsMessage.getDataChat());
-                    emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand,
-                            new DataChat(groupChat.getId(), groupChat.getChatName()), null, null)));
-                } catch (CreateChatException e) {
-                    emitter.tryEmitNext(json.writeValueAsString(
-                            new WsMessageResponse(eventCommand, e.getMessage()))
-                    );
-                }
-                break;
-
-            case CHAT_PRIVATE_CREATE:
-                try {
-                    Chat privateChat = messageService.createPrivateChat(wsMessage.getDataChat());
-                    emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand,
-                            new DataChat(privateChat.getId(), privateChat.getChatName()), null, null)));
-                } catch (CreateChatException e) {
-                    emitter.tryEmitNext(json.writeValueAsString(
-                            new WsMessageResponse(eventCommand, e.getMessage()))
-                    );
-                }
-                break;
-
-            case CHAT_UPDATE:
-                try {
-                    Chat updatedChat = messageService.updateChat(wsMessage.getDataChat());
-                    emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand,
-                            new DataChat(updatedChat.getId(), updatedChat.getChatName()), null, null)));
-                } catch (UpdateChatException e) {
-                    emitter.tryEmitNext(json.writeValueAsString(
-                            new WsMessageResponse(eventCommand, e.getMessage()))
-                    );
-                }
-                break;
-
-            case CHAT_DELETE://data?
-                try {
-                    messageService.removeChat(wsMessage.getDataChat());
-                    emitter.tryEmitNext(json.writeValueAsString(
-                            new WsMessage(eventCommand, new DataChat())));
-                } catch (RemoveChatException e) {
-                    emitter.tryEmitNext(json.writeValueAsString(
-                            new WsMessageResponse(eventCommand, e.getMessage()))
-                    );
-                }
-                break;
-
-            case CHAT_LEAVE:
-                try {
-                    Chat leavedChat = messageService.leaveChat(wsMessage.getDataChat());
-                    emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand,
-                                    new DataChat(leavedChat.getId(),null, null, null, null))));
-                } catch (Exception e) {
-                    emitter.tryEmitNext(json.writeValueAsString(
-                            new WsMessageResponse(eventCommand, e.getMessage()))
-                    );
-                }
-                break;
-
-            case CHAT_JOIN:
-                try {
-                    Chat joinedChat = messageService.joinChat(wsMessage.getData());
-                    emitter.tryEmitNext(json.writeValueAsString(
-                            new WsMessage(eventCommand, new Data(joinedChat.getId()))));
-                } catch (Exception e) {
-                    emitter.tryEmitNext(json.writeValueAsString(
-                            new WsMessageResponse(eventCommand, e.getMessage()))
-                    );
-                }
-                break;
-
-            case CHATS_GET_BY_USER_ID:
-                try {
-                    List<Chat> chatsByUserId = messageService.showChatsByUser(wsMessage.getData());
-                    emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand,
-                            new Data()))));
-                } catch (Exception e) {
-                    emitter.tryEmitNext(json.writeValueAsString(
-                            new WsMessageResponse(eventCommand, e.getMessage()))
-                    );
-                }
-                break;
-
-            case MESSAGE_SEND:
-                try {
-                    Message newMessage = messageService.sendMessage(wsMessage.getData());
-                    emitter.tryEmitNext(json.writeValueAsString(
-                            new WsMessage(eventCommand, new Data(newMessage.getId()))));
-                } catch (Exception e) {
-                    emitter.tryEmitNext(json.writeValueAsString(
-                            new WsMessageResponse(eventCommand, e.getMessage()))
-                    );
-                }
-                break;
-
-            case MESSAGE_READ:
-                break;
-
-            case MESSAGE_UPDATE:
-                try {
-                    Message updatedMessage = messageService.updateMessage(wsMessage.getData());
-                    emitter.tryEmitNext(json.writeValueAsString(
-                            new WsMessage(eventCommand, new Data(updatedMessage.getId()))));
-                } catch (MessageUpdateException e) {
-                    emitter.tryEmitNext(json.writeValueAsString(
-                            new WsMessageResponse(eventCommand, e.getMessage()))
-                    );
-                }
-                break;
-
-            case MESSAGE_DELETE://data?
-                try {
-                    messageService.deleteMessage(wsMessage.getData());
-                    emitter.tryEmitNext(json.writeValueAsString(
-                            new WsMessage(eventCommand, new Data())));
-                } catch (MessageDeleteException e) {
-                    emitter.tryEmitNext(json.writeValueAsString(
-                            new WsMessageResponse(eventCommand, e.getMessage()))
-                    );
-                }
-                break;
-
-            case MESSAGES_GET_BY_CHAT_ID:
-                try {
-                    List<Message> messagesByChatId = messageService.getMessages(wsMessage.getData());
-                    emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand,
-                            new Data()))));
-                } catch (Exception e) {
-                    emitter.tryEmitNext(json.writeValueAsString(
-                            new WsMessageResponse(eventCommand, e.getMessage()))
-                    );
-                }
-                break;
-        }
+//        Command eventCommand = wsMessage.getCommand();
+//        switch (eventCommand) {
+//            case CHAT_GROUP_CREATE:
+//                try {
+//                    Chat groupChat = messageService.createGroupChat(wsMessage.getDataChat());
+//                    emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand,
+//                            new DataChat(groupChat.getId(), groupChat.getChatName()), null, null)));
+//                } catch (CreateChatException e) {
+//                    emitter.tryEmitNext(json.writeValueAsString(
+//                            new WsMessageResponse(eventCommand, e.getMessage()))
+//                    );
+//                }
+//                break;
+//
+//            case CHAT_PRIVATE_CREATE:
+//                try {
+//                    Chat privateChat = messageService.createPrivateChat(wsMessage.getDataChat());
+//                    emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand,
+//                            new DataChat(privateChat.getId(), privateChat.getChatName()), null, null)));
+//                } catch (CreateChatException e) {
+//                    emitter.tryEmitNext(json.writeValueAsString(
+//                            new WsMessageResponse(eventCommand, e.getMessage()))
+//                    );
+//                }
+//                break;
+//
+//            case CHAT_UPDATE:
+//                try {
+//                    Chat updatedChat = messageService.updateChat(wsMessage.getDataChat());
+//                    emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand,
+//                            new DataChat(updatedChat.getId(), updatedChat.getChatName()), null, null)));
+//                } catch (UpdateChatException e) {
+//                    emitter.tryEmitNext(json.writeValueAsString(
+//                            new WsMessageResponse(eventCommand, e.getMessage()))
+//                    );
+//                }
+//                break;
+//
+//            case CHAT_DELETE://data?
+//                try {
+//                    messageService.removeChat(wsMessage.getDataChat());
+//                    emitter.tryEmitNext(json.writeValueAsString(
+//                            new WsMessage(eventCommand, new DataChat())));
+//                } catch (RemoveChatException e) {
+//                    emitter.tryEmitNext(json.writeValueAsString(
+//                            new WsMessageResponse(eventCommand, e.getMessage()))
+//                    );
+//                }
+//                break;
+//
+//            case CHAT_LEAVE:
+//                try {
+//                    Chat leavedChat = messageService.leaveChat(wsMessage.getDataChat());
+//                    emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand,
+//                                    new DataChat(leavedChat.getId(),null, null, null, null))));
+//                } catch (Exception e) {
+//                    emitter.tryEmitNext(json.writeValueAsString(
+//                            new WsMessageResponse(eventCommand, e.getMessage()))
+//                    );
+//                }
+//                break;
+//
+//            case CHAT_JOIN:
+//                try {
+//                    Chat joinedChat = messageService.joinChat(wsMessage.getData());
+//                    emitter.tryEmitNext(json.writeValueAsString(
+//                            new WsMessage(eventCommand, new Data(joinedChat.getId()))));
+//                } catch (Exception e) {
+//                    emitter.tryEmitNext(json.writeValueAsString(
+//                            new WsMessageResponse(eventCommand, e.getMessage()))
+//                    );
+//                }
+//                break;
+//
+//            case CHATS_GET_BY_USER_ID:
+//                try {
+//                    List<Chat> chatsByUserId = messageService.showChatsByUser(wsMessage.getData());
+//                    emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand,
+//                            new Data()))));
+//                } catch (Exception e) {
+//                    emitter.tryEmitNext(json.writeValueAsString(
+//                            new WsMessageResponse(eventCommand, e.getMessage()))
+//                    );
+//                }
+//                break;
+//
+//            case MESSAGE_SEND:
+//                try {
+//                    Message newMessage = messageService.sendMessage(wsMessage.getData());
+//                    emitter.tryEmitNext(json.writeValueAsString(
+//                            new WsMessage(eventCommand, new Data(newMessage.getId()))));
+//                } catch (Exception e) {
+//                    emitter.tryEmitNext(json.writeValueAsString(
+//                            new WsMessageResponse(eventCommand, e.getMessage()))
+//                    );
+//                }
+//                break;
+//
+//            case MESSAGE_READ:
+//                break;
+//
+//            case MESSAGE_UPDATE:
+//                try {
+//                    Message updatedMessage = messageService.updateMessage(wsMessage.getData());
+//                    emitter.tryEmitNext(json.writeValueAsString(
+//                            new WsMessage(eventCommand, new Data(updatedMessage.getId()))));
+//                } catch (MessageUpdateException e) {
+//                    emitter.tryEmitNext(json.writeValueAsString(
+//                            new WsMessageResponse(eventCommand, e.getMessage()))
+//                    );
+//                }
+//                break;
+//
+//            case MESSAGE_DELETE://data?
+//                try {
+//                    messageService.deleteMessage(wsMessage.getData());
+//                    emitter.tryEmitNext(json.writeValueAsString(
+//                            new WsMessage(eventCommand, new Data())));
+//                } catch (MessageDeleteException e) {
+//                    emitter.tryEmitNext(json.writeValueAsString(
+//                            new WsMessageResponse(eventCommand, e.getMessage()))
+//                    );
+//                }
+//                break;
+//
+//            case MESSAGES_GET_BY_CHAT_ID:
+//                try {
+//                    List<Message> messagesByChatId = messageService.getMessages(wsMessage.getData());
+//                    emitter.tryEmitNext(json.writeValueAsString(new WsMessage(eventCommand,
+//                            new Data()))));
+//                } catch (Exception e) {
+//                    emitter.tryEmitNext(json.writeValueAsString(
+//                            new WsMessageResponse(eventCommand, e.getMessage()))
+//                    );
+//                }
+//                break;
+       // }
     }
 }

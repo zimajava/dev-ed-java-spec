@@ -10,9 +10,5 @@ import lombok.NoArgsConstructor;
 public class WsMessage {
     private Command command;
     private DataBase data;
-    private DataChat dataChat;
-    private DataMessage dataMessage;
 
-    public WsMessage(Command eventCommand, DataChat dataChat) {
-    }
 }

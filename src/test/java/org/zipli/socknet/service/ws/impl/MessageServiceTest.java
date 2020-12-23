@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.zipli.socknet.dto.Data;
+import org.zipli.socknet.dto.DataChat;
+import org.zipli.socknet.dto.DataMessage;
 import org.zipli.socknet.exception.*;
 import org.zipli.socknet.model.Chat;
 import org.zipli.socknet.model.Message;
@@ -27,7 +29,8 @@ class MessageServiceTest {
 
     private User user;
     private Chat chat;
-    private Data data;
+    private DataMessage dataMessage;
+    private DataChat dataChat;
     private MessageService messageService;
     private Message message;
 
@@ -47,24 +50,31 @@ class MessageServiceTest {
 
         chat = new Chat("NameGroupChat", true, user.getId());
         chat = chatRepository.save(chat);
-        data = new Data("textMessage", user.getId(), chat.getId(), "", "ChatName");
+        dataMessage = new DataMessage(
+                user.getId(),
+                chat.getId(),
+                "dsadsda",
+                "");
+        dataChat = new DataChat(user.getId(),
+                chat.getId(),
+                "vgtunj");
         message = new Message(user.getId(), chat.getId(), new Date(), "dsadsadsadsads");
     }
 
     @Test
     void sendMessage() {
 
-        Message message = messageService.sendMessage(data);
+        Message message = messageService.sendMessage(dataMessage);
 
-        assertEquals(data.getTextMessage(), message.getTextMessage());
-        assertEquals(data.getUserId(), message.getAuthorId());
-        assertEquals(data.getChatId(), message.getChatId());
+        assertEquals(dataMessage.getTextMessage(), message.getTextMessage());
+        assertEquals(dataMessage.getIdUser(), message.getAuthorId());
+        assertEquals(dataMessage.getIdChat(), message.getChatId());
     }
 
     @Test
     void createGroupChat_Pass() {
 
-        Chat chat = messageService.createGroupChat(data);
+        Chat chat = messageService.createGroupChat(dataChat);
 
         assertTrue(chatRepository.existsByChatName(chat.getChatName()));
         chatRepository.deleteAll();
@@ -74,8 +84,8 @@ class MessageServiceTest {
     void createGroupChat_Fail() {
 
         try {
-            Chat chatOne = messageService.createGroupChat(data);
-            Chat chatTwo = messageService.createGroupChat(data);
+            Chat chatOne = messageService.createGroupChat(dataChat);
+            Chat chatTwo = messageService.createGroupChat(dataChat);
         } catch (CreateChatException e) {
             assertEquals(e.getMessage(), "Such a chat already exists");
         }
@@ -85,9 +95,9 @@ class MessageServiceTest {
     @Test
     void createPrivateChat_Pass() {
 
-        userRepository.save(new User("kkkk@gma.vv", "ghjk", "teaama", "morgen"));
-        data.setUserName("teaama");
-        Chat chat = messageService.createPrivateChat(data);
+        User user = userRepository.save(new User("kkkk@gma.vv", "ghjk", "teaama", "morgen"));
+        dataChat.setSecondUserId(user.getId());
+        Chat chat = messageService.createPrivateChat(dataChat);
 
         assertTrue(chatRepository.existsByChatName(chat.getChatName()));
         assertEquals(chat.getIdUsers().size(), 2);
@@ -106,8 +116,10 @@ class MessageServiceTest {
 
         userOne.setChatsId(Collections.singletonList(chat.getId()));
         userOne = userRepository.save(userOne);
-
-        Data dataTree = new Data("textMessage", userOne.getId(), chat.getId(), "", chat.getChatName());
+        new DataChat(user.getId(),
+                chat.getId(),
+                chat.getChatName());
+        DataChat dataTree = new DataChat(userOne.getId(), chat.getId(), chat.getChatName());
 
         messageService.removeChat(dataTree);
 
@@ -120,7 +132,7 @@ class MessageServiceTest {
     @Test
     void removeChat_Fail() {
 
-        Data dataTree = new Data("textMessage", "kakoitoId", chat.getId(), "", chat.getChatName());
+        DataChat dataTree = new DataChat("kakoitoId", chat.getId(), chat.getChatName());
 
         try {
             messageService.removeChat(dataTree);
@@ -132,26 +144,26 @@ class MessageServiceTest {
     @Test
     void joinChat() {
 
-        Chat chat = messageService.joinChat(data);
+        Chat chat = messageService.joinChat(dataChat);
         User userUpdate = userRepository.getUserById(user.getId());
 
-        assertTrue(chat.getIdUsers().contains(data.getUserId()));
+        assertTrue(chat.getIdUsers().contains(dataChat.getIdUser()));
         assertTrue(userUpdate.getChatsId().contains(chat.getId()));
     }
 
     @Test
     void updateChat() {
 
-        Data data = new Data("textMessage", user.getId(), chat.getId(), "", "NewChatName");
-        Chat chat = messageService.updateChat(data);
+        DataChat dataChat = new DataChat(user.getId(), chat.getId(), "NewChatName");
+        Chat chat = messageService.updateChat(dataChat);
 
-        assertEquals(chat.getChatName(), data.getNameChat());
+        assertEquals(chat.getChatName(), dataChat.getChatName());
     }
 
     @Test
     void showChatsByUser() {
 
-        List<Chat> chats = messageService.showChatsByUser(data);
+        List<Chat> chats = messageService.showChatsByUser(dataChat);
 
         assertEquals(user.getChatsId().size(), chats.size());
     }
@@ -163,9 +175,9 @@ class MessageServiceTest {
         chat.getIdUsers().add(user.getId());
         chat = chatRepository.save(chat);
 
-        data.setChatId(chat.getId());
+        dataChat.setIdChat(chat.getId());
 
-        Chat newChat = messageService.leaveChat(data);
+        Chat newChat = messageService.leaveChat(dataChat);
 
         assertEquals(chat.getIdUsers().size() - 1, newChat.getIdUsers().size());
 
@@ -191,8 +203,8 @@ class MessageServiceTest {
 
         chat = chatRepository.save(chat);
 
-        data.setChatId(chat.getId());
-        List<Message> messages = messageService.getMessages(data);
+        dataMessage.setIdChat(chat.getId());
+        List<Message> messages = messageService.getMessages(dataMessage);
 
         assertEquals(messages.size(), 3);
 
@@ -207,7 +219,7 @@ class MessageServiceTest {
 
         message = messageRepository.save(message);
 
-        Data data = new Data("newMessage", user.getId(), chat.getId(), message.getId(), user.getUserName(), chat.getChatName(), null, null);
+        DataMessage data = new DataMessage(user.getId(), chat.getId(), message.getId(), "dsad");
         Message updateMessage = messageService.updateMessage(data);
 
         assertEquals(updateMessage.getTextMessage(), data.getTextMessage());
@@ -220,7 +232,7 @@ class MessageServiceTest {
         message = messageRepository.save(message);
 
         User usernew = userRepository.save(new User("akkka@fsa.cas", "dsadasd", "akkka", "brrrr"));
-        Data data = new Data("newMessage", usernew.getId(), chat.getId(), message.getId(), user.getUserName(), chat.getChatName(), null, null);
+        DataMessage data = new DataMessage(usernew.getId(), chat.getId(), message.getId(), "dsad");
 
         try {
             messageService.updateMessage(data);
@@ -234,12 +246,12 @@ class MessageServiceTest {
         Message messageDelete = new Message(user.getId(), chat.getId(), new Date(), "dsadsadsadsads");
         messageDelete = messageRepository.save(messageDelete);
 
-        Data data = new Data("newMessage", user.getId(), chat.getId(), messageDelete.getId(), user.getUserName(), chat.getChatName(), null, null);
+        DataMessage data = new DataMessage(user.getId(), chat.getId(), messageDelete.getId(), "dsad");
         messageService.deleteMessage(data);
 
         assertFalse(messageRepository.existsById(messageDelete.getId()));
         assertFalse(chatRepository
-                .findChatById(data.getChatId())
+                .findChatById(data.getIdChat())
                 .getIdMessages()
                 .contains(messageDelete.getId()));
     }
@@ -249,7 +261,7 @@ class MessageServiceTest {
         Message messageDelete = new Message(user.getId(), chat.getId(), new Date(), "dsadsadsadsads");
         messageDelete = messageRepository.save(messageDelete);
 
-        Data data = new Data("newMessage", "", chat.getId(), messageDelete.getId(), user.getUserName(), chat.getChatName(), null, null);
+        DataMessage data = new DataMessage(user.getId(), chat.getId(), messageDelete.getId(), "dsad");
 
         try {
             messageService.deleteMessage(data);
@@ -263,7 +275,7 @@ class MessageServiceTest {
         Message messageDelete = new Message(user.getId(), chat.getId(), new Date(), "dsadsadsadsads");
         messageDelete = messageRepository.save(messageDelete);
 
-        Data data = new Data("newMessage", user.getId(), "", messageDelete.getId(), user.getUserName(), chat.getChatName(), null, null);
+        DataMessage data = new DataMessage(user.getId(), "", messageDelete.getId(), "dsad");
 
         try {
             messageService.deleteMessage(data);

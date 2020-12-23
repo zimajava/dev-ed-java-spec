@@ -29,4 +29,10 @@ public class DataChat extends DataBase{
 //        this.id = id;
         this.chatName = chatName;
     }
+    public DataChat(String userId, String idChat, String chatName) {
+        super(userId, idChat);
+        this.chatName = chatName;
+        this.chats = chats;
+        this.secondUserId = secondUserId;
+    }
 }
