@@ -10,6 +10,8 @@ import org.zipli.socknet.security.jwt.JwtUtils;
 import org.zipli.socknet.security.services.UserDetailsImpl;
 import org.zipli.socknet.service.email.EmailConfirmationService;
 
+import javax.mail.MessagingException;
+
 @Service
 public class AuthService implements IAuthService {
 
@@ -50,7 +52,13 @@ public class AuthService implements IAuthService {
             userRepository.save(user);
             UserDetails userDetails = new UserDetailsImpl(user);
             String token = jwtUtils.generateJwtToken(userDetails);
-            new Thread(() -> emailConfirmationService.sendEmail(user.getEmail(), token)).start();
+            new Thread(() -> {
+                try {
+                    emailConfirmationService.sendEmail(user.getEmail(), token);
+                } catch (MessagingException e) {
+                    e.printStackTrace();
+                }
+            }).start();
         }
     }
 

@@ -23,6 +23,7 @@ public class WebSecurityConfig {
     private static final String FRONTEND_LOCALHOST = "http://localhost:3000";
     private static final String FRONTEND_STAGING = "https://dev-ed-messenger-develop.herokuapp.com";
     private static final String FRONTEND_PROD = "https://dev-ed-messenger.herokuapp.com";
+
     private final AuthTokenManager authTokenManager;
     private final SecurityContextRepository securityContextRepository;
 
