@@ -208,17 +208,31 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public Message updateMessage(Data data) throws MessageUpdateException{
+    public Message updateMessage(Data data) throws MessageUpdateException {
 
-            Message message = messageRepository.getMessageById(data.getMessageId());
+        Message message = messageRepository.getMessageById(data.getMessageId());
 
-            if (message.getAuthorId().equals(data.getUserId())) {
-                message.setTextMessage(data.getTextMessage());
-                message = messageRepository.save(message);
+        if (message.getAuthorId().equals(data.getUserId())) {
+            message.setTextMessage(data.getTextMessage());
+            message = messageRepository.save(message);
 
-                return message;
-            } else {
-                throw new MessageUpdateException("Exception while updating message");
-            }
+            return message;
+        } else {
+            throw new MessageUpdateException("Exception while updating message");
+        }
+    }
+
+    @Override
+    public void deleteMessage(Data data) throws MessageDeleteException {
+
+        Message message = messageRepository.getMessageById(data.getMessageId());
+
+        if (message.getAuthorId().equals(data.getUserId())) {
+            Chat chat = chatRepository.findChatById(data.getChatId());
+            chat.getIdMessages().remove(message.getId());
+            messageRepository.delete(message);
+        } else {
+            throw new MessageDeleteException("Exception while delete message");
+        }
     }
 }

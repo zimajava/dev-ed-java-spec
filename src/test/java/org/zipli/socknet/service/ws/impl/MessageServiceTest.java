@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.zipli.socknet.dto.Data;
 import org.zipli.socknet.exception.CreateChatException;
+import org.zipli.socknet.exception.MessageDeleteException;
 import org.zipli.socknet.exception.MessageUpdateException;
 import org.zipli.socknet.exception.RemoveChatException;
 import org.zipli.socknet.model.Chat;
@@ -228,6 +229,35 @@ class MessageServiceTest {
             messageService.updateMessage(data);
         } catch (MessageUpdateException e) {
             assertEquals(e.getMessage(), "Exception while updating message");
+        }
+    }
+
+    @Test
+    void DeleteMessagePass() {
+        Message messageDelete = new Message(user.getId(), chat.getId(), new Date(), "dsadsadsadsads");
+        messageDelete = messageRepository.save(messageDelete);
+
+        Data data = new Data("newMessage", user.getId(), chat.getId(), messageDelete.getId(), user.getUserName(), chat.getChatName());
+        messageService.deleteMessage(data);
+
+        assertFalse(messageRepository.existsById(messageDelete.getId()));
+        assertFalse(chatRepository
+                .findChatById(data.getChatId())
+                .getIdMessages()
+                .contains(messageDelete.getId()));
+    }
+
+    @Test
+    void DeleteMessageFail() {
+        Message messageDelete = new Message(user.getId(), chat.getId(), new Date(), "dsadsadsadsads");
+        messageDelete = messageRepository.save(messageDelete);
+
+        Data data = new Data("newMessage", "", chat.getId(), messageDelete.getId(), user.getUserName(), chat.getChatName());
+
+        try {
+            messageService.deleteMessage(data);
+        } catch (MessageDeleteException e) {
+            assertEquals(e.getMessage(), "Exception while delete message");
         }
     }
 

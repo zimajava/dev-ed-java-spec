@@ -34,4 +34,6 @@ public interface IMessageService {
     void addMessageEmitterByToken(String token, Sinks.Many<String> emitter) throws CreateSocketException;
 
     Message updateMessage(Data data) throws UpdateChatException;
+
+    void deleteMessage(Data data);
 }
