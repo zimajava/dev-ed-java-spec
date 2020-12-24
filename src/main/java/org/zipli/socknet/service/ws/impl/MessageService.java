@@ -105,12 +105,12 @@ public class MessageService implements IMessageService {
 
     @Override
     public Chat updateChat(ChatData data) throws UpdateChatException {
-        if (!chatRepository.existsByChatNameAndCreatorUserId(data.getChatName(), data.getIdUser())) {
 
-            Chat chat = chatRepository.findChatById(data.getIdChat());
+        Chat chat = chatRepository.findChatById(data.getIdChat());
+
+        if (chat != null) {
             chat.setChatName(data.getChatName());
             chat = chatRepository.save(chat);
-
             return chat;
         } else {
             throw new UpdateChatException("Change chat failed");
