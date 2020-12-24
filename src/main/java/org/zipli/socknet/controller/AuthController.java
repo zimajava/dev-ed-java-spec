@@ -82,13 +82,7 @@ public class AuthController {
         } else if (newPassword == null) {
             throw new UserNotFoundException("Error. Password can't be null");
         } else {
-//            try {
             resetPasswordService.resetPassword(token, newPassword);
-//            } catch (UserNotFoundException e) {
-//                return ResponseEntity
-//                        .badRequest()
-//                        .body(e);
-//            }
             return ResponseEntity.ok("Password successfully changed");
         }
     }

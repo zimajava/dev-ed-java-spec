@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class WsMessage {
     private Command command;
-    private Data data;
-    
+    private BaseData data;
+
+    public WsMessage(Command eventCommand, String dataBase) {
+    }
 }

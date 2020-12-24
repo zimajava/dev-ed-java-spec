@@ -2,7 +2,8 @@ package org.zipli.socknet.service.ws.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.zipli.socknet.dto.Data;
+import org.zipli.socknet.dto.ChatData;
+import org.zipli.socknet.dto.MessageData;
 import org.zipli.socknet.exception.*;
 import org.zipli.socknet.model.Chat;
 import org.zipli.socknet.model.Message;
@@ -35,12 +36,12 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public Message sendMessage(Data data) {
+    public Message sendMessage(MessageData data) {
 
-        Message message = new Message(data.getUserId(), data.getChatId(), new Date(), data.getTextMessage());
+        Message message = new Message(data.getIdUser(), data.getIdChat(), new Date(), data.getTextMessage());
         message = messageRepository.save(message);
 
-        Chat chat = chatRepository.findChatById(data.getChatId());
+        Chat chat = chatRepository.findChatById(data.getIdChat());
         chat.getIdMessages().add(message.getId());
         chatRepository.save(chat);
 
@@ -48,19 +49,19 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public Chat createGroupChat(Data data) throws CreateChatException {
+    public Chat createGroupChat(ChatData data) throws CreateChatException {
 
-        if (!chatRepository.existsByChatName(data.getNameChat())) {
+        if (!chatRepository.existsByChatName(data.getChatName())) {
 
-            Chat chat = new Chat(data.getNameChat(),
+            Chat chat = new Chat(data.getChatName(),
                     false,
                     null,
-                    Collections.singletonList(data.getUserId()),
-                    data.getUserId());
+                    Collections.singletonList(data.getIdUser()),
+                    data.getIdUser());
 
             chat = chatRepository.save(chat);
 
-            User user = userRepository.getUserById(data.getUserId());
+            User user = userRepository.getUserById(data.getIdUser());
             user.getChatsId().add(chat.getId());
             userRepository.save(user);
 
@@ -72,16 +73,16 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public Chat createPrivateChat(Data data) throws CreateChatException {
+    public Chat createPrivateChat(ChatData data) throws CreateChatException {
 
-        if (!chatRepository.existsByChatName(data.getNameChat())) {
+        if (!chatRepository.existsByChatName(data.getChatName())) {
 
-            User creatorUser = userRepository.getUserById(data.getUserId());
-            User user = userRepository.getByUserName(data.getUserName());
+            User creatorUser = userRepository.getUserById(data.getIdUser());
+            User user = userRepository.getUserById(data.getSecondUserId());
 
-            Chat chat = new Chat(data.getNameChat(),
+            Chat chat = new Chat(data.getChatName(),
                     true,
-                    data.getUserId());
+                    data.getIdUser());
 
             chat.getIdUsers().add(creatorUser.getId());
             chat.getIdUsers().add(user.getId());
@@ -103,9 +104,23 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public void removeChat(Data data) throws RemoveChatException {
+    public Chat updateChat(ChatData data) throws UpdateChatException {
 
-        Chat chat = chatRepository.getByChatNameAndCreatorUserId(data.getNameChat(), data.getUserId());
+        Chat chat = chatRepository.findChatById(data.getIdChat());
+
+        if (chat != null) {
+            chat.setChatName(data.getChatName());
+            chat = chatRepository.save(chat);
+            return chat;
+        } else {
+            throw new UpdateChatException("Change chat failed");
+        }
+    }
+
+    @Override
+    public void removeChat(ChatData data) throws RemoveChatException {
+
+        Chat chat = chatRepository.getByChatNameAndCreatorUserId(data.getChatName(), data.getIdUser());
 
         if (chat != null) {
 
@@ -113,12 +128,12 @@ public class MessageService implements IMessageService {
 
             userRepository.saveAll(userRepository.findUsersByIdIn(listIdUsers).stream()
                     .map(user -> {
-                        user.getChatsId().remove(data.getChatId());
+                        user.getChatsId().remove(data.getIdChat());
                         return user;
                     })
                     .collect(Collectors.toList()));
-            messageRepository.deleteAllByChatId(data.getChatId());
-            chatRepository.deleteById(data.getChatId());
+            messageRepository.deleteAllByChatId(data.getIdChat());
+            chatRepository.deleteById(data.getIdChat());
 
         } else {
             throw new RemoveChatException("Only the creator can delete");
@@ -126,13 +141,13 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public Chat leaveChat(Data data) {
+    public Chat leaveChat(ChatData data) {
 
-        Chat chat = chatRepository.findChatById(data.getChatId());
-        chat.getIdUsers().remove(data.getUserId());
+        Chat chat = chatRepository.findChatById(data.getIdChat());
+        chat.getIdUsers().remove(data.getIdUser());
         chat = chatRepository.save(chat);
 
-        User user = userRepository.getUserById(data.getUserId());
+        User user = userRepository.getUserById(data.getIdUser());
         user.getChatsId().remove(chat.getId());
         userRepository.save(user);
 
@@ -140,18 +155,18 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public Chat joinChat(Data data) {
+    public Chat joinChat(ChatData data) {
 
-        Chat chat = chatRepository.findChatById(data.getChatId());
+        Chat chat = chatRepository.findChatById(data.getIdChat());
         List<String> listIdUsers = chat.getIdUsers();
 
-        if (!listIdUsers.contains(data.getUserId())) {
+        if (!listIdUsers.contains(data.getIdUser())) {
 
-            User user = userRepository.getUserById(data.getUserId());
-            user.getChatsId().add(data.getChatId());
+            User user = userRepository.getUserById(data.getIdUser());
+            user.getChatsId().add(data.getIdChat());
             userRepository.save(user);
 
-            listIdUsers.add(data.getUserId());
+            listIdUsers.add(data.getIdUser());
             chat = chatRepository.save(chat);
         }
 
@@ -159,9 +174,9 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public List<Message> getMessages(Data data) {
+    public List<Message> getMessages(MessageData data) {
 
-        Chat chat = chatRepository.findChatById(data.getChatId());
+        Chat chat = chatRepository.findChatById(data.getIdChat());
 
         List<String> listIdMessages = chat.getIdMessages();
         List<Message> messages = new ArrayList<>();
@@ -174,24 +189,9 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public Chat updateChat(Data data) {
+    public List<Chat> showChatsByUser(ChatData data) {
 
-        if (!chatRepository.existsByChatNameAndCreatorUserId(data.getNameChat(), data.getUserId())) {
-
-            Chat chat = chatRepository.findChatById(data.getChatId());
-            chat.setChatName(data.getNameChat());
-            chat = chatRepository.save(chat);
-
-            return chat;
-        } else {
-            throw new UpdateChatException("Change chat failed");
-        }
-    }
-
-    @Override
-    public List<Chat> showChatsByUser(Data data) {
-
-        User user = userRepository.getUserById(data.getUserId());
+        User user = userRepository.getUserById(data.getIdUser());
 
         return chatRepository.getChatsByIdIn(user.getChatsId());
     }
@@ -208,11 +208,11 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public Message updateMessage(Data data) throws MessageUpdateException {
+    public Message updateMessage(MessageData data) throws MessageUpdateException {
 
         Message message = messageRepository.getMessageById(data.getMessageId());
 
-        if (message.getAuthorId().equals(data.getUserId())) {
+        if (message.getAuthorId().equals(data.getIdUser())) {
             message.setTextMessage(data.getTextMessage());
             message = messageRepository.save(message);
 
@@ -223,12 +223,12 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public void deleteMessage(Data data) throws MessageDeleteException, UpdateChatException {
+    public void deleteMessage(MessageData data) throws MessageDeleteException, UpdateChatException {
 
         Message message = messageRepository.getMessageById(data.getMessageId());
 
-        if (message.getAuthorId().equals(data.getUserId())) {
-            Chat chat = chatRepository.findChatById(data.getChatId());
+        if (message.getAuthorId().equals(data.getIdUser())) {
+            Chat chat = chatRepository.findChatById(data.getIdChat());
             if (chat != null) {
                 chat.getIdMessages().remove(message.getId());
                 chatRepository.save(chat);
