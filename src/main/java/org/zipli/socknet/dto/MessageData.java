@@ -12,13 +12,13 @@ import java.util.List;
 @Setter
 @ToString
 @NoArgsConstructor
-public class DataMessage extends BaseData {
+public class MessageData extends BaseData {
     private String messageId;
 
     private String textMessage;
     private List<Message> messages;
 
-    public DataMessage(String idUser, String chatId, String messageId, String textMessage, List<Message> messages) {
+    public MessageData(String idUser, String chatId, String messageId, String textMessage, List<Message> messages) {
         super(idUser, chatId);
         this.messageId = messageId;
         this.textMessage = textMessage;
@@ -26,11 +26,11 @@ public class DataMessage extends BaseData {
     }
 
 
-    public DataMessage(List <Message> messages){
+    public MessageData(List <Message> messages){
         this.messages = messages;
     }
 
-    public DataMessage(String idUser, String chatId, String messageId, String textMessage) {
+    public MessageData(String idUser, String chatId, String messageId, String textMessage) {
         super(idUser, chatId);
         this.messageId = messageId;
         this.textMessage = textMessage;

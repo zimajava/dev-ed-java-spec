@@ -2,8 +2,8 @@ package org.zipli.socknet.service.ws.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.zipli.socknet.dto.DataChat;
-import org.zipli.socknet.dto.DataMessage;
+import org.zipli.socknet.dto.ChatData;
+import org.zipli.socknet.dto.MessageData;
 import org.zipli.socknet.exception.*;
 import org.zipli.socknet.model.Chat;
 import org.zipli.socknet.model.Message;
@@ -36,7 +36,7 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public Message sendMessage(DataMessage data) {
+    public Message sendMessage(MessageData data) {
 
         Message message = new Message(data.getIdUser(), data.getIdChat(), new Date(), data.getTextMessage());
         message = messageRepository.save(message);
@@ -49,7 +49,7 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public Chat createGroupChat(DataChat data) throws CreateChatException {
+    public Chat createGroupChat(ChatData data) throws CreateChatException {
 
         if (!chatRepository.existsByChatName(data.getChatName())) {
 
@@ -73,7 +73,7 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public Chat createPrivateChat(DataChat data) throws CreateChatException {
+    public Chat createPrivateChat(ChatData data) throws CreateChatException {
 
         if (!chatRepository.existsByChatName(data.getChatName())) {
 
@@ -104,7 +104,7 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public Chat updateChat(DataChat data) throws UpdateChatException {
+    public Chat updateChat(ChatData data) throws UpdateChatException {
         if (!chatRepository.existsByChatNameAndCreatorUserId(data.getChatName(), data.getIdUser())) {
 
             Chat chat = chatRepository.findChatById(data.getIdChat());
@@ -118,7 +118,7 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public void removeChat(DataChat data) throws RemoveChatException {
+    public void removeChat(ChatData data) throws RemoveChatException {
 
         Chat chat = chatRepository.getByChatNameAndCreatorUserId(data.getChatName(), data.getIdUser());
 
@@ -141,7 +141,7 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public Chat leaveChat(DataChat data) {
+    public Chat leaveChat(ChatData data) {
 
         Chat chat = chatRepository.findChatById(data.getIdChat());
         chat.getIdUsers().remove(data.getIdUser());
@@ -155,7 +155,7 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public Chat joinChat(DataChat data) {
+    public Chat joinChat(ChatData data) {
 
         Chat chat = chatRepository.findChatById(data.getIdChat());
         List<String> listIdUsers = chat.getIdUsers();
@@ -174,7 +174,7 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public List<Message> getMessages(DataMessage data) {
+    public List<Message> getMessages(MessageData data) {
 
         Chat chat = chatRepository.findChatById(data.getIdChat());
 
@@ -189,7 +189,7 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public List<Chat> showChatsByUser(DataChat data) {
+    public List<Chat> showChatsByUser(ChatData data) {
 
         User user = userRepository.getUserById(data.getIdUser());
 
@@ -208,7 +208,7 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public Message updateMessage(DataMessage data) throws MessageUpdateException {
+    public Message updateMessage(MessageData data) throws MessageUpdateException {
 
         Message message = messageRepository.getMessageById(data.getMessageId());
 
@@ -223,7 +223,7 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public void deleteMessage(DataMessage data) throws MessageDeleteException, UpdateChatException {
+    public void deleteMessage(MessageData data) throws MessageDeleteException, UpdateChatException {
 
         Message message = messageRepository.getMessageById(data.getMessageId());
 

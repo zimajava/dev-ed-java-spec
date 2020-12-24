@@ -12,29 +12,29 @@ import java.util.List;
 @Setter
 @ToString
 @NoArgsConstructor
-public class DataChat extends BaseData {
+public class ChatData extends BaseData {
     private String chatName;
     private String secondUserId;
     private List<Chat> chats;
 
-    public DataChat(String userId, String idChat, String chatName, List<Chat> chats, String secondUserId) {
+    public ChatData(String userId, String idChat, String chatName, List<Chat> chats, String secondUserId) {
         super(userId, idChat);
         this.chatName = chatName;
         this.chats = chats;
         this.secondUserId = secondUserId;
     }
 
-    public DataChat(String userId, String idChat, String chatName) {
+    public ChatData(String userId, String idChat, String chatName) {
         super(userId, idChat);
         this.chatName = chatName;
     }
 
-    public DataChat( String idChat, String chatName) {
+    public ChatData(String idChat, String chatName) {
         super(null, idChat);
         this.chatName = chatName;
     }
 
-    public DataChat(List<Chat> chats) {
+    public ChatData(List<Chat> chats) {
         this.chats = chats;
     }
 }
