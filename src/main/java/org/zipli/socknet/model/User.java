@@ -1,5 +1,6 @@
 package org.zipli.socknet.model;
 
+import com.sun.mail.iap.ByteArray;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -30,6 +31,7 @@ public class User {
     private String nickName;
     private boolean isConfirm;
     private List<String> chatsId;
+    private ByteArray avatar;
 
     public User(String email, String password, String userName, String nickName) {
         this.email = email;
