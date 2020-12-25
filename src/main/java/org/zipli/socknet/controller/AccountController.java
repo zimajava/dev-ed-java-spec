@@ -53,7 +53,6 @@ public class AccountController {
                     .badRequest()
                     .body(e);
         }
-
     }
 
     @PutMapping("/update-email")
@@ -65,7 +64,6 @@ public class AccountController {
                     .badRequest()
                     .body(e);
         }
-
     }
 
     @PutMapping("/update-password")

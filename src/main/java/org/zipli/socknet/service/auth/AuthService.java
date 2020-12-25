@@ -52,14 +52,11 @@ public class AuthService implements IAuthService {
             userRepository.save(user);
             UserDetails userDetails = new UserDetailsImpl(user);
             String token = jwtUtils.generateJwtToken(userDetails);
-
-                try {
-                    emailConfirmationService.sendEmail(user.getEmail(), token);
-                } catch (MessagingException e) {
-                    e.printStackTrace();
-                }
-
+            try {
+                emailConfirmationService.sendEmail(user.getEmail(), token);
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
         }
     }
-
 }

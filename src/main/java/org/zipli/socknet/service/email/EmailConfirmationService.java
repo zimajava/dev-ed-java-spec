@@ -30,7 +30,6 @@ public class EmailConfirmationService {
 
     @Async
     public void sendEmail(String email, String token) throws MessagingException {
-
         new Thread(() -> {
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = null;
@@ -61,7 +60,6 @@ public class EmailConfirmationService {
 
 
     public String confirmAccount(String token) {
-
         if (token != null) {
             String userName = jwtUtils.getUserNameFromJwtToken(token);
             User user = userRepository.getByUserName(userName);

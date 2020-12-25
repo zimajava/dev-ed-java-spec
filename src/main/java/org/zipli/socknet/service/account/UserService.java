@@ -52,10 +52,9 @@ public class UserService implements IUserService {
         if (user == null) {
             throw new UpdateAvatarException("not correct id");
         }
-            user.setAvatar(data.getAvatar());
-            userRepository.save(user);
-            return user;
-
+        user.setAvatar(data.getAvatar());
+        userRepository.save(user);
+        return user;
     }
 
     @Override
@@ -67,10 +66,9 @@ public class UserService implements IUserService {
         if (user == null) {
             throw new UpdateNickNameException("not correct id");
         }
-            user.setNickName(data.getNickName());
-            userRepository.save(user);
-            return user;
-
+        user.setNickName(data.getNickName());
+        userRepository.save(user);
+        return user;
     }
 
 
@@ -86,15 +84,13 @@ public class UserService implements IUserService {
         if (!(data.getEmail().contains("@"))) {
             throw new UpdateEmailException("not correct email");
         }
-
-            user.setEmail(data.getEmail());
-            user.setConfirm(false);
-            userRepository.save(user);
-            UserDetails userDetails = new UserDetailsImpl(user);
-            String token = jwtUtils.generateJwtToken(userDetails);
-            emailConfirmationService.sendEmail(data.getEmail(), token);
-            return user;
-
+        user.setEmail(data.getEmail());
+        user.setConfirm(false);
+        userRepository.save(user);
+        UserDetails userDetails = new UserDetailsImpl(user);
+        String token = jwtUtils.generateJwtToken(userDetails);
+        emailConfirmationService.sendEmail(data.getEmail(), token);
+        return user;
     }
 
 
@@ -107,10 +103,8 @@ public class UserService implements IUserService {
         if (user == null) {
             throw new UpdatePasswordExсeption("not correct id");
         }
-
-            user.setPassword(data.getPassword());
-            userRepository.save(user);
-            return user;
-
+        user.setPassword(data.getPassword());
+        userRepository.save(user);
+        return user;
     }
 }
