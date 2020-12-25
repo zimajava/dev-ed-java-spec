@@ -52,13 +52,10 @@ public class UserService implements IUserService {
         if (user == null) {
             throw new UpdateAvatarException("not correct id");
         }
-        try {
             user.setAvatar(data.getAvatar());
             userRepository.save(user);
             return user;
-        } catch (UpdateAvatarException e) {
-            throw new UpdateAvatarException("not correct avatar");
-        }
+
     }
 
     @Override
@@ -70,18 +67,15 @@ public class UserService implements IUserService {
         if (user == null) {
             throw new UpdateNickNameException("not correct id");
         }
-        try {
             user.setNickName(data.getNickName());
             userRepository.save(user);
             return user;
-        } catch (UpdateNickNameException e) {
-            throw new UpdateNickNameException("not correct nickName");
-        }
+
     }
 
 
     @Override
-    public User updateEmail(MyAccountChange data) throws UpdateEmailException {
+    public User updateEmail(MyAccountChange data) throws UpdateEmailException, MessagingException {
         if (data.getUserId() == null || data.getEmail() == null) {
             throw new UpdateEmailException("data is null");
         }
@@ -92,7 +86,7 @@ public class UserService implements IUserService {
         if (!(data.getEmail().contains("@"))) {
             throw new UpdateEmailException("not correct email");
         }
-        try {
+
             user.setEmail(data.getEmail());
             user.setConfirm(false);
             userRepository.save(user);
@@ -100,9 +94,7 @@ public class UserService implements IUserService {
             String token = jwtUtils.generateJwtToken(userDetails);
             emailConfirmationService.sendEmail(data.getEmail(), token);
             return user;
-        } catch (UpdateEmailException | MessagingException e) {
-            throw new UpdateEmailException("email already in use");
-        }
+
     }
 
 
@@ -115,12 +107,10 @@ public class UserService implements IUserService {
         if (user == null) {
             throw new UpdatePasswordExсeption("not correct id");
         }
-        try {
+
             user.setPassword(data.getPassword());
             userRepository.save(user);
             return user;
-        } catch (UpdatePasswordExсeption e) {
-            throw new UpdatePasswordExсeption("not correct password");
-        }
+
     }
 }

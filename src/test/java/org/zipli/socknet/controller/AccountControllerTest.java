@@ -14,6 +14,8 @@ import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.service.account.UserService;
 import org.zipli.socknet.service.email.EmailConfirmationService;
 
+import javax.mail.MessagingException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -99,7 +101,7 @@ public class AccountControllerTest {
 
 
     @Test
-    void updateEmailTest_Pass() {
+    void updateEmailTest_Pass() throws MessagingException {
 
         Mockito.doReturn(user)
                 .when(userService)
@@ -109,7 +111,7 @@ public class AccountControllerTest {
     }
 
     @Test
-    void updateEmailTest_Fail() {
+    void updateEmailTest_Fail() throws MessagingException {
         Mockito.doThrow(UpdateEmailException.class)
                 .when(userService)
                 .updateEmail(null);

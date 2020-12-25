@@ -16,6 +16,8 @@ import org.zipli.socknet.payload.request.MyAccountChange;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.service.email.EmailConfirmationService;
 
+import javax.mail.MessagingException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
@@ -102,7 +104,7 @@ public class UserServiceTest {
 
 
     @Test
-    void updateEmailTest_Pass() {
+    void updateEmailTest_Pass() throws MessagingException {
 
         Mockito.doReturn(user)
                 .when(userService)
@@ -112,7 +114,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void updateEmailTest_Fail() {
+    void updateEmailTest_Fail() throws MessagingException {
         Mockito.doThrow(UpdateEmailException.class)
                 .when(userService)
                 .updateEmail(null);

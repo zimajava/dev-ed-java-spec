@@ -44,7 +44,7 @@ public class AuthService implements IAuthService {
     }
 
     @Override
-    public void registration(User user) throws MessagingException {
+    public void registration(User user) {
         User existingUser = userRepository.getUserByEmail(user.getEmail());
         if (existingUser != null) {
             throw new AuthException("This email already exists!");
@@ -52,7 +52,13 @@ public class AuthService implements IAuthService {
             userRepository.save(user);
             UserDetails userDetails = new UserDetailsImpl(user);
             String token = jwtUtils.generateJwtToken(userDetails);
-            emailConfirmationService.sendEmail(user.getEmail(), token);
+
+                try {
+                    emailConfirmationService.sendEmail(user.getEmail(), token);
+                } catch (MessagingException e) {
+                    e.printStackTrace();
+                }
+
         }
     }
 

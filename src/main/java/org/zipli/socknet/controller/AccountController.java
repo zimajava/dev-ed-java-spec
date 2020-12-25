@@ -11,6 +11,8 @@ import org.zipli.socknet.exception.UpdatePasswordExсeption;
 import org.zipli.socknet.payload.request.MyAccountChange;
 import org.zipli.socknet.service.account.UserService;
 
+import javax.mail.MessagingException;
+
 @RestController
 @Slf4j
 @RequestMapping("/zipli/auth/myAccount")
@@ -58,7 +60,7 @@ public class AccountController {
     public ResponseEntity<?> updateEmail(@RequestBody MyAccountChange data) throws UpdateEmailException {
         try {
             return ResponseEntity.ok(userService.updateEmail(data));
-        } catch (UpdateEmailException e) {
+        } catch (UpdateEmailException | MessagingException e) {
             return ResponseEntity
                     .badRequest()
                     .body(e);
