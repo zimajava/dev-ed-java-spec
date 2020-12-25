@@ -32,7 +32,7 @@ public class EmailConfirmationService {
     public void sendEmail(String email, String token) throws MessagingException {
 
         new Thread(() -> {
-        MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = null;
             try {
                 helper = new MimeMessageHelper(message, true, "utf-8");
@@ -48,7 +48,7 @@ public class EmailConfirmationService {
                         + "<br/>"
                         + "<br/>"
                         + "<br/>"
-                        +"<img src='http://www.apache.org/images/asf_logo_wide.gif'>";
+                        + "<img src='http://www.apache.org/images/asf_logo_wide.gif'>";
 
                 message.setContent(htmlMsg, "text/html");
 

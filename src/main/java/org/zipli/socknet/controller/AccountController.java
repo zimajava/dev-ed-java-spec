@@ -6,8 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.zipli.socknet.exception.GetUserExeption;
 import org.zipli.socknet.exception.UpdateAvatarException;
-import org.zipli.socknet.exception.UpdateEmailExeption;
-import org.zipli.socknet.exception.UpdatePasswordExeption;
+import org.zipli.socknet.exception.UpdateEmailException;
+import org.zipli.socknet.exception.UpdatePasswordExсeption;
 import org.zipli.socknet.payload.request.MyAccountChange;
 import org.zipli.socknet.service.account.UserService;
 
@@ -55,10 +55,10 @@ public class AccountController {
     }
 
     @PutMapping("/update-email")
-    public ResponseEntity<?> updateEmail(@RequestBody MyAccountChange data) throws UpdateEmailExeption {
+    public ResponseEntity<?> updateEmail(@RequestBody MyAccountChange data) throws UpdateEmailException {
         try {
             return ResponseEntity.ok(userService.updateEmail(data));
-        } catch (UpdateEmailExeption e) {
+        } catch (UpdateEmailException e) {
             return ResponseEntity
                     .badRequest()
                     .body(e);
@@ -67,10 +67,10 @@ public class AccountController {
     }
 
     @PutMapping("/update-password")
-    public ResponseEntity<?> updatePassword(@RequestBody MyAccountChange data) throws UpdatePasswordExeption {
+    public ResponseEntity<?> updatePassword(@RequestBody MyAccountChange data) throws UpdatePasswordExсeption {
         try {
             return ResponseEntity.ok(userService.updatePassword(data));
-        } catch (UpdatePasswordExeption e) {
+        } catch (UpdatePasswordExсeption e) {
             return ResponseEntity
                     .badRequest()
                     .body(e);

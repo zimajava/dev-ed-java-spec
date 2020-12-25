@@ -9,8 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.zipli.socknet.controller.AccountController;
 import org.zipli.socknet.exception.GetUserExeption;
 import org.zipli.socknet.exception.UpdateAvatarException;
-import org.zipli.socknet.exception.UpdateEmailExeption;
-import org.zipli.socknet.exception.UpdatePasswordExeption;
+import org.zipli.socknet.exception.UpdateEmailException;
+import org.zipli.socknet.exception.UpdatePasswordExсeption;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.payload.request.MyAccountChange;
 import org.zipli.socknet.repository.UserRepository;
@@ -113,7 +113,7 @@ public class UserServiceTest {
 
     @Test
     void updateEmailTest_Fail() {
-        Mockito.doThrow(UpdateEmailExeption.class)
+        Mockito.doThrow(UpdateEmailException.class)
                 .when(userService)
                 .updateEmail(null);
         assertNotEquals(accountController.updateEmail(null),
@@ -132,7 +132,7 @@ public class UserServiceTest {
 
     @Test
     void updatePasswordTest_Fail() {
-        Mockito.doThrow(UpdatePasswordExeption.class)
+        Mockito.doThrow(UpdatePasswordExсeption.class)
                 .when(userService)
                 .updatePassword(null);
         assertNotEquals(accountController.updatePassword(null),

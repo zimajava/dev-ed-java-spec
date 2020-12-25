@@ -110,7 +110,7 @@ public class AccountControllerTest {
 
     @Test
     void updateEmailTest_Fail() {
-        Mockito.doThrow(UpdateEmailExeption.class)
+        Mockito.doThrow(UpdateEmailException.class)
                 .when(userService)
                 .updateEmail(null);
         assertNotEquals(accountController.updateEmail(null),
@@ -129,7 +129,7 @@ public class AccountControllerTest {
 
     @Test
     void updatePasswordTest_Fail() {
-        Mockito.doThrow(UpdatePasswordExeption.class)
+        Mockito.doThrow(UpdatePasswordExсeption.class)
                 .when(userService)
                 .updatePassword(null);
         assertNotEquals(accountController.updatePassword(null),

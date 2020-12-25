@@ -31,21 +31,21 @@ public class UserService implements IUserService {
     @Override
     @Transactional
     public User findUser(String userId) throws GetUserExeption {
-            if (userId == null) {
-                throw new GetUserExeption("not correct id");
-            }
-            User user = userRepository.getUserById(userId);
-            if (user == null) {
-                throw new GetUserExeption("not correct id");
-            }
-            return user;
+        if (userId == null) {
+            throw new GetUserExeption("not correct id");
+        }
+        User user = userRepository.getUserById(userId);
+        if (user == null) {
+            throw new GetUserExeption("not correct id");
+        }
+        return user;
     }
 
 
     @Override
     @Transactional
     public User updateAvatar(MyAccountChange data) throws UpdateAvatarException {
-        if (data.getUserId() == null  || data.getAvatar()==null) {
+        if (data.getUserId() == null || data.getAvatar() == null) {
             throw new UpdateAvatarException("data is null");
         }
         User user = userRepository.getUserById(data.getUserId());
@@ -62,35 +62,35 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public User updateNickName(MyAccountChange data) throws UpdateNickNameExeption {
-        if (data.getUserId() == null || data.getNickName()==null) {
-            throw new UpdateNickNameExeption("data is null");
+    public User updateNickName(MyAccountChange data) throws UpdateNickNameException {
+        if (data.getUserId() == null || data.getNickName() == null) {
+            throw new UpdateNickNameException("data is null");
         }
         User user = userRepository.getUserById(data.getUserId());
         if (user == null) {
-            throw new UpdateNickNameExeption("not correct id");
+            throw new UpdateNickNameException("not correct id");
         }
         try {
             user.setNickName(data.getNickName());
             userRepository.save(user);
             return user;
-        } catch (UpdateNickNameExeption e) {
-            throw new UpdateNickNameExeption("not correct nickName");
+        } catch (UpdateNickNameException e) {
+            throw new UpdateNickNameException("not correct nickName");
         }
     }
 
 
     @Override
-    public User updateEmail(MyAccountChange data) throws UpdateEmailExeption {
-        if (data.getUserId() == null || data.getEmail()==null) {
-            throw new UpdateEmailExeption("data is null");
+    public User updateEmail(MyAccountChange data) throws UpdateEmailException {
+        if (data.getUserId() == null || data.getEmail() == null) {
+            throw new UpdateEmailException("data is null");
         }
         User user = userRepository.getUserById(data.getUserId());
         if (user == null) {
-            throw new UpdateEmailExeption("not correct id");
+            throw new UpdateEmailException("not correct id");
         }
         if (!(data.getEmail().contains("@"))) {
-            throw new UpdateEmailExeption("not correct email");
+            throw new UpdateEmailException("not correct email");
         }
         try {
             user.setEmail(data.getEmail());
@@ -100,27 +100,27 @@ public class UserService implements IUserService {
             String token = jwtUtils.generateJwtToken(userDetails);
             emailConfirmationService.sendEmail(data.getEmail(), token);
             return user;
-        } catch (UpdateEmailExeption | MessagingException e) {
-            throw new UpdateEmailExeption("email already in use");
+        } catch (UpdateEmailException | MessagingException e) {
+            throw new UpdateEmailException("email already in use");
         }
     }
 
 
     @Override
-    public User updatePassword(MyAccountChange data) throws UpdatePasswordExeption {
-        if (data.getUserId() == null || data.getPassword()==null) {
-            throw new UpdatePasswordExeption("data is null");
+    public User updatePassword(MyAccountChange data) throws UpdatePasswordExсeption {
+        if (data.getUserId() == null || data.getPassword() == null) {
+            throw new UpdatePasswordExсeption("data is null");
         }
         User user = userRepository.getUserById(data.getUserId());
         if (user == null) {
-            throw new UpdatePasswordExeption("not correct id");
+            throw new UpdatePasswordExсeption("not correct id");
         }
         try {
             user.setPassword(data.getPassword());
             userRepository.save(user);
             return user;
-        } catch (UpdatePasswordExeption e) {
-            throw new UpdatePasswordExeption("not correct password");
+        } catch (UpdatePasswordExсeption e) {
+            throw new UpdatePasswordExсeption("not correct password");
         }
     }
 }
