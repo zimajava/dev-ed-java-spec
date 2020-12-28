@@ -166,12 +166,12 @@ class AuthControllerTest {
 
     @Test
     void authenticateUser_shouldReturnBadRequest() {
-        Mockito.doThrow(new AuthException("User does not exist!"))
+        AuthException e = new AuthException("User does not exist!");
+        Mockito.doThrow(e)
                .when(authService)
                .login(loginRequest.getLogin(), loginRequest.getPassword());
-        AuthException e = new AuthException("User does not exist!");
 
-        assertNotEquals(authController.authenticateUser(loginRequest), ResponseEntity.badRequest()
-                                                                                     .body(e));
+        assertEquals(authController.authenticateUser(loginRequest), ResponseEntity.badRequest()
+                                                                                  .body(e));
     }
 }
