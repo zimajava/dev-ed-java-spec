@@ -21,25 +21,35 @@ class JwtUtilsTest {
                     "dasdasdasd",
                     "sas"));
 
+    String email = "jkbuigt7";
+
     @Test
     void generateJwtToken() {
-        String jwt = jwtUtils.generateJwtToken(userDetails);
+        String jwt = jwtUtils.generateJwtToken(userDetails, email);
 
         assertTrue(jwtUtils.validateJwtToken(jwt));
     }
 
     @Test
     void getUserNameFromJwtToken() {
-        String jwt = jwtUtils.generateJwtToken(userDetails);
+        String jwt = jwtUtils.generateJwtToken(userDetails, email);
         String usernameByJwt = jwtUtils.getUserNameFromJwtToken(jwt);
 
         assertEquals(userDetails.getUsername(), usernameByJwt);
     }
 
     @Test
+    void getEmailFromJwtToken() {
+        String jwt = jwtUtils.generateJwtToken(userDetails, email);
+        String emailByJwt = jwtUtils.getEmailFromJwtToken(jwt);
+
+        assertEquals(email, emailByJwt);
+    }
+
+    @Test
     void validateJwtTokenPass() {
         String jwtFalse = "noValidJwt";
-        String jwtTry = jwtUtils.generateJwtToken(userDetails);
+        String jwtTry = jwtUtils.generateJwtToken(userDetails, email);
 
         assertFalse(jwtUtils.validateJwtToken(jwtFalse));
         assertTrue(jwtUtils.validateJwtToken(jwtTry));
