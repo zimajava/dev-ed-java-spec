@@ -6,7 +6,7 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
+
 
 
 @Getter
@@ -15,9 +15,6 @@ public class MyAccountChange extends SignupRequest {
     @NotBlank(message = "UserId can't be empty")
     @NotNull
     private String userId;
-    @Pattern(regexp = "/^\\d+$/ ")
-    @NotBlank(message = "Avatar can't be empty")
-    @NotNull
     private ByteArray avatar;
 
     public MyAccountChange(String email, String password, String userName, String nickName, ByteArray avatar, String userId) {

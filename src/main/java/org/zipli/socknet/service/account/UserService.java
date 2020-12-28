@@ -18,26 +18,43 @@ import javax.mail.MessagingException;
 @Service
 public class UserService implements IUserService {
 
-    @Autowired
-    UserRepository userRepository;
-
-    @Autowired
-    EmailConfirmationService emailConfirmationService;
-
-    @Autowired
+    private UserRepository userRepository;
+    private EmailConfirmationService emailConfirmationService;
     private JwtUtils jwtUtils;
+
+
+    @Autowired
+    public void UserService(UserRepository userRepository, EmailConfirmationService emailConfirmationService, JwtUtils jwtUtils) {
+        this.userRepository = userRepository;
+        this.emailConfirmationService = emailConfirmationService;
+        this.jwtUtils = jwtUtils;
+    }
 
 
     @Override
     @Transactional
-    public User findUser(String userId) throws GetUserExeption {
+    public User findUser(String userId) throws GetUserException {
         if (userId == null) {
-            throw new GetUserExeption("not correct id");
+            throw new GetUserException("UserId is null");
         }
         User user = userRepository.getUserById(userId);
         if (user == null) {
-            throw new GetUserExeption("not correct id");
+            throw new GetUserException("not correct id");
         }
+        return user;
+    }
+
+    @Override
+    public User deleteAvatar(String userId) throws DeleteAvatarException {
+        if (userId == null) {
+            throw new DeleteAvatarException("UserId is null");
+        }
+        User user = userRepository.getUserById(userId);
+        if (user == null) {
+            throw new DeleteAvatarException("not correct id");
+        }
+        user.setAvatar(null);
+        userRepository.save(user);
         return user;
     }
 
@@ -58,6 +75,7 @@ public class UserService implements IUserService {
     }
 
     @Override
+    @Transactional
     public User updateNickName(MyAccountChange data) throws UpdateNickNameException {
         if (data.getUserId() == null || data.getNickName() == null) {
             throw new UpdateNickNameException("data is null");
@@ -73,7 +91,8 @@ public class UserService implements IUserService {
 
 
     @Override
-    public User updateEmail(MyAccountChange data) throws UpdateEmailException, MessagingException {
+    @Transactional
+    public User updateEmail(MyAccountChange data) throws UpdateEmailException {
         if (data.getUserId() == null || data.getEmail() == null) {
             throw new UpdateEmailException("data is null");
         }
@@ -89,12 +108,17 @@ public class UserService implements IUserService {
         userRepository.save(user);
         UserDetails userDetails = new UserDetailsImpl(user);
         String token = jwtUtils.generateJwtToken(userDetails);
-        emailConfirmationService.sendEmail(data.getEmail(), token);
+        try {
+            emailConfirmationService.sendEmail(user.getEmail(), token);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
         return user;
     }
 
 
     @Override
+    @Transactional
     public User updatePassword(MyAccountChange data) throws UpdatePasswordExсeption {
         if (data.getUserId() == null || data.getPassword() == null) {
             throw new UpdatePasswordExсeption("data is null");

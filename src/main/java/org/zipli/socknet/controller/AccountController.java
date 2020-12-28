@@ -4,29 +4,43 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.zipli.socknet.exception.GetUserExeption;
-import org.zipli.socknet.exception.UpdateAvatarException;
-import org.zipli.socknet.exception.UpdateEmailException;
-import org.zipli.socknet.exception.UpdatePasswordExсeption;
+import org.zipli.socknet.exception.*;
 import org.zipli.socknet.payload.request.MyAccountChange;
 import org.zipli.socknet.service.account.UserService;
 
+
 import javax.mail.MessagingException;
+import javax.validation.Valid;
 
 @RestController
 @Slf4j
-@RequestMapping("/zipli/auth/myAccount")
+@RequestMapping("/zipli/myAccount")
 public class AccountController {
 
+    private UserService userService;
+
     @Autowired
-    UserService userService;
+    public void UserService(UserService userService) {
+        this.userService = userService;
+    }
 
 
     @GetMapping("/getUser")
-    public ResponseEntity<?> getUser(@RequestParam String userId) throws GetUserExeption {
+    public ResponseEntity<?> getUser(@RequestParam @Valid String userId) {
         try {
             return ResponseEntity.ok(userService.findUser(userId));
-        } catch (GetUserExeption e) {
+        } catch (GetUserException e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(e);
+        }
+    }
+
+    @PutMapping("/delete-avatar")
+    public ResponseEntity<?> deleteAvatar(@RequestParam @Valid String userId) {
+        try {
+            return ResponseEntity.ok(userService.deleteAvatar(userId));
+        } catch (DeleteAvatarException e) {
             return ResponseEntity
                     .badRequest()
                     .body(e);
@@ -34,7 +48,7 @@ public class AccountController {
     }
 
     @PutMapping("/update-avatar")
-    public ResponseEntity<?> updateAvatar(@RequestBody MyAccountChange data) throws UpdateAvatarException {
+    public ResponseEntity<?> updateAvatar(@RequestBody @Valid MyAccountChange data) {
         try {
             return ResponseEntity.ok(userService.updateAvatar(data));
         } catch (UpdateAvatarException e) {
@@ -45,10 +59,10 @@ public class AccountController {
     }
 
     @PutMapping("/update-nickName")
-    public ResponseEntity<?> updateNickName(@RequestBody MyAccountChange data) throws UpdateAvatarException {
+    public ResponseEntity<?> updateNickName(@RequestBody @Valid MyAccountChange data) {
         try {
             return ResponseEntity.ok(userService.updateNickName(data));
-        } catch (UpdateAvatarException e) {
+        } catch (UpdateNickNameException e) {
             return ResponseEntity
                     .badRequest()
                     .body(e);
@@ -56,10 +70,10 @@ public class AccountController {
     }
 
     @PutMapping("/update-email")
-    public ResponseEntity<?> updateEmail(@RequestBody MyAccountChange data) throws UpdateEmailException {
+    public ResponseEntity<?> updateEmail(@RequestBody @Valid MyAccountChange data) {
         try {
             return ResponseEntity.ok(userService.updateEmail(data));
-        } catch (UpdateEmailException | MessagingException e) {
+        } catch (UpdateEmailException e) {
             return ResponseEntity
                     .badRequest()
                     .body(e);
@@ -67,7 +81,7 @@ public class AccountController {
     }
 
     @PutMapping("/update-password")
-    public ResponseEntity<?> updatePassword(@RequestBody MyAccountChange data) throws UpdatePasswordExсeption {
+    public ResponseEntity<?> updatePassword(@RequestBody @Valid MyAccountChange data) {
         try {
             return ResponseEntity.ok(userService.updatePassword(data));
         } catch (UpdatePasswordExсeption e) {

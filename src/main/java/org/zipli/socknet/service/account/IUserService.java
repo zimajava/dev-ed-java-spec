@@ -7,7 +7,9 @@ import javax.mail.MessagingException;
 
 public interface IUserService {
 
-    User findUser(String userID);
+    User findUser(String userId);
+
+    User deleteAvatar(String userId);
 
     User updateAvatar(MyAccountChange data);
 
