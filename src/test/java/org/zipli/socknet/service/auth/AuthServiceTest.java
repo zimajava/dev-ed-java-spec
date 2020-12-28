@@ -1,39 +1,48 @@
-package org.zipli.socknet.service;
+package org.zipli.socknet.service.auth;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.zipli.socknet.dto.response.LoginResponse;
 import org.zipli.socknet.exception.AuthException;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.repository.UserRepository;
-import org.zipli.socknet.service.auth.AuthService;
+import org.zipli.socknet.security.jwt.JwtUtils;
+import org.zipli.socknet.security.services.UserDetailsImpl;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.times;
 
 @SpringBootTest
 public class AuthServiceTest {
 
-    @Autowired
-    private AuthService authService;
-
-    @MockBean
-    private UserRepository userRepository;
-
     private final String email = "asd@gmail.com";
     private final String userName = "Vasya";
     private final String password = "12345";
+    @Autowired
+    private AuthService authService;
+    @MockBean
+    private UserRepository userRepository;
+    @MockBean
+    private JwtUtils jwtUtils;
 
     @Test
     public void loginByEmailAndPasswordWithConfirmedEmail_Pass() {
         User user = new User(email, password, userName, "Cat");
+        String expected = jwtUtils.generateJwtToken(new UserDetailsImpl(user));
+        LoginResponse expectedLoginResponse = new LoginResponse(user.getId(), expected, expected);
         user.setConfirm(true);
 
         Mockito.when(userRepository.findUserByEmailAndPassword(email, password)).thenReturn(user);
+        LoginResponse actualLoginResponse = authService.login(email, password);
 
-        assertEquals(user, authService.login(email, password));
+
+        assertEquals(expectedLoginResponse.getUserId(), actualLoginResponse.getUserId());
+        assertEquals(expectedLoginResponse.getAccessToken(), actualLoginResponse.getAccessToken());
+        assertEquals(expectedLoginResponse.getRefreshToken(), actualLoginResponse.getRefreshToken());
     }
 
     @Test
@@ -49,11 +58,17 @@ public class AuthServiceTest {
     @Test
     public void loginByUsernameAndPasswordWithConfirmedEmail_Pass() {
         User user = new User(email, password, userName, "Cat");
+        String expected = jwtUtils.generateJwtToken(new UserDetailsImpl(user));
+        LoginResponse expectedLoginResponse = new LoginResponse(user.getId(), expected, expected);
         user.setConfirm(true);
 
         Mockito.when(userRepository.findUserByUserNameAndPassword(userName, password)).thenReturn(user);
+        LoginResponse actualLoginResponse = authService.login(userName, password);
 
-        assertEquals(user, authService.login(userName, password));
+
+        assertEquals(expectedLoginResponse.getUserId(), actualLoginResponse.getUserId());
+        assertEquals(expectedLoginResponse.getAccessToken(), actualLoginResponse.getAccessToken());
+        assertEquals(expectedLoginResponse.getRefreshToken(), actualLoginResponse.getRefreshToken());
     }
 
     @Test

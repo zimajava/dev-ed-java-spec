@@ -2,12 +2,15 @@ package org.zipli.socknet.service.auth;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.zipli.socknet.dto.response.LoginResponse;
 import org.zipli.socknet.exception.AuthException;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
 import org.zipli.socknet.security.services.UserDetailsImpl;
 import org.zipli.socknet.service.email.EmailConfirmationService;
+
+import javax.mail.MessagingException;
 
 @Service
 public class AuthService implements IAuthService {
@@ -23,7 +26,7 @@ public class AuthService implements IAuthService {
     }
 
     @Override
-    public User login(String emailOrUsername, String password) {
+    public LoginResponse login(String emailOrUsername, String password) {
         User result;
         if (emailOrUsername.contains("@")) {
             result = userRepository.findUserByEmailAndPassword(emailOrUsername, password);
@@ -35,7 +38,8 @@ public class AuthService implements IAuthService {
         } else if (!result.isConfirm()) {
             throw new AuthException("User does not pass email confirmation!");
         } else {
-            return result;
+            String token = jwtUtils.generateJwtToken(new UserDetailsImpl(result));
+            return new LoginResponse(result.getId(), token, token);
         }
     }
 
@@ -48,7 +52,14 @@ public class AuthService implements IAuthService {
             userRepository.save(user);
             UserDetails userDetails = new UserDetailsImpl(user);
             String token = jwtUtils.generateJwtToken(userDetails);
-            emailConfirmationService.sendEmail(user.getEmail(), token);
+            new Thread(() -> {
+                try {
+                    emailConfirmationService.sendEmail(user.getEmail(), token);
+                } catch (MessagingException e) {
+                    e.printStackTrace();
+                }
+            }).start();
         }
     }
+
 }

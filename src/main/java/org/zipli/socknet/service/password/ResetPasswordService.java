@@ -1,12 +1,10 @@
 package org.zipli.socknet.service.password;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
-import org.zipli.socknet.exception.InvalidTokenException;
+import org.springframework.transaction.annotation.Transactional;
 import org.zipli.socknet.exception.UserNotFoundException;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.repository.UserRepository;
@@ -19,13 +17,16 @@ public class ResetPasswordService {
     private final JavaMailSender javaMailSender;
     private final JwtUtils jwtUtils;
     private final UserRepository userRepository;
+    private final UserDetailsServiceImpl userDetailsService;
+
     @Value("${deploy.app}")
     private String deploy;
 
-    public ResetPasswordService(JavaMailSender javaMailSender, JwtUtils jwtUtils, UserRepository userRepository) {
+    public ResetPasswordService(JavaMailSender javaMailSender, JwtUtils jwtUtils, UserRepository userRepository, UserDetailsServiceImpl userDetailsService) {
         this.javaMailSender = javaMailSender;
         this.jwtUtils = jwtUtils;
         this.userRepository = userRepository;
+        this.userDetailsService = userDetailsService;
     }
 
     public void sendEmailForChangingPassword(String email) {
@@ -39,41 +40,32 @@ public class ResetPasswordService {
                 + "<p>You have requested to reset your password.</p>"
                 + "<p>Click the link below to change your password:</p>"
                 + deploy + "/zipli/auth/reset_password?token=" + token + "<p>Change my password</p>"
-                + "<br>"
-                + "<p>Ignore this email if you do remember your password, "
+                + "<br>" + "<p>Ignore this email if you do remember your password, "
                 + "or you have not made the request.</p>");
         javaMailSender.send(mailMessage);
     }
 
     public String generateResetPasswordToken(String email) {
 
-        if (userRepository.existsByEmail(email)) {
-            User user = userRepository.getUserByEmail(email);
+        User user = userRepository.getUserByEmail(email);
+        if (user != null) {
             String userName = user.getUserName();
-            UserDetailsServiceImpl userDetailsService = new UserDetailsServiceImpl(userRepository);
             return jwtUtils.generateJwtToken(userDetailsService.loadUserByUsername(userName));
         } else {
             throw new UserNotFoundException("Error. User is not founded.");
         }
     }
 
+    @Transactional
     public String resetPassword(String newPassword, String token) {
 
-        if (token != null) {
             String userName = jwtUtils.getUserNameFromJwtToken(token);
             User user = userRepository.getByUserName(userName);
             String password = user.getPassword();
-//            user = mongoTemplate.findOne(
-//                    Query.query(Criteria.where("password").is(password)), User.class);
-//            user.setPassword(newPassword);
-//            mongoTemplate.save(user, "user");
-            //тут нужно старый пароль поменять на новый
-
-            // String query = ">db.mycol.update({'password':'" + password + "'},{$set:{'password':'" + newPassword + "'}})";
-            // ^ Сменить название бд и коллекции
+            if (!password.isEmpty()) {
+                user.setPassword(newPassword);
+            }
+            userRepository.save(user);
             return "Password successfully changed";
-        } else {
-            throw new InvalidTokenException("Error. Token is invalid or broken");
-        }
     }
 }

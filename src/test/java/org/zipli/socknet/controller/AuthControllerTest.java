@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class AuthControllerTest {
+
     @Autowired
     AuthController authController;
     @MockBean
@@ -35,10 +36,10 @@ class AuthControllerTest {
     JwtUtils jwtUtils;
     private LoginRequest loginRequest;
     private SignupRequest signupRequest;
-
-//    @MockBean
-//    LoginRequest loginRequest1;
     private SignupRequest signupRequest1;
+    private String newPassword;
+    private String token;
+    private String email;
 
     @BeforeEach
     public void init() {
@@ -72,7 +73,7 @@ class AuthControllerTest {
         AuthException e = new AuthException("This email already exists!");
 
         assertNotEquals(authController.addUser(signupRequest1), ResponseEntity.badRequest()
-                .body(e));
+                                                                              .body(e));
     }
 
     @Test
@@ -82,12 +83,11 @@ class AuthControllerTest {
                 .getUserByEmail("registeredUser@gmail.com");
 
         assertNotEquals(authController.addUser(signupRequest1), ResponseEntity.badRequest()
-                .body("Not valid values"));
+                                                                              .body("Not valid values"));
     }
 
     @Test
     void emailConfirm_TokenIsValid() {
-        String token = "qwerty";
         String username = "";
         Mockito.doReturn(username)
                 .when(jwtUtils)
@@ -114,11 +114,7 @@ class AuthControllerTest {
 
     @Test
     void processForgotPassword_UserIsRegisteredInDatabase(){
-      String email = "registeredUser@gmail.com";
-      String token = new String();
-        Mockito.doReturn(token)
-                .when(resetPasswordService)
-                .generateResetPasswordToken(email);
+        String email = "registeredUser@gmail.com";
 
         assertEquals(authController.processForgotPassword(email),
                 ResponseEntity.ok("Password can be changed"));
@@ -126,51 +122,33 @@ class AuthControllerTest {
 
     @Test
     void processForgotPassword_UserIsNotFound(){
-        String email = "kh;uifyd";
-        Mockito.doThrow(new UserNotFoundException("Error. User is not founded."))
-                .when(resetPasswordService)
-                .generateResetPasswordToken(email);
-        UserNotFoundException e = new UserNotFoundException("Error. User is not founded.");
 
-        assertNotEquals(ResponseEntity
-                        .badRequest()
-                        .body(e),
-                authController.processForgotPassword(email));
+        assertThrows(UserNotFoundException.class, ()-> {
+            authController.processForgotPassword(email);
+        });
     }
 
     @Test
     void processResetPassword_TokenIsValid(){
         String newPassword = "jvtiyd4218";
-        String changedPassword = new String();
         String token = "hjvftf";
-        Mockito.doReturn(changedPassword)
-                .when(resetPasswordService)
-                .resetPassword(newPassword,token);
 
         assertEquals(authController.processResetPassword(token, newPassword),
                 ResponseEntity.ok("Password successfully changed"));
     }
 
     @Test
-    void processResetPassword_TokenIsInvalid(){
-        String newPassword = "jvtiyd4218";
-        String token = "hjvftf";
-        Mockito.doThrow(new InvalidTokenException("Error. Token is invalid or broken"))
-                .when(resetPasswordService)
-                .resetPassword(newPassword,token);
-        InvalidTokenException e = new InvalidTokenException("Error. Token is invalid or broken");
+    void processResetPassword_NullParameters(){
 
-        assertNotEquals(ResponseEntity
-                        .badRequest()
-                        .body(e),
-                authController.processResetPassword(token, newPassword));
+        assertThrows(UserNotFoundException.class, ()-> {
+            authController.processResetPassword(token, newPassword);
+        });
     }
-
 
     @Test
     void authenticateUser_shouldReturnStatusOk() {
+
         assertTrue(authController.authenticateUser(loginRequest)
                 .equals(ResponseEntity.ok("Here will be JwtResponse")));
-
     }
 }

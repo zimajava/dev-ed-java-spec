@@ -3,8 +3,8 @@ package org.zipli.socknet.controller;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.zipli.socknet.dto.response.LoginResponse;
 import org.zipli.socknet.exception.AuthException;
-import org.zipli.socknet.exception.InvalidTokenException;
 import org.zipli.socknet.exception.NotConfirmAccountException;
 import org.zipli.socknet.exception.UserNotFoundException;
 import org.zipli.socknet.model.User;
@@ -32,15 +32,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> addUser(@Valid @RequestBody SignupRequest signupRequest) {
-        if (signupRequest.getEmail() == null
-                || signupRequest.getNickName() == null
-                || signupRequest.getPassword() == null
-                || signupRequest.getUserName() == null) {
-            return ResponseEntity
-                    .badRequest()
-                    .body("Not valid values");
-        } else {
-            User user = new User(signupRequest.getEmail(),
+                    User user = new User(signupRequest.getEmail(),
                     signupRequest.getPassword(),
                     signupRequest.getUserName(),
                     signupRequest.getNickName());
@@ -52,10 +44,9 @@ public class AuthController {
                         .body(e);
             }
             return ResponseEntity.ok("User registered successfully!");
-        }
     }
 
-    @GetMapping("/confirm-account")
+    @PostMapping("/confirm-mail")
     public ResponseEntity<?> emailConfirm(@Valid @RequestParam("token") String token) {
         try {
             emailConfirmationService.confirmAccount(token);
@@ -68,33 +59,44 @@ public class AuthController {
     }
 
     @PostMapping("/forgot_password")
-    public ResponseEntity<?> processForgotPassword(@Valid @RequestParam("email") String email) {
-        try {
-            resetPasswordService.generateResetPasswordToken(email);
-        } catch (UserNotFoundException e) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(e);
+    public ResponseEntity<?> processForgotPassword(@Valid @RequestParam("email") String email) throws UserNotFoundException {
+        if (email == null) {
+            throw new UserNotFoundException("Error. User is not found");
+        } else {
+            try {
+                resetPasswordService.generateResetPasswordToken(email);
+            } catch (UserNotFoundException e) {
+                return ResponseEntity
+                        .badRequest()
+                        .body(e);
+            }
+            resetPasswordService.sendEmailForChangingPassword(email);
+            return ResponseEntity.ok("Password can be changed");
         }
-        resetPasswordService.sendEmailForChangingPassword(email);
-        return ResponseEntity.ok("Password can be changed");
     }
 
     @PostMapping("/reset_password")
     public ResponseEntity<?> processResetPassword(@Valid @RequestParam("token") String token, String newPassword) {
-        try {
+        if (token == null) {
+            throw new UserNotFoundException("Error. User is not found");
+        } else if (newPassword == null) {
+            throw new UserNotFoundException("Error. Password can't be null");
+        } else {
             resetPasswordService.resetPassword(token, newPassword);
-        } catch (InvalidTokenException e) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(e);
+            return ResponseEntity.ok("Password successfully changed");
         }
-        return ResponseEntity.ok("Password successfully changed");
     }
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-        //method realization
-        return ResponseEntity.ok("Here will be JwtResponse");
-    }
+            LoginResponse loginResponse;
+            try {
+                loginResponse = authService.login(loginRequest.getLogin(), loginRequest.getPassword());
+            } catch (AuthException e) {
+                return ResponseEntity
+                        .badRequest()
+                        .body(e);
+            }
+            return ResponseEntity.ok(loginResponse);
+        }
 }
