@@ -38,7 +38,7 @@ public class AuthService implements IAuthService {
         } else if (!result.isConfirm()) {
             throw new AuthException("User does not pass email confirmation!");
         } else {
-            String token = jwtUtils.generateJwtToken(new UserDetailsImpl(result), emailOrUsername);
+            String token = jwtUtils.generateJwtToken(new UserDetailsImpl(result), result.getEmail());
             return new LoginResponse(result.getId(), token, token);
         }
     }
