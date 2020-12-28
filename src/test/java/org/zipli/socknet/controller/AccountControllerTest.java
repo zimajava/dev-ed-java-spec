@@ -15,6 +15,7 @@ import org.zipli.socknet.service.account.UserService;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+
 @SpringBootTest
 public class AccountControllerTest {
 
