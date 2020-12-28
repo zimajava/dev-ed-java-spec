@@ -8,12 +8,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.zipli.socknet.dto.response.LoginResponse;
 import org.zipli.socknet.exception.*;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.payload.request.LoginRequest;
 import org.zipli.socknet.payload.request.SignupRequest;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
+import org.zipli.socknet.service.auth.AuthService;
 import org.zipli.socknet.service.email.EmailConfirmationService;
 import org.zipli.socknet.service.password.ResetPasswordService;
 
@@ -27,6 +29,8 @@ class AuthControllerTest {
     @MockBean
     EmailConfirmationService emailConfirmationService;
     @MockBean
+    AuthService authService;
+    @MockBean
     ResetPasswordService resetPasswordService;
     @MockBean
     JavaMailSender javaMailSender;
@@ -35,6 +39,8 @@ class AuthControllerTest {
     @MockBean
     JwtUtils jwtUtils;
     private LoginRequest loginRequest;
+    private LoginRequest validRequest;
+    private LoginResponse loginResponse;
     private SignupRequest signupRequest;
     private SignupRequest signupRequest1;
     private String newPassword;
@@ -57,6 +63,9 @@ class AuthControllerTest {
 
         loginRequest = new LoginRequest("ugyur",
                 "uyfrjjj");
+
+        validRequest = new LoginRequest("new23User@gmail.com",
+                "dsfh78Kjhve");
     }
 
     @Test
@@ -68,8 +77,8 @@ class AuthControllerTest {
     @Test
     void addUser_UserHasAlreadyRegistered() {
         Mockito.doReturn(new User())
-                .when(userRepository)
-                .getUserByEmail("registeredUser@gmail.com");
+               .when(userRepository)
+               .getUserByEmail("registeredUser@gmail.com");
         AuthException e = new AuthException("This email already exists!");
 
         assertNotEquals(authController.addUser(signupRequest1), ResponseEntity.badRequest()
@@ -79,8 +88,8 @@ class AuthControllerTest {
     @Test
     void addUser_NotValidValues() {
         Mockito.doReturn(null)
-                .when(userRepository)
-                .getUserByEmail("registeredUser@gmail.com");
+               .when(userRepository)
+               .getUserByEmail("registeredUser@gmail.com");
 
         assertNotEquals(authController.addUser(signupRequest1), ResponseEntity.badRequest()
                                                                               .body("Not valid values"));
@@ -90,11 +99,11 @@ class AuthControllerTest {
     void emailConfirm_TokenIsValid() {
         String username = "";
         Mockito.doReturn(username)
-                .when(jwtUtils)
-                .getUserNameFromJwtToken(token);
+               .when(jwtUtils)
+               .getUserNameFromJwtToken(token);
         Mockito.doReturn(new User())
-                .when(userRepository)
-                .getByUserName(username);
+               .when(userRepository)
+               .getByUserName(username);
 
         assertEquals(authController.emailConfirm(token), ResponseEntity.ok("Account verified"));
     }
@@ -102,8 +111,8 @@ class AuthControllerTest {
     @Test
     void emailConfirm_TokenIsInvalid() {
         Mockito.doThrow(new NotConfirmAccountException("Error. The token is invalid or broken!"))
-                .when(emailConfirmationService)
-                .confirmAccount(null);
+               .when(emailConfirmationService)
+               .confirmAccount(null);
         NotConfirmAccountException e = new NotConfirmAccountException("Error. The token is invalid or broken!");
 
         assertNotEquals(ResponseEntity
@@ -113,7 +122,7 @@ class AuthControllerTest {
     }
 
     @Test
-    void processForgotPassword_UserIsRegisteredInDatabase(){
+    void processForgotPassword_UserIsRegisteredInDatabase() {
         String email = "registeredUser@gmail.com";
 
         assertEquals(authController.processForgotPassword(email),
@@ -121,15 +130,15 @@ class AuthControllerTest {
     }
 
     @Test
-    void processForgotPassword_UserIsNotFound(){
+    void processForgotPassword_UserIsNotFound() {
 
-        assertThrows(UserNotFoundException.class, ()-> {
+        assertThrows(UserNotFoundException.class, () -> {
             authController.processForgotPassword(email);
         });
     }
 
     @Test
-    void processResetPassword_TokenIsValid(){
+    void processResetPassword_TokenIsValid() {
         String newPassword = "jvtiyd4218";
         String token = "hjvftf";
 
@@ -138,17 +147,31 @@ class AuthControllerTest {
     }
 
     @Test
-    void processResetPassword_NullParameters(){
+    void processResetPassword_NullParameters() {
 
-        assertThrows(UserNotFoundException.class, ()-> {
+        assertThrows(UserNotFoundException.class, () -> {
             authController.processResetPassword(token, newPassword);
         });
     }
 
     @Test
     void authenticateUser_shouldReturnStatusOk() {
+        Mockito.doReturn(loginResponse)
+               .when(authService)
+               .login(validRequest.getLogin(), validRequest.getPassword());
 
-        assertTrue(authController.authenticateUser(loginRequest)
-                .equals(ResponseEntity.ok("Here will be JwtResponse")));
+        assertEquals(ResponseEntity.ok()
+                                   .body(loginResponse), authController.authenticateUser(validRequest));
+    }
+
+    @Test
+    void authenticateUser_shouldReturnBadRequest() {
+        Mockito.doThrow(new AuthException("User does not exist!"))
+               .when(authService)
+               .login(loginRequest.getLogin(), loginRequest.getPassword());
+        AuthException e = new AuthException("User does not exist!");
+
+        assertNotEquals(authController.authenticateUser(loginRequest), ResponseEntity.badRequest()
+                                                                                     .body(e));
     }
 }
