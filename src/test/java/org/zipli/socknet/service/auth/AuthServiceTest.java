@@ -12,6 +12,8 @@ import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
 import org.zipli.socknet.security.services.UserDetailsImpl;
 
+import javax.mail.MessagingException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.times;
@@ -100,7 +102,7 @@ public class AuthServiceTest {
     }
 
     @Test
-    public void registration_Pass() {
+    public void registration_Pass() throws MessagingException {
         User user = new User(email, password, userName, "Cat");
 
         Mockito.when(userRepository.getUserByEmail(user.getEmail())).thenReturn(null);
