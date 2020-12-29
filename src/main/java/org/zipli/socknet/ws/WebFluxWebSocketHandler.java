@@ -16,10 +16,8 @@ import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
 
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import static org.zipli.socknet.dto.Command.ERROR_CREATE_CONNECT;
 
@@ -59,7 +57,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
         return Mono.zip(input, output).then();
     }
 
-    public void CloseSession(WebSocketSession session, CloseStatus status){
+    public void closeSession(WebSocketSession session, CloseStatus status){
         log.debug("CloseSession(session={},status={})", session, status);
         if (session.isOpen()) {
             try {
