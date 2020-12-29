@@ -28,19 +28,7 @@ public class UserServiceTest {
 
     @MockBean
     UserRepository userRepository;
-
-    @MockBean
-    AvatarRequest avatarRequest;
-
-    @MockBean
-    EmailRequest emailRequest;
-
-    @MockBean
-    NickNameRequest nickNameRequest;
-
-    @MockBean
-    PasswordRequest passwordRequest;
-
+    
     @MockBean
     User user;
 
