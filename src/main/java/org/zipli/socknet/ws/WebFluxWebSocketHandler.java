@@ -2,6 +2,7 @@ package org.zipli.socknet.ws;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.socket.CloseStatus;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketSession;
 import org.zipli.socknet.dto.*;
@@ -15,8 +16,10 @@ import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
 
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static org.zipli.socknet.dto.Command.ERROR_CREATE_CONNECT;
 
@@ -54,6 +57,17 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
         Mono<Void> output = webSocketSession.send(source.map(webSocketSession::textMessage));
 
         return Mono.zip(input, output).then();
+    }
+
+    public void CloseSession(WebSocketSession session, CloseStatus status){
+        log.debug("CloseSession(session={},status={})", session, status);
+        if (session.isOpen()) {
+            try {
+                session.close(status);
+            } catch (NullPointerException | IllegalStateException e) {
+                log.debug("Error closing WebSocket connection: {}", e.getMessage(), e);
+            }
+        }
     }
 
     private void eventProcessor(Sinks.Many<String> emitter, WsMessage wsMessage) {
