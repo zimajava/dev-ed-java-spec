@@ -2,7 +2,6 @@ package org.zipli.socknet.ws;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.socket.CloseStatus;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketSession;
 import org.zipli.socknet.dto.*;
@@ -49,23 +48,18 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                     } catch (Exception e) {
                         log.error("Error get message {}", e.getMessage());
                     }
-                }).then();
+                })
+                .doOnComplete(() -> System.out.println("close!")).then();
+        try{
+            messageService.deleteMessageEmitterByUserId(token, emitter);
+        } catch (DeleteSessionException e) {
+            e.printStackTrace();
+        }
 
         Flux<String> source = emitter.asFlux();
         Mono<Void> output = webSocketSession.send(source.map(webSocketSession::textMessage));
 
         return Mono.zip(input, output).then();
-    }
-
-    public void closeSession(WebSocketSession session, CloseStatus status){
-        log.debug("CloseSession(session={},status={})", session, status);
-        if (session.isOpen()) {
-            try {
-                session.close(status);
-            } catch (NullPointerException | IllegalStateException e) {
-                log.debug("Error closing WebSocket connection: {}", e.getMessage(), e);
-            }
-        }
     }
 
     private void eventProcessor(Sinks.Many<String> emitter, WsMessage wsMessage) {

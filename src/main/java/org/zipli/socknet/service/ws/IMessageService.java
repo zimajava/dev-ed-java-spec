@@ -34,4 +34,6 @@ public interface IMessageService {
     Message updateMessage(MessageData data) throws UpdateChatException;
 
     void deleteMessage(MessageData data) throws MessageDeleteException, UpdateChatException;
+
+    void deleteMessageEmitterByUserId(String token, Sinks.Many<String> emitter) throws DeleteSessionException;
 }
