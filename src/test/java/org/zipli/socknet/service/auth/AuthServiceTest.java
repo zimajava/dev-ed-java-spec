@@ -32,7 +32,7 @@ public class AuthServiceTest {
     @Test
     public void loginByEmailAndPasswordWithConfirmedEmail_Pass() {
         User user = new User(email, password, userName, "Cat");
-        String expected = jwtUtils.generateJwtToken(new UserDetailsImpl(user));
+        String expected = jwtUtils.generateJwtToken(new UserDetailsImpl(user), email);
         LoginResponse expectedLoginResponse = new LoginResponse(user.getId(), expected, expected);
         user.setConfirm(true);
 
@@ -58,7 +58,7 @@ public class AuthServiceTest {
     @Test
     public void loginByUsernameAndPasswordWithConfirmedEmail_Pass() {
         User user = new User(email, password, userName, "Cat");
-        String expected = jwtUtils.generateJwtToken(new UserDetailsImpl(user));
+        String expected = jwtUtils.generateJwtToken(new UserDetailsImpl(user), email);
         LoginResponse expectedLoginResponse = new LoginResponse(user.getId(), expected, expected);
         user.setConfirm(true);
 
