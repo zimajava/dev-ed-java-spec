@@ -31,26 +31,31 @@ public class EmailConfirmationService {
     @Async
     public void sendEmail(String email, String token) throws MessagingException {
         MimeMessage message = javaMailSender.createMimeMessage();
-
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "utf-8");
-        helper.setTo(email);
-        helper.setSubject("Complete Registration!");
-        helper.setFrom("zipli.socknet@gmail.com");
+        try {
+            helper.setTo(email);
+            helper.setSubject("Complete Registration!");
+            helper.setFrom("zipli.socknet@gmail.com");
 
-        String htmlMsg = "<h3>Confirm your mail</h3>"
-                + "<p style=\"font-size:18px;\">To confirm your account, please click "
-                + "<strong>"
-                + "<a href=\"" + deploy + "/confirm-mail?token=" + token + "\" target=\"_blank\">here</a>"
-                + "</strong>"
-                + "</p>"
-                + "<br/>"
-                + "<br/>"
-                + "<br/>"
-                +"<img src='http://www.apache.org/images/asf_logo_wide.gif'>";
+            String htmlMsg = "<h3>Confirm your mail</h3>"
+                    + "<p style=\"font-size:18px;\">To confirm your account, please click "
+                    + "<strong>"
+                    + "<a href=\"" + deploy + "/confirm-mail?token=" + token + "\" target=\"_blank\">here</a>"
+                    + "</strong>"
+                    + "</p>"
+                    + "<br/>"
+                    + "<br/>"
+                    + "<br/>"
+                    + "<img src='http://www.apache.org/images/asf_logo_wide.gif'>";
 
-        message.setContent(htmlMsg, "text/html");
+            message.setContent(htmlMsg, "text/html");
+            new Thread(() -> {
+                javaMailSender.send(message);
+            }).start();
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
 
-        javaMailSender.send(message);
     }
 
     public String confirmAccount(String token) {
