@@ -37,7 +37,7 @@ class AuthTokenManagerTest {
                         "dasdasdasd",
                         "dsad"));
 
-        String jwtToken = jwtUtils.generateJwtToken(userDetails);
+        String jwtToken = jwtUtils.generateJwtToken(userDetails, "email@gmail.com");
 
         Authentication mockAuth = Mockito.mock(Authentication.class);
 
