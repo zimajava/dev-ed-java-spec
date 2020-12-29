@@ -131,7 +131,6 @@ public class MessageService implements IMessageService {
                                         Command.CHAT_JOIN,
                                         finalChat.getId())
                         );
-
                     });
 
             return chat;
@@ -162,8 +161,6 @@ public class MessageService implements IMessageService {
                                         Command.CHAT_UPDATE,
                                         finalChat.getId())
                         );
-
-
                     });
 
             return chat;
@@ -203,7 +200,6 @@ public class MessageService implements IMessageService {
                                         Command.CHAT_DELETE,
                                         chat.getId())
                         );
-
                     });
 
         } else {
@@ -238,7 +234,6 @@ public class MessageService implements IMessageService {
                                     finalChat.getId(),
                                     data.getIdUser())
                     );
-
                 });
 
         return chat;
@@ -275,7 +270,6 @@ public class MessageService implements IMessageService {
                                         finalChat.getId(),
                                         data.getIdUser())
                         );
-
                     });
         }
 
@@ -374,7 +368,6 @@ public class MessageService implements IMessageService {
                                             Command.MESSAGE_DELETE,
                                             message.getId())
                             );
-
                         });
 
             } else {
