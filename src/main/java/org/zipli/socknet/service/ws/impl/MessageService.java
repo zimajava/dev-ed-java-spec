@@ -1,7 +1,5 @@
 package org.zipli.socknet.service.ws.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.zipli.socknet.dto.ChatData;
@@ -17,6 +15,7 @@ import org.zipli.socknet.repository.MessageRepository;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
 import org.zipli.socknet.service.ws.IMessageService;
+import org.zipli.socknet.util.JsonUtils;
 import reactor.core.publisher.Sinks;
 
 import java.util.*;
@@ -31,7 +30,7 @@ public class MessageService implements IMessageService {
     private final MessageRepository messageRepository;
     private final JwtUtils jwtUtils;
     private final Map<String, Sinks.Many<String>> messageEmitterByUserId = new ConcurrentHashMap<>();
-    private static final ObjectMapper json = new ObjectMapper();
+    private static final JsonUtils json = new JsonUtils();
 
     public MessageService(UserRepository userRepository, ChatRepository chatRepository, MessageRepository messageRepository, JwtUtils jwtUtils) {
         this.userRepository = userRepository;
@@ -44,30 +43,28 @@ public class MessageService implements IMessageService {
     public Message sendMessage(MessageData data) {
 
         Message message = new Message(data.getIdUser(), data.getIdChat(), new Date(), data.getTextMessage());
-        message = messageRepository.save(message);
+        Message finalMessage = messageRepository.save(message);
         Chat chat = chatRepository.findChatById(data.getIdChat());
         chat.getIdMessages().add(message.getId());
-        List<String> idUsers = chat.getIdUsers();
-        Message finalMessage = message;
 
-        idUsers.parallelStream()
+        chat.getIdUsers().parallelStream()
                 .forEach(userId -> {
                     Sinks.Many<String> stringMany = messageEmitterByUserId.get(userId);
-                    try {
-                        if (stringMany != null) {
-                            stringMany.tryEmitNext(
-                                    json.writeValueAsString(
-                                            new WsMessage(Command.MESSAGE_SEND,
-                                                    new MessageData(userId,
-                                                            chat.getId(),
-                                                            finalMessage.getId(),
-                                                            finalMessage.getTextMessage()
-                                                    ))));
-                        } else {
-                            log.info("Send massage! " + finalMessage);
-                        }
-                    } catch (JsonProcessingException e) {
-                        e.printStackTrace();
+                    if (stringMany != null) {
+                        stringMany.tryEmitNext(
+                                json.jsonWriteHandle(
+                                        new WsMessage(Command.MESSAGE_SEND,
+                                                new MessageData(userId,
+                                                        chat.getId(),
+                                                        finalMessage.getId(),
+                                                        finalMessage.getTextMessage()
+                                                ))));
+                    } else {
+                        log.info("user "
+                                + userId
+                                + " isn't online, message"
+                                + finalMessage.getId()
+                                + "  not sent.");
                     }
                 });
 
@@ -114,7 +111,7 @@ public class MessageService implements IMessageService {
 
             chat.getIdUsers().add(creatorUser.getId());
             chat.getIdUsers().add(user.getId());
-            chat = chatRepository.save(chat);
+            Chat finalChat = chatRepository.save(chat);
 
             creatorUser.getChatsId().add(chat.getId());
             user.getChatsId().add(chat.getId());
@@ -125,24 +122,23 @@ public class MessageService implements IMessageService {
 
             userRepository.saveAll(users);
 
-            Chat finalChat = chat;
             chat.getIdUsers().parallelStream()
                     .forEach(userId -> {
                         Sinks.Many<String> stringMany = messageEmitterByUserId.get(userId);
-                        try {
-                            if (stringMany != null) {
-                                stringMany.tryEmitNext(
-                                        json.writeValueAsString(
-                                                new WsMessage(Command.CHAT_JOIN,
-                                                        new ChatData(userId,
-                                                                finalChat.getId(),
-                                                                finalChat.getChatName()
-                                                        ))));
-                            } else {
-                                log.info("Join Chat! " + finalChat);
-                            }
-                        } catch (JsonProcessingException e) {
-                            e.printStackTrace();
+                        if (stringMany != null) {
+                            stringMany.tryEmitNext(
+                                    json.jsonWriteHandle(
+                                            new WsMessage(Command.CHAT_JOIN,
+                                                    new ChatData(userId,
+                                                            finalChat.getId(),
+                                                            finalChat.getChatName()
+                                                    ))));
+                        } else {
+                            log.info("user "
+                                    + userId
+                                    + " isn't online, chat"
+                                    + finalChat.getId()
+                                    + "  not sent.");
                         }
                     });
 
@@ -159,26 +155,25 @@ public class MessageService implements IMessageService {
 
         if (chat != null) {
             chat.setChatName(data.getChatName());
-            chat = chatRepository.save(chat);
+            Chat finalChat = chatRepository.save(chat);
 
-            Chat finalChat = chat;
             chat.getIdUsers().parallelStream()
                     .forEach(userId -> {
                         Sinks.Many<String> stringMany = messageEmitterByUserId.get(userId);
-                        try {
-                            if (stringMany != null) {
-                                stringMany.tryEmitNext(
-                                        json.writeValueAsString(
-                                                new WsMessage(Command.CHAT_UPDATE,
-                                                        new ChatData(userId,
-                                                                finalChat.getId(),
-                                                                finalChat.getChatName()
-                                                        ))));
-                            } else {
-                                log.info("Update Chat! " + finalChat);
-                            }
-                        } catch (JsonProcessingException e) {
-                            e.printStackTrace();
+                        if (stringMany != null) {
+                            stringMany.tryEmitNext(
+                                    json.jsonWriteHandle(
+                                            new WsMessage(Command.CHAT_UPDATE,
+                                                    new ChatData(userId,
+                                                            finalChat.getId(),
+                                                            finalChat.getChatName()
+                                                    ))));
+                        } else {
+                            log.info("user "
+                                    + userId
+                                    + " isn't online, update chat"
+                                    + finalChat.getId()
+                                    + "  not sent.");
                         }
                     });
 
@@ -209,20 +204,20 @@ public class MessageService implements IMessageService {
             chat.getIdUsers().parallelStream()
                     .forEach(userId -> {
                         Sinks.Many<String> stringMany = messageEmitterByUserId.get(userId);
-                        try {
-                            if (stringMany != null) {
-                                stringMany.tryEmitNext(
-                                        json.writeValueAsString(
-                                                new WsMessage(Command.CHAT_DELETE,
-                                                        new ChatData(userId,
-                                                                chat.getId(),
-                                                                chat.getChatName()
-                                                        ))));
-                            } else {
-                                log.info("Delete Chat! " + chat);
-                            }
-                        } catch (JsonProcessingException e) {
-                            e.printStackTrace();
+                        if (stringMany != null) {
+                            stringMany.tryEmitNext(
+                                    json.jsonWriteHandle(
+                                            new WsMessage(Command.CHAT_DELETE,
+                                                    new ChatData(userId,
+                                                            chat.getId(),
+                                                            chat.getChatName()
+                                                    ))));
+                        } else {
+                            log.info("user "
+                                    + userId
+                                    + " isn't online, delete chat"
+                                    + chat.getId()
+                                    + "  not sent.");
                         }
                     });
 
@@ -236,32 +231,33 @@ public class MessageService implements IMessageService {
 
         Chat chat = chatRepository.findChatById(data.getIdChat());
         chat.getIdUsers().remove(data.getIdUser());
-        chat = chatRepository.save(chat);
+        Chat finalChat = chatRepository.save(chat);
 
         User user = userRepository.getUserById(data.getIdUser());
         user.getChatsId().remove(chat.getId());
         userRepository.save(user);
 
-        Chat finalChat = chat;
         chat.getIdUsers().parallelStream()
                 .forEach(userId -> {
                     Sinks.Many<String> stringMany = messageEmitterByUserId.get(userId);
-                    try {
-                        if (stringMany != null) {
-                            stringMany.tryEmitNext(
-                                    json.writeValueAsString(
-                                            new WsMessage(Command.CHAT_LEAVE,
-                                                    new ChatData(userId,
-                                                            finalChat.getId(),
-                                                            finalChat.getChatName(),
-                                                            null,
-                                                            data.getIdUser()
-                                                    ))));
-                        } else {
-                            log.info("Leave Chat! " + finalChat);
-                        }
-                    } catch (JsonProcessingException e) {
-                        e.printStackTrace();
+                    if (stringMany != null) {
+                        stringMany.tryEmitNext(
+                                json.jsonWriteHandle(
+                                        new WsMessage(Command.CHAT_LEAVE,
+                                                new ChatData(userId,
+                                                        finalChat.getId(),
+                                                        finalChat.getChatName(),
+                                                        null,
+                                                        data.getIdUser()
+                                                ))));
+                    } else {
+                        log.info("user "
+                                + userId
+                                + " isn't online, leave chat"
+                                + finalChat.getId()
+                                + "user: "
+                                + data.getIdUser()
+                                + "  not sent.");
                     }
                 });
 
@@ -281,28 +277,29 @@ public class MessageService implements IMessageService {
             userRepository.save(user);
 
             listIdUsers.add(data.getIdUser());
-            chat = chatRepository.save(chat);
+            Chat finalChat = chatRepository.save(chat);
 
-            Chat finalChat = chat;
             chat.getIdUsers().parallelStream()
                     .forEach(userId -> {
                         Sinks.Many<String> stringMany = messageEmitterByUserId.get(userId);
-                        try {
-                            if (stringMany != null) {
-                                stringMany.tryEmitNext(
-                                        json.writeValueAsString(
-                                                new WsMessage(Command.CHAT_JOIN,
-                                                        new ChatData(userId,
-                                                                finalChat.getId(),
-                                                                finalChat.getChatName(),
-                                                                null,
-                                                                data.getIdUser()
-                                                        ))));
-                            } else {
-                                log.info("Join Chat! " + finalChat + " " + data.getIdUser());
-                            }
-                        } catch (JsonProcessingException e) {
-                            e.printStackTrace();
+                        if (stringMany != null) {
+                            stringMany.tryEmitNext(
+                                    json.jsonWriteHandle(
+                                            new WsMessage(Command.CHAT_JOIN,
+                                                    new ChatData(userId,
+                                                            finalChat.getId(),
+                                                            finalChat.getChatName(),
+                                                            null,
+                                                            data.getIdUser()
+                                                    ))));
+                        } else {
+                            log.info("user "
+                                    + userId
+                                    + " isn't online, join chat"
+                                    + finalChat.getId()
+                                    + "user: "
+                                    + data.getIdUser()
+                                    + "  not sent.");
                         }
                     });
         }
@@ -352,27 +349,27 @@ public class MessageService implements IMessageService {
         if (message.getAuthorId().equals(data.getIdUser())) {
             message.setTextMessage(data.getTextMessage());
             message = messageRepository.save(message);
-            Chat chat = chatRepository.findChatById(data.getIdChat());
+            Chat finalChat = chatRepository.findChatById(data.getIdChat());
 
             Message finalMessage = message;
-            chat.getIdUsers().parallelStream()
+            finalChat.getIdUsers().parallelStream()
                     .forEach(userId -> {
                         Sinks.Many<String> stringMany = messageEmitterByUserId.get(userId);
-                        try {
-                            if (stringMany != null) {
-                                stringMany.tryEmitNext(
-                                        json.writeValueAsString(
-                                                new WsMessage(Command.MESSAGE_UPDATE,
-                                                        new MessageData(userId,
-                                                                chat.getId(),
-                                                                finalMessage.getId(),
-                                                                finalMessage.getTextMessage()
-                                                        ))));
-                            } else {
-                                log.info("Update Message! " + finalMessage);
-                            }
-                        } catch (JsonProcessingException e) {
-                            e.printStackTrace();
+                        if (stringMany != null) {
+                            stringMany.tryEmitNext(
+                                    json.jsonWriteHandle(
+                                            new WsMessage(Command.MESSAGE_UPDATE,
+                                                    new MessageData(userId,
+                                                            finalChat.getId(),
+                                                            finalMessage.getId(),
+                                                            finalMessage.getTextMessage()
+                                                    ))));
+                        } else {
+                            log.info("user "
+                                    + userId
+                                    + " isn't online, message update "
+                                    + finalMessage.getId()
+                                    + "  not sent.");
                         }
                     });
 
@@ -391,26 +388,26 @@ public class MessageService implements IMessageService {
             Chat chat = chatRepository.findChatById(data.getIdChat());
             if (chat != null) {
                 chat.getIdMessages().remove(message.getId());
-                chatRepository.save(chat);
+                Chat finalChat = chatRepository.save(chat);
 
                 chat.getIdUsers().parallelStream()
                         .forEach(userId -> {
                             Sinks.Many<String> stringMany = messageEmitterByUserId.get(userId);
-                            try {
-                                if (stringMany != null) {
-                                    stringMany.tryEmitNext(
-                                            json.writeValueAsString(
-                                                    new WsMessage(Command.MESSAGE_UPDATE,
-                                                            new MessageData(userId,
-                                                                    chat.getId(),
-                                                                    message.getId(),
-                                                                    message.getTextMessage()
-                                                            ))));
-                                } else {
-                                    log.info("Delete massage! " + message);
-                                }
-                            } catch (JsonProcessingException e) {
-                                e.printStackTrace();
+                            if (stringMany != null) {
+                                stringMany.tryEmitNext(
+                                        json.jsonWriteHandle(
+                                                new WsMessage(Command.MESSAGE_DELETE,
+                                                        new MessageData(userId,
+                                                                finalChat.getId(),
+                                                                message.getId(),
+                                                                message.getTextMessage()
+                                                        ))));
+                            } else {
+                                log.info("user "
+                                        + userId
+                                        + " isn't online, message delete "
+                                        + message.getId()
+                                        + "  not sent.");
                             }
                         });
 
