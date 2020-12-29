@@ -1,5 +1,6 @@
 package org.zipli.socknet.service.auth;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.zipli.socknet.dto.response.LoginResponse;
@@ -11,7 +12,7 @@ import org.zipli.socknet.security.services.UserDetailsImpl;
 import org.zipli.socknet.service.email.EmailConfirmationService;
 
 import javax.mail.MessagingException;
-
+@Slf4j
 @Service
 public class AuthService implements IAuthService {
 
@@ -56,7 +57,7 @@ public class AuthService implements IAuthService {
                 try {
                     emailConfirmationService.sendEmail(user.getEmail(), token);
                 } catch (MessagingException e) {
-                    e.printStackTrace();
+                    log.error("Your description here", e);
                 }
             }).start();
         }

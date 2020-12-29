@@ -1,6 +1,7 @@
 package org.zipli.socknet.security;
 
 import io.netty.handler.codec.http.HttpMethod;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -19,8 +20,8 @@ import java.util.Arrays;
 @EnableWebFluxSecurity
 //@PropertySource("")
 public class WebSecurityConfig {
-
-    private static final String FRONTEND_LOCALHOST = "http://localhost:3000";
+    @Value("${deploy.app}")
+    private String FRONTEND_LOCALHOST;
     private static final String FRONTEND_STAGING = "https://dev-ed-messenger-develop.herokuapp.com";
     private static final String FRONTEND_PROD = "https://dev-ed-messenger.herokuapp.com";
 
