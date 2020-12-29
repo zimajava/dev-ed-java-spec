@@ -49,9 +49,9 @@ public class MessageService implements IMessageService {
 
         chat.getIdUsers().parallelStream()
                 .forEach(userId -> {
-                    Sinks.Many<String> stringMany = messageEmitterByUserId.get(userId);
-                    if (stringMany != null) {
-                        stringMany.tryEmitNext(
+                    Sinks.Many<String> emitterByUser = messageEmitterByUserId.get(userId);
+                    if (emitterByUser != null) {
+                        emitterByUser.tryEmitNext(
                                 json.jsonWriteHandle(
                                         new WsMessage(Command.MESSAGE_SEND,
                                                 new MessageData(userId,
@@ -124,9 +124,9 @@ public class MessageService implements IMessageService {
 
             chat.getIdUsers().parallelStream()
                     .forEach(userId -> {
-                        Sinks.Many<String> stringMany = messageEmitterByUserId.get(userId);
-                        if (stringMany != null) {
-                            stringMany.tryEmitNext(
+                        Sinks.Many<String> emitterByUser = messageEmitterByUserId.get(userId);
+                        if (emitterByUser != null) {
+                            emitterByUser.tryEmitNext(
                                     json.jsonWriteHandle(
                                             new WsMessage(Command.CHAT_JOIN,
                                                     new ChatData(userId,
@@ -159,9 +159,9 @@ public class MessageService implements IMessageService {
 
             chat.getIdUsers().parallelStream()
                     .forEach(userId -> {
-                        Sinks.Many<String> stringMany = messageEmitterByUserId.get(userId);
-                        if (stringMany != null) {
-                            stringMany.tryEmitNext(
+                        Sinks.Many<String> emitterByUser = messageEmitterByUserId.get(userId);
+                        if (emitterByUser != null) {
+                            emitterByUser.tryEmitNext(
                                     json.jsonWriteHandle(
                                             new WsMessage(Command.CHAT_UPDATE,
                                                     new ChatData(userId,
@@ -203,9 +203,9 @@ public class MessageService implements IMessageService {
 
             chat.getIdUsers().parallelStream()
                     .forEach(userId -> {
-                        Sinks.Many<String> stringMany = messageEmitterByUserId.get(userId);
-                        if (stringMany != null) {
-                            stringMany.tryEmitNext(
+                        Sinks.Many<String> emitterByUser = messageEmitterByUserId.get(userId);
+                        if (emitterByUser != null) {
+                            emitterByUser.tryEmitNext(
                                     json.jsonWriteHandle(
                                             new WsMessage(Command.CHAT_DELETE,
                                                     new ChatData(userId,
@@ -239,9 +239,9 @@ public class MessageService implements IMessageService {
 
         chat.getIdUsers().parallelStream()
                 .forEach(userId -> {
-                    Sinks.Many<String> stringMany = messageEmitterByUserId.get(userId);
-                    if (stringMany != null) {
-                        stringMany.tryEmitNext(
+                    Sinks.Many<String> emitterByUser = messageEmitterByUserId.get(userId);
+                    if (emitterByUser != null) {
+                        emitterByUser.tryEmitNext(
                                 json.jsonWriteHandle(
                                         new WsMessage(Command.CHAT_LEAVE,
                                                 new ChatData(userId,
@@ -281,9 +281,9 @@ public class MessageService implements IMessageService {
 
             chat.getIdUsers().parallelStream()
                     .forEach(userId -> {
-                        Sinks.Many<String> stringMany = messageEmitterByUserId.get(userId);
-                        if (stringMany != null) {
-                            stringMany.tryEmitNext(
+                        Sinks.Many<String> emitterByUser = messageEmitterByUserId.get(userId);
+                        if (emitterByUser != null) {
+                            emitterByUser.tryEmitNext(
                                     json.jsonWriteHandle(
                                             new WsMessage(Command.CHAT_JOIN,
                                                     new ChatData(userId,
@@ -354,9 +354,9 @@ public class MessageService implements IMessageService {
             Message finalMessage = message;
             finalChat.getIdUsers().parallelStream()
                     .forEach(userId -> {
-                        Sinks.Many<String> stringMany = messageEmitterByUserId.get(userId);
-                        if (stringMany != null) {
-                            stringMany.tryEmitNext(
+                        Sinks.Many<String> emitterByUser = messageEmitterByUserId.get(userId);
+                        if (emitterByUser != null) {
+                            emitterByUser.tryEmitNext(
                                     json.jsonWriteHandle(
                                             new WsMessage(Command.MESSAGE_UPDATE,
                                                     new MessageData(userId,
@@ -392,9 +392,9 @@ public class MessageService implements IMessageService {
 
                 chat.getIdUsers().parallelStream()
                         .forEach(userId -> {
-                            Sinks.Many<String> stringMany = messageEmitterByUserId.get(userId);
-                            if (stringMany != null) {
-                                stringMany.tryEmitNext(
+                            Sinks.Many<String> emitterByUser = messageEmitterByUserId.get(userId);
+                            if (emitterByUser != null) {
+                                emitterByUser.tryEmitNext(
                                         json.jsonWriteHandle(
                                                 new WsMessage(Command.MESSAGE_DELETE,
                                                         new MessageData(userId,
