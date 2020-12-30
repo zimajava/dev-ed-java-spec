@@ -29,7 +29,7 @@ public interface IMessageService {
 
     Message sendMessage(MessageData data);
 
-    void addMessageEmitterByToken(String token, Sinks.Many<String> emitter) throws CreateSocketException;
+    String    addMessageEmitterByToken(String token, Sinks.Many<String> emitter) throws CreateSocketException;
 
     Message updateMessage(MessageData data) throws UpdateChatException;
 

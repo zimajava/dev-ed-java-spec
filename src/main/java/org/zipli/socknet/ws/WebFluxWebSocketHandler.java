@@ -14,7 +14,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
 
-
 import java.util.Collections;
 import java.util.List;
 
@@ -33,8 +32,9 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
     public Mono<Void> handle(WebSocketSession webSocketSession) {
         String token = webSocketSession.getHandshakeInfo().getUri().getQuery().replace("token=", "");
         Sinks.Many<String> emitter = Sinks.many().multicast().directAllOrNothing();
+        final String userId;
         try {
-            messageService.addMessageEmitterByToken(token, emitter);
+            userId = messageService.addMessageEmitterByToken(token, emitter);
         } catch (CreateSocketException e) {
             String response = JsonUtils.jsonWriteHandle(new WsMessageResponse(ERROR_CREATE_CONNECT, e.getMessage()));
             return webSocketSession.send(Mono.just(webSocketSession.textMessage(response)));
@@ -49,12 +49,13 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                         log.error("Error get message {}", e.getMessage());
                     }
                 })
-                .doOnComplete(() -> System.out.println("close!")).then();
-        try{
-            messageService.deleteMessageEmitterByUserId(token, emitter);
-        } catch (DeleteSessionException e) {
-            e.printStackTrace();
-        }
+                .doOnComplete(() -> {
+                    try {
+                        messageService.deleteMessageEmitterByUserId(userId, emitter);
+                    } catch (DeleteSessionException e) {
+                        log.error("");
+                    }
+                }).then();
 
         Flux<String> source = emitter.asFlux();
         Mono<Void> output = webSocketSession.send(source.map(webSocketSession::textMessage));
