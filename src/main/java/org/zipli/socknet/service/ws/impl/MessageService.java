@@ -266,11 +266,13 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public void addMessageEmitterByToken(String token, Sinks.Many<String> emitter) throws CreateSocketException {
+    public String addMessageEmitterByToken(String token, Sinks.Many<String> emitter) throws CreateSocketException {
         try {
             String username = jwtUtils.getUserNameFromJwtToken(token);
             User user = userRepository.findUserByUserName(username);
-            messageEmitterByUserId.put(user.getId(), emitter);
+            String userId = user.getId();
+            messageEmitterByUserId.put(userId, emitter);
+            return userId;
         } catch (Exception e) {
             throw new CreateSocketException("Can't create connect to user, Exception cause: " + e.getMessage() + " on class " + e.getClass().getSimpleName());
         }
@@ -343,6 +345,15 @@ public class MessageService implements IMessageService {
             } else {
                 log.info("User = {userId: {} isn't online: {} not sent.}", userId, wsMessage.getCommand());
             }
+        }
+    }
+
+    @Override
+    public void deleteMessageEmitterByUserId(String userId, Sinks.Many<String> emitter) throws DeleteSessionException{
+        try {
+           messageEmitterByUserId.remove(userId);
+        } catch (Exception e) {
+            throw new DeleteSessionException("Can't delete message emitter");
         }
     }
 }
