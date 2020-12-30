@@ -337,9 +337,7 @@ public class MessageService implements IMessageService {
     private void sendMessageToUser(String userId, WsMessage wsMessage) {
         Sinks.Many<String> emitterByUser = messageEmitterByUserId.get(userId);
         if (emitterByUser != null) {
-            emitterByUser.tryEmitNext(
-                    JsonUtils.jsonWriteHandle(
-                            wsMessage));
+            emitterByUser.tryEmitNext(JsonUtils.jsonWriteHandle(wsMessage));
         } else {
             if (wsMessage.getCommand().equals(Command.CHAT_LEAVE) || wsMessage.getCommand().equals(Command.CHAT_JOIN)) {
                 log.info("User = {userId: {} isn't online: {}, user: {} not sent.}", userId, wsMessage.getCommand(), wsMessage.getData().getIdUser());
