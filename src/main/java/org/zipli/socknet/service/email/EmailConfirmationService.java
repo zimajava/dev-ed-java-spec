@@ -1,5 +1,6 @@
 package org.zipli.socknet.service.email;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -13,6 +14,7 @@ import org.zipli.socknet.security.jwt.JwtUtils;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
+@Slf4j
 @Service
 public class EmailConfirmationService {
 
@@ -53,9 +55,8 @@ public class EmailConfirmationService {
                 javaMailSender.send(message);
             }).start();
         } catch (MessagingException e) {
-            e.printStackTrace();
+            log.error("Your description here", e);
         }
-
     }
 
     public String confirmAccount(String token) {
