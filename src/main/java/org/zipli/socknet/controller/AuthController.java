@@ -33,18 +33,18 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> addUser(@Valid @RequestBody SignupRequest signupRequest) {
-                    User user = new User(signupRequest.getEmail(),
-                    signupRequest.getPassword(),
-                    signupRequest.getUserName(),
-                    signupRequest.getNickName());
-            try {
-                authService.registration(user);
-            } catch (AuthException | MessagingException e) {
-                return ResponseEntity
-                        .badRequest()
-                        .body(e);
-            }
-            return ResponseEntity.ok("User registered successfully!");
+        User user = new User(signupRequest.getEmail(),
+                signupRequest.getPassword(),
+                signupRequest.getUserName(),
+                signupRequest.getNickName());
+        try {
+            authService.registration(user);
+        } catch (AuthException e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(e);
+        }
+        return ResponseEntity.ok("User registered successfully!");
     }
 
     @PostMapping("/confirm-mail")
@@ -90,14 +90,14 @@ public class AuthController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-            LoginResponse loginResponse;
-            try {
-                loginResponse = authService.login(loginRequest.getLogin(), loginRequest.getPassword());
-            } catch (AuthException e) {
-                return ResponseEntity
-                        .badRequest()
-                        .body(e);
-            }
-            return ResponseEntity.ok(loginResponse);
+        LoginResponse loginResponse;
+        try {
+            loginResponse = authService.login(loginRequest.getLogin(), loginRequest.getPassword());
+        } catch (AuthException e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(e);
         }
+        return ResponseEntity.ok(loginResponse);
+    }
 }

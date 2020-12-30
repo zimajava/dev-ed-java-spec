@@ -1,6 +1,7 @@
 package org.zipli.socknet.security;
 
 import io.netty.handler.codec.http.HttpMethod;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -14,15 +15,15 @@ import org.zipli.socknet.security.jwt.AuthTokenManager;
 import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebFluxSecurity
 //@PropertySource("")
 public class WebSecurityConfig {
+    @Value("${cors.urls}")
+    private List<String> corsUrls;
 
-    private static final String FRONTEND_LOCALHOST = "http://localhost:3000";
-    private static final String FRONTEND_STAGING = "https://dev-ed-messenger-develop.herokuapp.com";
-    private static final String FRONTEND_PROD = "https://dev-ed-messenger.herokuapp.com";
 
     private final AuthTokenManager authTokenManager;
     private final SecurityContextRepository securityContextRepository;
@@ -64,7 +65,7 @@ public class WebSecurityConfig {
         corsConfig.applyPermitDefaultValues();
         corsConfig.addAllowedMethod(String.valueOf(HttpMethod.PUT));
         corsConfig.addAllowedMethod(String.valueOf(HttpMethod.DELETE));
-        corsConfig.setAllowedOrigins(Arrays.asList(FRONTEND_LOCALHOST, FRONTEND_STAGING, FRONTEND_PROD));
+        corsConfig.setAllowedOrigins(corsUrls);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfig);

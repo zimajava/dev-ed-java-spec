@@ -44,7 +44,7 @@ public class AuthService implements IAuthService {
     }
 
     @Override
-    public void registration(User user) throws MessagingException {
+    public void registration(User user) {
         User existingUser = userRepository.getUserByEmail(user.getEmail());
         if (existingUser != null) {
             throw new AuthException("This email already exists!");

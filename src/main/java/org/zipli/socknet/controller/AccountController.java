@@ -75,7 +75,7 @@ public class AccountController {
     public ResponseEntity<?> updateEmail(@RequestBody @Valid EmailRequest data) {
         try {
             return ResponseEntity.ok(userService.updateEmail(data));
-        } catch (UpdateEmailException | MessagingException e) {
+        } catch (UpdateEmailException e) {
             return ResponseEntity
                     .badRequest()
                     .body(e);
