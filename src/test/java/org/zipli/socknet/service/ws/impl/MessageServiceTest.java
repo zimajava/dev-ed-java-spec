@@ -3,8 +3,10 @@ package org.zipli.socknet.service.ws.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.zipli.socknet.dto.ChatData;
 import org.zipli.socknet.dto.MessageData;
 import org.zipli.socknet.exception.*;
@@ -15,10 +17,14 @@ import org.zipli.socknet.repository.ChatRepository;
 import org.zipli.socknet.repository.MessageRepository;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
+import reactor.core.publisher.Sinks;
 
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BooleanSupplier;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -39,6 +45,15 @@ class MessageServiceTest {
     MessageRepository messageRepository;
     @Autowired
     ChatRepository chatRepository;
+
+    @MockBean
+    Sinks.Many<String> emitter;
+
+    @MockBean
+    Map<String, Sinks.Many<String>> messageEmitterByUserId;
+
+    @MockBean
+    MessageService messageService1;
 
     @BeforeEach
     void setUp() {
@@ -283,4 +298,35 @@ class MessageServiceTest {
         }
     }
 
+    @Test
+    void deleteMessageEmitterByUserId_Pass() {
+        String token = "jbkug";
+        String userId = new String();
+        try {
+            userId = Mockito.doReturn(new String())
+                    .when(messageService1)
+                    .addMessageEmitterByToken(token, emitter);
+        } catch (CreateSocketException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            messageService1.deleteMessageEmitterByUserId(userId, emitter);
+        } catch (DeleteSessionException e) {
+            e.printStackTrace();
+        }
+
+        assertFalse(messageEmitterByUserId.containsValue(userId));
+    }
+
+    @Test
+    void deleteMessageEmitterByUserId_Fail() {
+        String userId = "hgjfby";
+
+        try {
+            messageService.deleteMessageEmitterByUserId(userId, emitter);
+        } catch (DeleteSessionException e) {
+            assertEquals(e.getMessage(), "Can't delete message emitter");
+        }
+    }
 }

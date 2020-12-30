@@ -29,11 +29,11 @@ public interface IMessageService {
 
     Message sendMessage(MessageData data);
 
-    String    addMessageEmitterByToken(String token, Sinks.Many<String> emitter) throws CreateSocketException;
+    String addMessageEmitterByToken(String token, Sinks.Many<String> emitter) throws CreateSocketException;
 
     Message updateMessage(MessageData data) throws UpdateChatException;
 
     void deleteMessage(MessageData data) throws MessageDeleteException, UpdateChatException;
 
-    void deleteMessageEmitterByUserId(String token, Sinks.Many<String> emitter) throws DeleteSessionException;
+    void deleteMessageEmitterByUserId(String userId, Sinks.Many<String> emitter) throws DeleteSessionException;
 }

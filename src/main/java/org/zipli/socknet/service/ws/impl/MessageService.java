@@ -244,13 +244,9 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public void deleteMessageEmitterByUserId(String token, Sinks.Many<String> emitter) throws DeleteSessionException{
+    public void deleteMessageEmitterByUserId(String userId, Sinks.Many<String> emitter) throws DeleteSessionException{
         try {
-            String username = jwtUtils.getUserNameFromJwtToken(token);
-            User user = userRepository.findUserByUserName(username);
-            Sinks.Many<String> stringMany = messageEmitterByUserId.get(user.getId());
-            List < Sinks.Many<String>> list = new ArrayList<>();
-            list.remove(stringMany);
+           messageEmitterByUserId.remove(userId);
         } catch (Exception e) {
             throw new DeleteSessionException("Can't delete message emitter");
         }

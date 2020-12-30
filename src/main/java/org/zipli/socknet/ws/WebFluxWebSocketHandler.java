@@ -53,7 +53,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                     try {
                         messageService.deleteMessageEmitterByUserId(userId, emitter);
                     } catch (DeleteSessionException e) {
-                        log.error("");
+                        log.error("Error delete session {}", e.getMessage());
                     }
                 }).then();
 
