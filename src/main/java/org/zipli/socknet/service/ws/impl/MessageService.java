@@ -42,7 +42,7 @@ public class MessageService implements IMessageService {
     public Message sendMessage(MessageData data) {
 
         Message message = new Message(data.getIdUser(), data.getIdChat(), new Date(), data.getTextMessage());
-        Message finalMessage = messageRepository.save(message);
+        final Message finalMessage = messageRepository.save(message);
         Chat chat = chatRepository.findChatById(data.getIdChat());
         chat.getIdMessages().add(message.getId());
 
@@ -100,7 +100,7 @@ public class MessageService implements IMessageService {
 
             chat.getIdUsers().add(creatorUser.getId());
             chat.getIdUsers().add(user.getId());
-            Chat finalChat = chatRepository.save(chat);
+            final Chat finalChat = chatRepository.save(chat);
 
             creatorUser.getChatsId().add(chat.getId());
             user.getChatsId().add(chat.getId());
@@ -111,7 +111,7 @@ public class MessageService implements IMessageService {
 
             userRepository.saveAll(users);
 
-            chat.getIdUsers().parallelStream()
+            finalChat.getIdUsers().parallelStream()
                     .forEach(userId -> sendMessageToUser(userId,
                             new WsMessage(Command.CHAT_JOIN,
                                     new ChatData(userId,
@@ -134,9 +134,9 @@ public class MessageService implements IMessageService {
 
         if (chat != null) {
             chat.setChatName(data.getChatName());
-            Chat finalChat = chatRepository.save(chat);
+            final Chat finalChat = chatRepository.save(chat);
 
-            chat.getIdUsers().parallelStream()
+            finalChat.getIdUsers().parallelStream()
                     .forEach(userId -> sendMessageToUser(userId,
                             new WsMessage(Command.CHAT_UPDATE,
                                     new ChatData(userId,
@@ -190,13 +190,13 @@ public class MessageService implements IMessageService {
 
         Chat chat = chatRepository.findChatById(data.getIdChat());
         chat.getIdUsers().remove(data.getIdUser());
-        Chat finalChat = chatRepository.save(chat);
+        final Chat finalChat = chatRepository.save(chat);
 
         User user = userRepository.getUserById(data.getIdUser());
         user.getChatsId().remove(chat.getId());
         userRepository.save(user);
 
-        chat.getIdUsers().parallelStream()
+        finalChat.getIdUsers().parallelStream()
                 .forEach(userId -> sendMessageToUser(userId,
                         new WsMessage(Command.CHAT_LEAVE,
                                 new ChatData(userId,
@@ -224,9 +224,9 @@ public class MessageService implements IMessageService {
             userRepository.save(user);
 
             listIdUsers.add(data.getIdUser());
-            Chat finalChat = chatRepository.save(chat);
+            final Chat finalChat = chatRepository.save(chat);
 
-            chat.getIdUsers().parallelStream()
+            finalChat.getIdUsers().parallelStream()
                     .forEach(userId -> sendMessageToUser(userId,
                             new WsMessage(Command.CHAT_JOIN,
                                     new ChatData(userId,
@@ -283,10 +283,9 @@ public class MessageService implements IMessageService {
 
         if (message.getAuthorId().equals(data.getIdUser())) {
             message.setTextMessage(data.getTextMessage());
-            message = messageRepository.save(message);
-            Chat finalChat = chatRepository.findChatById(data.getIdChat());
+            final Message finalMessage = messageRepository.save(message);
+            final Chat finalChat = chatRepository.findChatById(data.getIdChat());
 
-            Message finalMessage = message;
             finalChat.getIdUsers().parallelStream()
                     .forEach(userId -> sendMessageToUser(userId,
                             new WsMessage(Command.MESSAGE_UPDATE,
@@ -313,9 +312,9 @@ public class MessageService implements IMessageService {
             Chat chat = chatRepository.findChatById(data.getIdChat());
             if (chat != null) {
                 chat.getIdMessages().remove(message.getId());
-                Chat finalChat = chatRepository.save(chat);
+                final Chat finalChat = chatRepository.save(chat);
 
-                chat.getIdUsers().parallelStream()
+                finalChat.getIdUsers().parallelStream()
                         .forEach(userId -> sendMessageToUser(userId,
                                 new WsMessage(Command.MESSAGE_DELETE,
                                         new MessageData(userId,
