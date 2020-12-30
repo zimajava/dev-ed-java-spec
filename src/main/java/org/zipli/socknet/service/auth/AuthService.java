@@ -38,7 +38,7 @@ public class AuthService implements IAuthService {
         } else if (!result.isConfirm()) {
             throw new AuthException("User does not pass email confirmation!");
         } else {
-            String token = jwtUtils.generateJwtToken(new UserDetailsImpl(result));
+            String token = jwtUtils.generateJwtToken(new UserDetailsImpl(result), result.getEmail());
             return new LoginResponse(result.getId(), token, token);
         }
     }
@@ -51,14 +51,8 @@ public class AuthService implements IAuthService {
         } else {
             userRepository.save(user);
             UserDetails userDetails = new UserDetailsImpl(user);
-            String token = jwtUtils.generateJwtToken(userDetails);
-            new Thread(() -> {
-                try {
-                    emailConfirmationService.sendEmail(user.getEmail(), token);
-                } catch (MessagingException e) {
-                    e.printStackTrace();
-                }
-            }).start();
+            String token = jwtUtils.generateJwtToken(userDetails, user.getEmail());
+            emailConfirmationService.sendEmail(user.getEmail(), token);
         }
     }
 

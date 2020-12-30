@@ -50,7 +50,7 @@ public class ResetPasswordService {
         User user = userRepository.getUserByEmail(email);
         if (user != null) {
             String userName = user.getUserName();
-            return jwtUtils.generateJwtToken(userDetailsService.loadUserByUsername(userName));
+            return jwtUtils.generateJwtToken(userDetailsService.loadUserByUsername(userName), email);
         } else {
             throw new UserNotFoundException("Error. User is not founded.");
         }

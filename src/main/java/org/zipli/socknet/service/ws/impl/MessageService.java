@@ -3,7 +3,9 @@ package org.zipli.socknet.service.ws.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.zipli.socknet.dto.ChatData;
+import org.zipli.socknet.dto.Command;
 import org.zipli.socknet.dto.MessageData;
+import org.zipli.socknet.dto.WsMessage;
 import org.zipli.socknet.exception.*;
 import org.zipli.socknet.model.Chat;
 import org.zipli.socknet.model.Message;
@@ -13,14 +15,15 @@ import org.zipli.socknet.repository.MessageRepository;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
 import org.zipli.socknet.service.ws.IMessageService;
+import org.zipli.socknet.util.JsonUtils;
 import reactor.core.publisher.Sinks;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-@Service
 @Slf4j
+@Service
 public class MessageService implements IMessageService {
     private final UserRepository userRepository;
     private final ChatRepository chatRepository;
@@ -39,10 +42,21 @@ public class MessageService implements IMessageService {
     public Message sendMessage(MessageData data) {
 
         Message message = new Message(data.getIdUser(), data.getIdChat(), new Date(), data.getTextMessage());
-        message = messageRepository.save(message);
-
+        final Message finalMessage = messageRepository.save(message);
         Chat chat = chatRepository.findChatById(data.getIdChat());
         chat.getIdMessages().add(message.getId());
+
+        chat.getIdUsers().parallelStream()
+                .forEach(userId -> sendMessageToUser(userId,
+                        new WsMessage(Command.MESSAGE_SEND,
+                                new MessageData(userId,
+                                        chat.getId(),
+                                        finalMessage.getId(),
+                                        finalMessage.getTextMessage()
+                                )
+                        ))
+                );
+
         chatRepository.save(chat);
 
         return message;
@@ -86,7 +100,7 @@ public class MessageService implements IMessageService {
 
             chat.getIdUsers().add(creatorUser.getId());
             chat.getIdUsers().add(user.getId());
-            chat = chatRepository.save(chat);
+            final Chat finalChat = chatRepository.save(chat);
 
             creatorUser.getChatsId().add(chat.getId());
             user.getChatsId().add(chat.getId());
@@ -96,6 +110,16 @@ public class MessageService implements IMessageService {
             users.add(user);
 
             userRepository.saveAll(users);
+
+            finalChat.getIdUsers().parallelStream()
+                    .forEach(userId -> sendMessageToUser(userId,
+                            new WsMessage(Command.CHAT_JOIN,
+                                    new ChatData(userId,
+                                            finalChat.getId(),
+                                            finalChat.getChatName()
+                                    )
+                            ))
+                    );
 
             return chat;
         } else {
@@ -110,7 +134,18 @@ public class MessageService implements IMessageService {
 
         if (chat != null) {
             chat.setChatName(data.getChatName());
-            chat = chatRepository.save(chat);
+            final Chat finalChat = chatRepository.save(chat);
+
+            finalChat.getIdUsers().parallelStream()
+                    .forEach(userId -> sendMessageToUser(userId,
+                            new WsMessage(Command.CHAT_UPDATE,
+                                    new ChatData(userId,
+                                            finalChat.getId(),
+                                            finalChat.getChatName()
+                                    )
+                            ))
+                    );
+
             return chat;
         } else {
             throw new UpdateChatException("Change chat failed");
@@ -135,6 +170,16 @@ public class MessageService implements IMessageService {
             messageRepository.deleteAllByChatId(data.getIdChat());
             chatRepository.deleteById(data.getIdChat());
 
+            chat.getIdUsers().parallelStream()
+                    .forEach(userId -> sendMessageToUser(userId,
+                            new WsMessage(Command.CHAT_DELETE,
+                                    new ChatData(userId,
+                                            chat.getId(),
+                                            chat.getChatName()
+                                    )
+                            ))
+                    );
+
         } else {
             throw new RemoveChatException("Only the creator can delete");
         }
@@ -145,11 +190,23 @@ public class MessageService implements IMessageService {
 
         Chat chat = chatRepository.findChatById(data.getIdChat());
         chat.getIdUsers().remove(data.getIdUser());
-        chat = chatRepository.save(chat);
+        final Chat finalChat = chatRepository.save(chat);
 
         User user = userRepository.getUserById(data.getIdUser());
         user.getChatsId().remove(chat.getId());
         userRepository.save(user);
+
+        finalChat.getIdUsers().parallelStream()
+                .forEach(userId -> sendMessageToUser(userId,
+                        new WsMessage(Command.CHAT_LEAVE,
+                                new ChatData(userId,
+                                        finalChat.getId(),
+                                        finalChat.getChatName(),
+                                        null,
+                                        data.getIdUser()
+                                )
+                        ))
+                );
 
         return chat;
     }
@@ -167,7 +224,19 @@ public class MessageService implements IMessageService {
             userRepository.save(user);
 
             listIdUsers.add(data.getIdUser());
-            chat = chatRepository.save(chat);
+            final Chat finalChat = chatRepository.save(chat);
+
+            finalChat.getIdUsers().parallelStream()
+                    .forEach(userId -> sendMessageToUser(userId,
+                            new WsMessage(Command.CHAT_JOIN,
+                                    new ChatData(userId,
+                                            finalChat.getId(),
+                                            finalChat.getChatName(),
+                                            null,
+                                            data.getIdUser()
+                                    )
+                            ))
+                    );
         }
 
         return chat;
@@ -197,13 +266,11 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public String addMessageEmitterByToken(String token, Sinks.Many<String> emitter) throws CreateSocketException {
+    public void addMessageEmitterByToken(String token, Sinks.Many<String> emitter) throws CreateSocketException {
         try {
             String username = jwtUtils.getUserNameFromJwtToken(token);
             User user = userRepository.findUserByUserName(username);
-            String userId = user.getId();
-            messageEmitterByUserId.put(userId, emitter);
-            return userId;
+            messageEmitterByUserId.put(user.getId(), emitter);
         } catch (Exception e) {
             throw new CreateSocketException("Can't create connect to user, Exception cause: " + e.getMessage() + " on class " + e.getClass().getSimpleName());
         }
@@ -216,7 +283,19 @@ public class MessageService implements IMessageService {
 
         if (message.getAuthorId().equals(data.getIdUser())) {
             message.setTextMessage(data.getTextMessage());
-            message = messageRepository.save(message);
+            final Message finalMessage = messageRepository.save(message);
+            final Chat finalChat = chatRepository.findChatById(data.getIdChat());
+
+            finalChat.getIdUsers().parallelStream()
+                    .forEach(userId -> sendMessageToUser(userId,
+                            new WsMessage(Command.MESSAGE_UPDATE,
+                                    new MessageData(userId,
+                                            finalChat.getId(),
+                                            finalMessage.getId(),
+                                            finalMessage.getTextMessage()
+                                    )
+                            ))
+                    );
 
             return message;
         } else {
@@ -233,13 +312,37 @@ public class MessageService implements IMessageService {
             Chat chat = chatRepository.findChatById(data.getIdChat());
             if (chat != null) {
                 chat.getIdMessages().remove(message.getId());
-                chatRepository.save(chat);
+                final Chat finalChat = chatRepository.save(chat);
+
+                finalChat.getIdUsers().parallelStream()
+                        .forEach(userId -> sendMessageToUser(userId,
+                                new WsMessage(Command.MESSAGE_DELETE,
+                                        new MessageData(userId,
+                                                finalChat.getId(),
+                                                message.getId(),
+                                                message.getTextMessage()
+                                        )
+                                ))
+                        );
             } else {
                 throw new UpdateChatException("There is no such chat");
             }
             messageRepository.delete(message);
         } else {
             throw new MessageDeleteException("Only the author can delete message");
+        }
+    }
+
+    private void sendMessageToUser(String userId, WsMessage wsMessage) {
+        Sinks.Many<String> emitterByUser = messageEmitterByUserId.get(userId);
+        if (emitterByUser != null) {
+            emitterByUser.tryEmitNext(JsonUtils.jsonWriteHandle(wsMessage));
+        } else {
+            if (wsMessage.getCommand().equals(Command.CHAT_LEAVE) || wsMessage.getCommand().equals(Command.CHAT_JOIN)) {
+                log.info("User = {userId: {} isn't online: {}, user: {} not sent.}", userId, wsMessage.getCommand(), wsMessage.getData().getIdUser());
+            } else {
+                log.info("User = {userId: {} isn't online: {} not sent.}", userId, wsMessage.getCommand());
+            }
         }
     }
 

@@ -13,15 +13,20 @@ import java.util.Date;
 @Slf4j
 @Component
 public class JwtUtils {
+
+    public static final String EMAIL = "email";
+
     @Value("${app.jwtSecret}")
     private String jwtSecret;
 
     @Value("${app.jwtExpirationMs}")
     private int jwtExpirationMs;
 
-    public String generateJwtToken(UserDetails userPrincipal) {
+    public String generateJwtToken(UserDetails userPrincipal, String email) {
+
         return Jwts.builder()
                 .setSubject((userPrincipal.getUsername()))
+                .claim(EMAIL, email)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
@@ -34,6 +39,15 @@ public class JwtUtils {
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
+    }
+
+    public String getEmailFromJwtToken(String token) {
+        return Jwts.parser()
+                .setSigningKey(jwtSecret)
+                .parseClaimsJws(token)
+                .getBody()
+                .get(EMAIL)
+                .toString();
     }
 
     public boolean validateJwtToken(String authToken) {
