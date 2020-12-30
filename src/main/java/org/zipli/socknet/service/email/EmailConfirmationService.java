@@ -48,7 +48,7 @@ public class EmailConfirmationService {
                     + "<br/>"
                     + "<br/>"
                     + "<br/>"
-                    + "<img src='http://www.apache.org/images/asf_logo_wide.gif'>";
+                    + "<img src='https://i.gifer.com/DfGU.gif'>";
 
             message.setContent(htmlMsg, "text/html");
             new Thread(() -> {
