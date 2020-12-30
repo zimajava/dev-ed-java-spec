@@ -102,7 +102,7 @@ public class AuthServiceTest {
     }
 
     @Test
-    public void registration_Pass() throws MessagingException {
+    public void registration_Pass() {
         User user = new User(email, password, userName, "Cat");
 
         Mockito.when(userRepository.getUserByEmail(user.getEmail())).thenReturn(null);

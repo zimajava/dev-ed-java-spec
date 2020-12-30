@@ -96,7 +96,7 @@ public class UserService implements IUserService {
 
     @Override
     @Transactional
-    public User updateEmail(EmailRequest data) throws UpdateEmailException, MessagingException {
+    public User updateEmail(EmailRequest data) throws UpdateEmailException {
         if (data.getUserId() == null || data.getEmail() == null) {
             throw new UpdateEmailException("data is null");
         }

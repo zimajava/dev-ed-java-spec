@@ -152,7 +152,7 @@ public class AccountControllerTest {
     }
 
     @Test
-    void updateEmailTest_Pass() throws MessagingException {
+    void updateEmailTest_Pass() {
         Mockito.doReturn(user)
                 .when(userService)
                 .updateEmail(emailRequest);
@@ -161,7 +161,7 @@ public class AccountControllerTest {
     }
 
     @Test
-    void updateEmailTest_NullData() throws MessagingException {
+    void updateEmailTest_NullData() {
         UpdateEmailException e = new UpdateEmailException("data is null");
         Mockito.doThrow(e)
                 .when(userService)
@@ -170,7 +170,7 @@ public class AccountControllerTest {
     }
 
     @Test
-    void updateEmailTest_BadId() throws MessagingException {
+    void updateEmailTest_BadId() {
         UpdateEmailException e = new UpdateEmailException("not correct id");
         Mockito.doThrow(e)
                 .when(userService)
@@ -179,7 +179,7 @@ public class AccountControllerTest {
     }
 
     @Test
-    void updateEmailTest_BadEmail() throws MessagingException {
+    void updateEmailTest_BadEmail() {
         UpdateEmailException e = new UpdateEmailException("not correct email");
         Mockito.doThrow(e)
                 .when(userService)
@@ -206,7 +206,7 @@ public class AccountControllerTest {
     }
 
     @Test
-    void updatePasswordTest_BadId()  {
+    void updatePasswordTest_BadId() {
         UpdatePasswordExсeption e = new UpdatePasswordExсeption("not correct id");
         Mockito.doThrow(e)
                 .when(userService)

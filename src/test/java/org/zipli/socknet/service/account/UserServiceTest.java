@@ -133,7 +133,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void updateEmailTest_Pass() throws MessagingException {
+    void updateEmailTest_Pass()  {
         Mockito.when(userRepository.getUserById("ddjfdlkfje")).thenReturn(user);
         assertEquals(userService.updateEmail(new EmailRequest("ddjfdlkfje", "vlad345@ukr.net")),
                 user);
