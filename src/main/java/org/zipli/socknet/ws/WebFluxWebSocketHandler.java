@@ -14,7 +14,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
 
-
 import java.util.Collections;
 import java.util.List;
 
@@ -99,7 +98,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                 try {
                     messageService.removeChat((ChatData) wsMessage.getData());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
-                            new WsMessage(eventCommand, "Chat is successfully deleted")));
+                            new WsMessageResponse(eventCommand, "Chat is successfully deleted")));
                 } catch (RemoveChatException e) {
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand, e.getMessage()))
@@ -134,8 +133,8 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
             case CHATS_GET_BY_USER_ID:
                 try {
                     List<Chat> chatsByUserId = messageService.showChatsByUser((ChatData) wsMessage.getData());
-                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(new WsMessage(eventCommand,
-                            new ChatData(chatsByUserId))));
+                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(new WsMessageResponse(eventCommand,
+                            chatsByUserId)));
                 } catch (Exception e) {
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand, e.getMessage()))
@@ -171,7 +170,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                 try {
                     messageService.deleteMessage((MessageData) wsMessage.getData());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
-                            new WsMessage(eventCommand, "Message is successfully deleted")));
+                            new WsMessageResponse(eventCommand, "Message is successfully deleted")));
                 } catch (MessageDeleteException e) {
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand, e.getMessage()))
