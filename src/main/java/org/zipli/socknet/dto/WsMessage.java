@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class WsMessage {
+public class WsMessage  {
     private Command command;
     private BaseData data;
 
