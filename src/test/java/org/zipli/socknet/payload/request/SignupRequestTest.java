@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class SignupRequestTest {
     private final Pattern emailPattern = Pattern.compile("^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*\\.\\w{2,}$");
     private final Pattern passwordPattern = Pattern.compile("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,16}$");
-    private final Pattern userNamePattern = Pattern.compile("^[a-zA-Z_-]{2,16}$");//"^[a-zA-Z0-9_-]{8,16}$"
+    private final Pattern userNamePattern = Pattern.compile("^[a-zA-Z_-]{2,16}$");
     private final Pattern nickNamePattern = Pattern.compile("^.{1,16}$");
 
     private SignupRequest validParameters;
