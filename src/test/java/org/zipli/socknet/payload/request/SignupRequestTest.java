@@ -13,11 +13,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class SignupRequestTest {
     private final Pattern emailPattern = Pattern.compile("^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*\\.\\w{2,}$");
     private final Pattern passwordPattern = Pattern.compile("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,16}$");
-    private final Pattern userNamePattern = Pattern.compile("^[a-zA-Z0-9_-]{8,16}$");
-    private final Pattern nickNamePattern = Pattern.compile("^[a-zA-Z0-9_ .-]{8,16}$");
+    private final Pattern userNamePattern = Pattern.compile("^[a-zA-Z_-]{2,16}$");
+    private final Pattern nickNamePattern = Pattern.compile("^.{1,16}$");
 
     private SignupRequest validParameters;
     private SignupRequest fieldsLessThan8;
+    private SignupRequest fieldsIsEmpty;
     private SignupRequest fieldsMoreThan16;
     private SignupRequest fieldsWithoutUpperCase;
     private SignupRequest fieldsWithoutLowerCase;
@@ -31,19 +32,19 @@ class SignupRequestTest {
         validParameters = new SignupRequest(
                 "newUser2@gmail.com",
                 "ugyur2Wa4",
-                "uyfrjjj3Jk8",
+                "uZ-y",
                 "gfr5367HP");
 
         fieldsWithSpecificChars = new SignupRequest(
                 "n_ew.j-ser2@gmail.com",
                 "ugyur2Wa4",
-                "uyfrj_jj3-Jk8",
+                "uyfrj_jjv-Jkn",
                 "gf.r5_367-H P");
 
         fieldsWithTwoDogs = new SignupRequest(
                 "new@User2@gmail.com",
                 "ugyur2Wa4",
-                "uyfrjjj3Jk8",
+                "uyfrjjjxJkz",
                 "gfr5367HP");
 
         emptySignupRequest = new SignupRequest("", "", "", "");
@@ -54,28 +55,34 @@ class SignupRequestTest {
                 "uyfrjjj",
                 "gfr5367");
 
+        fieldsIsEmpty = new SignupRequest(
+                "",
+                "",
+                "",
+                "");
+
         fieldsMoreThan16 = new SignupRequest(
                 "ewUnjnoe899249mlfser2@gmail.com",
                 "ugyur2Wa4sdjkfjkskllsllj",
-                "uyfrjjj3Jk8sfkdkjjgdjgdl",
+                "uyfrjjjqJkrsfkdkjjgdjgdl",
                 "gfr5367HPdksdfjkdjkfjkdk");
 
         fieldsWithoutUpperCase = new SignupRequest(
                 "newuser2@gmail.com",
                 "ugyur2wa4",
-                "kjfdk87dfkl",
+                "kjfdkqwdfkl",
                 "gfr5367hp");
 
         fieldsWithoutLowerCase = new SignupRequest(
                 ":NEWUSER2@GMAIL.COM",
                 "UGHSK2WGKK4",
-                "UGHSK2WGKK4",
+                "UGHSKRWGKKE",
                 "LKNFFEK2WGKK4");
 
         fieldsWithSpaces = new SignupRequest(
                 "new User2@gmail.com",
                 "ugyur 2Wa4",
-                "uyfrj jj3Jk8",
+                "uyfrj jjeJkb",
                 "gfr53 67HP");
     }
 
@@ -171,7 +178,7 @@ class SignupRequestTest {
 
     @Test
     public void userName_ShouldNotPassValidation() {
-        assertFalse(fieldsLessThan8.getUserName()
+        assertFalse(fieldsIsEmpty.getUserName()
                                    .matches(String.valueOf(userNamePattern)));
 
         assertFalse(fieldsMoreThan16.getUserName()
@@ -198,10 +205,11 @@ class SignupRequestTest {
 
     @Test
     public void nickName_ShouldNotPassValidation() {
-        assertFalse(fieldsLessThan8.getNickName()
+        assertFalse(fieldsIsEmpty.getNickName()
                                    .matches(String.valueOf(nickNamePattern)));
 
         assertFalse(fieldsMoreThan16.getNickName()
                                     .matches(String.valueOf(nickNamePattern)));
     }
+
 }
