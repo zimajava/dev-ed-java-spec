@@ -68,7 +68,7 @@ public class WebSecurityConfig {
         corsConfig.setAllowedOrigins(corsUrls);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfig);
+        source.registerCorsConfiguration("*", corsConfig);
         return source;
     }
 }
