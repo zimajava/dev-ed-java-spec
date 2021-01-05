@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class LoginRequestTest {
     private final Pattern emailPattern = Pattern.compile("^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*\\.\\w{2,}$");
     private final Pattern passwordPattern = Pattern.compile("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,16}$");
-    private final Pattern userNamePattern = Pattern.compile("^[a-zA-Z0-9_-]{8,16}$");
+    private final Pattern userNamePattern = Pattern.compile("^[a-zA-Z_-]{2,16}$");
 
     private LoginRequest validParametersEmail;
     private LoginRequest validParametersUserName;
@@ -40,7 +40,7 @@ class LoginRequestTest {
                 "ugyur2Wa4");
 
         validParametersUserName = new LoginRequest(
-                "uyfrjjj3Jk8",
+                "uyfrjjjJk",
                 "ugyur2Wa4");
 
         emptyLoginRequestEmail = new LoginRequest("", "");
@@ -78,7 +78,7 @@ class LoginRequestTest {
                 "ugyur2wa4");
 
         fieldsWithoutUpperCaseUserName = new LoginRequest(
-                "kjfdk87dfkl",
+                "kjfdkdfkl",
                 "ugyur2wa4");
 
         fieldsWithoutLowerCaseEmail = new LoginRequest(
@@ -86,7 +86,7 @@ class LoginRequestTest {
                 "UGHSK2WGKK4");
 
         fieldsWithoutLowerCaseUserName = new LoginRequest(
-                "UGHSK2WGKK4",
+                "UGHSKWGKK",
                 "UGHSK2WGKK4");
 
         fieldsWithSpecificCharsEmail = new LoginRequest(
@@ -94,7 +94,7 @@ class LoginRequestTest {
                 "ugyur2Wa4");
 
         fieldsWithSpecificCharsUserName = new LoginRequest(
-                "uyfrj_jj3-Jk8",
+                "uyfrj_jj-Jk",
                 "ugyur2Wa4");
 
         fieldsWithTwoDogs = new LoginRequest(
