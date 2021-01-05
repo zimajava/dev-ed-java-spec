@@ -202,7 +202,6 @@ public class MessageService implements IMessageService {
                                 new ChatData(userId,
                                         finalChat.getId(),
                                         finalChat.getChatName(),
-                                        null,
                                         data.getIdUser()
                                 )
                         ))
@@ -232,7 +231,6 @@ public class MessageService implements IMessageService {
                                     new ChatData(userId,
                                             finalChat.getId(),
                                             finalChat.getChatName(),
-                                            null,
                                             data.getIdUser()
                                     )
                             ))
