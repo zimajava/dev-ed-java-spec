@@ -69,7 +69,7 @@ public class MessageService implements IMessageService {
 
             Chat chat = new Chat(data.getChatName(),
                     false,
-                    null,
+                    new ArrayList<>(),
                     Collections.singletonList(data.getIdUser()),
                     data.getIdUser());
 
