@@ -52,35 +52,40 @@ public class FileService implements IFileService {
 
     @Override
     public File sendFile(FileData data) throws SendFileException, IOException {
+        File file;
+        Chat chat;
+        if (data != null) {
+            DBObject metaData = new BasicDBObject();
+            metaData.put("type", "file");
+            metaData.put("title", data.getTitle());
+            ObjectId id = gridFsTemplate.store(
+                    data.getMultipartFile().getInputStream(),
+                    data.getMultipartFile().getName(),
+                    data.getMultipartFile().getContentType(),
+                    metaData
+            );
+            GridFSFile gridFSFile = gridFsTemplate.findOne(new Query(Criteria.where("_id").is(id)));
+            if (gridFSFile != null) {
+                file = new File(data.getIdUser(), data.getIdChat(), new Date(),
+                        operations.getResource(gridFSFile).getInputStream());
 
-        DBObject metaData = new BasicDBObject();
-        metaData.put("type", "file");
-        metaData.put("title", data.getTitle());
-        ObjectId id = gridFsTemplate.store(
-                data.getMultipartFile().getInputStream(),
-                data.getMultipartFile().getName(),
-                data.getMultipartFile().getContentType(),
-                metaData
-        );
-        GridFSFile gridFSFile = gridFsTemplate.findOne(new Query(Criteria.where("_id").is(id)));
-        if (gridFSFile != null) {
-            File file = new File(data.getIdUser(), data.getIdChat(), new Date(),
-                    operations.getResource(gridFSFile).getInputStream());
+                final File finalFile = fileRepository.save(file);
+                chat = chatRepository.findChatById(data.getIdChat());
+                chat.getIdFiles().add(file.getId());
 
-            final File finalFile = fileRepository.save(file);
-            Chat chat = chatRepository.findChatById(data.getIdChat());
-            chat.getIdFiles().add(file.getId());
-
-            chat.getIdUsers().parallelStream()
-                    .forEach(userId -> messageService.sendMessageToUser(userId,
-                            new WsMessage(Command.FILE_SEND,
-                                    new FileData(userId,
-                                            chat.getId(),
-                                            finalFile.getId(),
-                                            finalFile.getTitle(),
-                                            data.getMultipartFile())
-                            ))
-                    );
+                chat.getIdUsers().parallelStream()
+                        .forEach(userId -> messageService.sendMessageToUser(userId,
+                                new WsMessage(Command.FILE_SEND,
+                                        new FileData(userId,
+                                                chat.getId(),
+                                                finalFile.getId(),
+                                                finalFile.getTitle(),
+                                                data.getMultipartFile())
+                                ))
+                        );
+            } else {
+                throw new SendFileException("GridFSFile is null!");
+            }
 
             chatRepository.save(chat);
             return file;
@@ -115,7 +120,7 @@ public class FileService implements IFileService {
             }
             fileRepository.delete(file);
         } else {
-            throw new FileDeleteException("Only the author can delete message");
+            throw new FileDeleteException("Only the author can delete the file");
         }
     }
 }

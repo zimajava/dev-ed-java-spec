@@ -218,7 +218,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                 try {
                     fileService.deleteFile((FileData) wsMessage.getData());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
-                            new WsMessage(eventCommand, "File is successfully deleted")));
+                            new WsMessageResponse(eventCommand, "Message is successfully deleted")));
                 } catch (FileDeleteException e) {
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand, e.getMessage()))
