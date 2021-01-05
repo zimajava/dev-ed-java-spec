@@ -48,14 +48,14 @@ public class WsMessage {
                 case MESSAGES_GET_BY_CHAT_ID:
                     return new WsMessage(command, new MessageData(
                             data.findValue("idUser").asText(),
-                            data.findValue("chatId").asText(),
+                            data.findValue("idChat").asText(),
                             data.findValue("messageId").asText(),
                             data.findValue("textMessage").asText()
                     ));
                 default:
                     return new WsMessage(command, new BaseData(
                             data.findValue("idUser").asText(),
-                            data.findValue("chatId").asText()
+                            data.findValue("idChat").asText()
                     ));
             }
         }
