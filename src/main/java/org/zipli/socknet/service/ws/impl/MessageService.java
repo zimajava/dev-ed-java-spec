@@ -71,6 +71,7 @@ public class MessageService implements IMessageService {
                     false,
                     null,
                     Collections.singletonList(data.getIdUser()),
+                    null,
                     data.getIdUser());
 
             chat = chatRepository.save(chat);
@@ -335,7 +336,7 @@ public class MessageService implements IMessageService {
         }
     }
 
-    private void sendMessageToUser(String userId, WsMessage wsMessage) {
+    void sendMessageToUser(String userId, WsMessage wsMessage) {
         Sinks.Many<String> emitterByUser = messageEmitterByUserId.get(userId);
         if (emitterByUser != null) {
             emitterByUser.tryEmitNext(JsonUtils.jsonWriteHandle(wsMessage));

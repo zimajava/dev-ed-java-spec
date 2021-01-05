@@ -7,7 +7,9 @@ import org.springframework.web.reactive.socket.WebSocketSession;
 import org.zipli.socknet.dto.*;
 import org.zipli.socknet.exception.*;
 import org.zipli.socknet.model.Chat;
+import org.zipli.socknet.model.File;
 import org.zipli.socknet.model.Message;
+import org.zipli.socknet.service.ws.IFileService;
 import org.zipli.socknet.service.ws.IMessageService;
 import org.zipli.socknet.util.JsonUtils;
 import reactor.core.publisher.Flux;
@@ -23,9 +25,11 @@ import static org.zipli.socknet.dto.Command.ERROR_CREATE_CONNECT;
 @Component
 public class WebFluxWebSocketHandler implements WebSocketHandler {
     private final IMessageService messageService;
+    private final IFileService fileService;
 
-    public WebFluxWebSocketHandler(IMessageService messageService) {
+    public WebFluxWebSocketHandler(IMessageService messageService, IFileService fileService) {
         this.messageService = messageService;
+        this.fileService = fileService;
     }
 
     @Override
@@ -192,6 +196,30 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(new WsMessage(eventCommand,
                             new MessageData(messagesByChatId))));
                 } catch (Exception e) {
+                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
+                            new WsMessageResponse(eventCommand, e.getMessage()))
+                    );
+                }
+                break;
+
+            case FILE_SEND:
+                try {
+                    File newFile = fileService.sendFile((FileData) wsMessage.getData());
+                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(new WsMessage(eventCommand,
+                            new FileData(Collections.singletonList(newFile)))));
+                } catch (Exception e) {
+                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
+                            new WsMessageResponse(eventCommand, e.getMessage()))
+                    );
+                }
+                break;
+
+            case FILE_DELETE:
+                try {
+                    fileService.deleteFile((FileData) wsMessage.getData());
+                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
+                            new WsMessage(eventCommand, "File is successfully deleted")));
+                } catch (FileDeleteException e) {
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand, e.getMessage()))
                     );
