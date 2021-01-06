@@ -217,7 +217,7 @@ public class MessageService implements IMessageService {
         Chat chat = chatRepository.findChatById(data.getIdChat());
         List<String> listIdUsers = chat.getIdUsers();
 
-        if (!listIdUsers.contains(data.getIdUser())) {
+        if (!chat.isPrivate() && !listIdUsers.contains(data.getIdUser())) {
 
             User user = userRepository.getUserById(data.getIdUser());
             user.getChatsId().add(data.getIdChat());
