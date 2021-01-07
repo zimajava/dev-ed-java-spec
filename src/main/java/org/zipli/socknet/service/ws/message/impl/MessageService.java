@@ -1,4 +1,4 @@
-package org.zipli.socknet.service.ws.impl;
+package org.zipli.socknet.service.ws.message.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -14,7 +14,7 @@ import org.zipli.socknet.repository.ChatRepository;
 import org.zipli.socknet.repository.MessageRepository;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
-import org.zipli.socknet.service.ws.IMessageService;
+import org.zipli.socknet.service.ws.message.IMessageService;
 import org.zipli.socknet.util.JsonUtils;
 import reactor.core.publisher.Sinks;
 

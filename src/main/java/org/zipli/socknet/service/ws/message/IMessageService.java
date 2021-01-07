@@ -1,4 +1,4 @@
-package org.zipli.socknet.service.ws;
+package org.zipli.socknet.service.ws.message;
 
 import org.zipli.socknet.dto.ChatData;
 import org.zipli.socknet.dto.MessageData;
