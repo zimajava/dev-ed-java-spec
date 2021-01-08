@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.web.multipart.MultipartFile;
-import org.zipli.socknet.model.File;
+import org.zipli.socknet.model.FileMessage;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ public class FileData extends BaseData {
 
     private String title;
     private MultipartFile multipartFile;
-    private List<File> files;
+    private List<FileMessage> fileMessages;
 
     public FileData(String idUser, String chatId, String fileId, String title) {
         super(idUser, chatId);
@@ -26,8 +26,8 @@ public class FileData extends BaseData {
         this.title = title;
     }
 
-    public FileData(List <File> files){
-        this.files = files;
+    public FileData(List <FileMessage> fileMessages){
+        this.fileMessages = fileMessages;
     }
 
     public FileData(String idUser, String chatId, String fileId, String title, MultipartFile multipartFile) {

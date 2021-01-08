@@ -14,7 +14,7 @@ import java.util.Date;
 @ToString
 @Document
 @NoArgsConstructor
-public class File {
+public class FileMessage {
 
     @Id
     private String id;
@@ -25,14 +25,14 @@ public class File {
     private InputStream stream;
     private Date date;
 
-    public File(String authorId, String chatId,Date date, String title) {
+    public FileMessage(String authorId, String chatId, Date date, String title) {
         this.authorId = authorId;
         this.chatId = chatId;
         this.date = date;
         this.title = title;
     }
 
-    public File(String authorId, String chatId,Date date, InputStream stream) {
+    public FileMessage(String authorId, String chatId, Date date, InputStream stream) {
         this.authorId = authorId;
         this.chatId = chatId;
         this.date = date;
