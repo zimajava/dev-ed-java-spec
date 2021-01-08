@@ -19,7 +19,7 @@ import javax.validation.constraints.Size;
 public class LoginRequest {
     @NotBlank(message = "Login can't be empty")
     @NotNull
-    @Pattern(regexp = "^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*\\.\\w{2,}$|^[a-zA-Z0-9_-]{8,16}$")
+    @Pattern(regexp = "^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*\\.\\w{2,}$|^[a-zA-Z_-]{2,16}$")
     private String login;
 
     @NotBlank(message = "Password can't be empty")

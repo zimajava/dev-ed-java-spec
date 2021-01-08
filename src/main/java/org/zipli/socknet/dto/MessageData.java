@@ -14,7 +14,6 @@ import java.util.List;
 @NoArgsConstructor
 public class MessageData extends BaseData {
     private String messageId;
-
     private String textMessage;
     private List<Message> messages;
 

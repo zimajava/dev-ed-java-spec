@@ -20,6 +20,7 @@ import reactor.core.publisher.Sinks;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -29,7 +30,7 @@ public class MessageService implements IMessageService {
     private final ChatRepository chatRepository;
     private final MessageRepository messageRepository;
     private final JwtUtils jwtUtils;
-    private final Map<String, Sinks.Many<String>> messageEmitterByUserId = new ConcurrentHashMap<>();
+    private final Map<String, List<Sinks.Many<String>>> messageEmitterByUserId = new ConcurrentHashMap<>();
 
     public MessageService(UserRepository userRepository, ChatRepository chatRepository, MessageRepository messageRepository, JwtUtils jwtUtils) {
         this.userRepository = userRepository;
@@ -69,7 +70,7 @@ public class MessageService implements IMessageService {
 
             Chat chat = new Chat(data.getChatName(),
                     false,
-                    null,
+                    new ArrayList<>(),
                     Collections.singletonList(data.getIdUser()),
                     data.getIdUser());
 
@@ -202,7 +203,6 @@ public class MessageService implements IMessageService {
                                 new ChatData(userId,
                                         finalChat.getId(),
                                         finalChat.getChatName(),
-                                        null,
                                         data.getIdUser()
                                 )
                         ))
@@ -217,7 +217,7 @@ public class MessageService implements IMessageService {
         Chat chat = chatRepository.findChatById(data.getIdChat());
         List<String> listIdUsers = chat.getIdUsers();
 
-        if (!listIdUsers.contains(data.getIdUser())) {
+        if (!chat.isPrivate() && !listIdUsers.contains(data.getIdUser())) {
 
             User user = userRepository.getUserById(data.getIdUser());
             user.getChatsId().add(data.getIdChat());
@@ -232,7 +232,6 @@ public class MessageService implements IMessageService {
                                     new ChatData(userId,
                                             finalChat.getId(),
                                             finalChat.getChatName(),
-                                            null,
                                             data.getIdUser()
                                     )
                             ))
@@ -271,7 +270,7 @@ public class MessageService implements IMessageService {
             String username = jwtUtils.getUserNameFromJwtToken(token);
             User user = userRepository.findUserByUserName(username);
             String userId = user.getId();
-            messageEmitterByUserId.put(userId, emitter);
+            messageEmitterByUserId.computeIfAbsent(userId, e -> new CopyOnWriteArrayList<>()).add(emitter);
             return userId;
         } catch (Exception e) {
             throw new CreateSocketException("Can't create connect to user, Exception cause: " + e.getMessage() + " on class " + e.getClass().getSimpleName());
@@ -336,9 +335,9 @@ public class MessageService implements IMessageService {
     }
 
     private void sendMessageToUser(String userId, WsMessage wsMessage) {
-        Sinks.Many<String> emitterByUser = messageEmitterByUserId.get(userId);
-        if (emitterByUser != null) {
-            emitterByUser.tryEmitNext(JsonUtils.jsonWriteHandle(wsMessage));
+        List<Sinks.Many<String>> emittersByUser = messageEmitterByUserId.get(userId);
+        if (emittersByUser != null) {
+            emittersByUser.forEach(emitter -> emitter.tryEmitNext(JsonUtils.jsonWriteHandle(wsMessage)));
         } else {
             if (wsMessage.getCommand().equals(Command.CHAT_LEAVE) || wsMessage.getCommand().equals(Command.CHAT_JOIN)) {
                 log.info("User = {userId: {} isn't online: {}, user: {} not sent.}", userId, wsMessage.getCommand(), wsMessage.getData().getIdUser());
@@ -349,9 +348,9 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public void deleteMessageEmitterByUserId(String userId, Sinks.Many<String> emitter) throws DeleteSessionException{
+    public void deleteMessageEmitterByUserId(String userId, Sinks.Many<String> emitter) throws DeleteSessionException {
         try {
-           messageEmitterByUserId.remove(userId);
+            messageEmitterByUserId.getOrDefault(userId, new CopyOnWriteArrayList<>()).remove(emitter);
         } catch (Exception e) {
             throw new DeleteSessionException("Can't delete message emitter");
         }
