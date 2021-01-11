@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.zipli.socknet.exception.*;
 import org.zipli.socknet.model.User;
-
 import org.zipli.socknet.payload.request.AvatarRequest;
 import org.zipli.socknet.payload.request.EmailRequest;
 import org.zipli.socknet.payload.request.NickNameRequest;
@@ -16,19 +15,16 @@ import org.zipli.socknet.security.jwt.JwtUtils;
 import org.zipli.socknet.security.services.UserDetailsImpl;
 import org.zipli.socknet.service.email.EmailConfirmationService;
 
-import javax.mail.MessagingException;
-
-
 @Service
 public class UserService implements IUserService {
 
-    private UserRepository userRepository;
-    private EmailConfirmationService emailConfirmationService;
-    private JwtUtils jwtUtils;
+    private final UserRepository userRepository;
+    private final EmailConfirmationService emailConfirmationService;
+    private final JwtUtils jwtUtils;
 
 
     @Autowired
-    public void UserService(UserRepository userRepository, EmailConfirmationService emailConfirmationService, JwtUtils jwtUtils) {
+    public UserService(UserRepository userRepository, EmailConfirmationService emailConfirmationService, JwtUtils jwtUtils) {
         this.userRepository = userRepository;
         this.emailConfirmationService = emailConfirmationService;
         this.jwtUtils = jwtUtils;
