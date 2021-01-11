@@ -6,6 +6,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.zipli.socknet.exception.ErrorStatusCode;
 import org.zipli.socknet.exception.NotConfirmAccountException;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.repository.UserRepository;
@@ -72,7 +73,7 @@ public class EmailConfirmationService {
             userRepository.save(user);
             return "Account verified";
         } else {
-            throw new NotConfirmAccountException("Error. The token is invalid or broken!");
+            throw new NotConfirmAccountException(ErrorStatusCode.TOKEN_INVALID_OR_BROKEN.getValue());
         }
     }
 }

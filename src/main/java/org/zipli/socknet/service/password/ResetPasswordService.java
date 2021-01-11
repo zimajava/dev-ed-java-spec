@@ -5,6 +5,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.zipli.socknet.exception.ErrorStatusCode;
 import org.zipli.socknet.exception.UserNotFoundException;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.repository.UserRepository;
@@ -52,7 +53,7 @@ public class ResetPasswordService {
             String userName = user.getUserName();
             return jwtUtils.generateJwtToken(userDetailsService.loadUserByUsername(userName), email);
         } else {
-            throw new UserNotFoundException("Error. User is not founded.");
+            throw new UserNotFoundException(ErrorStatusCode.USER_NOT_FOUND.getValue());
         }
     }
 
