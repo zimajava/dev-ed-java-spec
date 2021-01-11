@@ -1,50 +1,46 @@
 package org.zipli.socknet.service.ws.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 import org.zipli.socknet.dto.FileData;
 import org.zipli.socknet.exception.*;
 import org.zipli.socknet.model.Chat;
-import org.zipli.socknet.model.FileMessage;
+import org.zipli.socknet.model.File;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.repository.ChatRepository;
 import org.zipli.socknet.repository.FileRepository;
 import org.zipli.socknet.repository.UserRepository;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
-import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 @DataMongoTest
-class FileMessageServiceTest {
+class FileServiceTest {
 
     private FileData fileData;
-    private Chat chat;
-
-    @MockBean
+    private File file;
+    @Autowired
     FileService fileService;
 
-    @Autowired
+    @MockBean
     FileRepository fileRepository;
-    @Autowired
+    @MockBean
     ChatRepository chatRepository;
-    @Autowired
+    @MockBean
     UserRepository userRepository;
 
     @MockBean
@@ -56,14 +52,36 @@ class FileMessageServiceTest {
 
     @BeforeEach
     void setup() {
-        MockMultipartFile multipartFile = new MockMultipartFile("Screenshot_1", "Screenshot_1.png".getBytes());
+//        MockMultipartFile multipartFile = new MockMultipartFile("Screenshot_1", "file:c:\\Screenshot_1.png".getBytes());
 
+//        MultipartFile multipartFile =
+//                new MockMultipartFile(
+//                        "file",
+//                        "test contract.pdf",
+//                        MediaType.APPLICATION_PDF_VALUE,
+//                        "<<pdf data>>".getBytes(StandardCharsets.UTF_8));
+
+//
+//        mockMvc.perform(
+//                multipart("/users/")
+//                        .file(file)
+//                        .file(metadata)
+//                        .accept(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isOk())
+//                .andExpect(content().string("testcontract.pdf"));
+//    }
         fileData = new FileData(
                 "userId",
                 "chatId",
                 "fileId",
-                "title",
-                multipartFile);
+                "hello.txt",
+                InputStream.nullInputStream());
+
+
+//        MockMvc mockMvc
+//                = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+//        mockMvc.perform(multipart("/upload").file(file))
+//                .andExpect(status().isOk());
 
 //        Mockito.doReturn(new Chat("NameGroupChat", true, "userId"))
 //                .when(chatRepository)
@@ -75,16 +93,15 @@ class FileMessageServiceTest {
     @Test
     void sendFile_Pass() {
 
-        FileMessage fileMessage = null;
         try {
-            fileMessage = fileService.sendFile(fileData);
+            file = fileService.sendFile(fileData);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        assertEquals(fileData.getTitle(), fileMessage.getTitle());
-        assertEquals(fileData.getIdUser(), fileMessage.getAuthorId());
-        assertEquals(fileData.getIdChat(), fileMessage.getChatId());
+        assertEquals(fileData.getTitle(), file.getTitle());
+        assertEquals(fileData.getIdUser(), file.getAuthorId());
+        assertEquals(fileData.getIdChat(), file.getChatId());
     }
 
     @Test
@@ -111,31 +128,32 @@ class FileMessageServiceTest {
 
     @Test
     void deleteFile_Pass() {
-        User user = new User("jhk@gmail.com", "kji", "khi", "kji");
+        User user = new User("email@gmail.com", "password", "userName", "nickName");
         user = userRepository.save(user);
-        Chat chat = new Chat("NameGroupChat", true, user.getId());
+        Chat chat = new Chat("NameOfChat", true, user.getId());
         chat.getIdUsers().add(user.getId());
         chat = chatRepository.save(chat);
 
-        FileMessage fileMessageDelete = new FileMessage(user.getId(), chat.getId(), new Date(), "title");
-        fileMessageDelete = fileRepository.save(fileMessageDelete);
+        File fileDelete = new File(user.getId(), chat.getId(), new Date(), "title");
+        chat.getIdFiles().add(fileDelete.getId());
+        fileDelete = fileRepository.save(fileDelete);
 
-        FileData data = new FileData(user.getId(), chat.getId(), fileMessageDelete.getId(), "title");
+        FileData data = new FileData(user.getId(), chat.getId(), fileDelete.getId(), "title");
         fileService.deleteFile(data);
 
-        assertFalse(fileRepository.existsById(fileMessageDelete.getId()));
+        assertFalse(fileRepository.existsById(fileDelete.getId()));
         assertFalse(chatRepository
                 .findChatById(data.getIdChat())
                 .getIdFiles()
-                .contains(fileMessageDelete.getId()));
+                .contains(fileDelete.getId()));
     }
 
     @Test
     void deleteFile_FailUpdateChatException() {
-        FileMessage fileMessageDelete = new FileMessage(fileData.getIdUser(), fileData.getIdChat(), new Date(), fileData.getTitle());
-        fileMessageDelete = fileRepository.save(fileMessageDelete);
+        File fileDelete = new File(fileData.getIdUser(), fileData.getIdChat(), new Date(), fileData.getTitle());
+        fileDelete = fileRepository.save(fileDelete);
 
-        FileData data = new FileData(fileData.getIdUser(), fileData.getIdChat(), fileMessageDelete.getId(), fileData.getTitle());
+        FileData data = new FileData(fileData.getIdUser(), fileData.getIdChat(), fileDelete.getId(), fileData.getTitle());
 
         try {
             fileService.deleteFile(data);
@@ -146,10 +164,10 @@ class FileMessageServiceTest {
 
     @Test
     void deleteFile_FailDeleteFileException() {
-        FileMessage fileMessageDelete = new FileMessage(fileData.getIdUser(), fileData.getIdChat(), new Date(), fileData.getTitle());
-        fileMessageDelete = fileRepository.save(fileMessageDelete);
+        File fileDelete = new File(fileData.getIdUser(), fileData.getIdChat(), new Date(), fileData.getTitle());
+        fileDelete = fileRepository.save(fileDelete);
 
-        FileData data = new FileData(fileData.getIdUser(), " ", fileMessageDelete.getId(), fileData.getTitle());
+        FileData data = new FileData(fileData.getIdUser(), " ", fileDelete.getId(), fileData.getTitle());
 
         try {
             fileService.deleteFile(data);

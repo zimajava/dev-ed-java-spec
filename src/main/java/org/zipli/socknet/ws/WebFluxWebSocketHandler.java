@@ -7,7 +7,7 @@ import org.springframework.web.reactive.socket.WebSocketSession;
 import org.zipli.socknet.dto.*;
 import org.zipli.socknet.exception.*;
 import org.zipli.socknet.model.Chat;
-import org.zipli.socknet.model.FileMessage;
+import org.zipli.socknet.model.File;
 import org.zipli.socknet.model.Message;
 import org.zipli.socknet.service.ws.IFileService;
 import org.zipli.socknet.service.ws.IMessageService;
@@ -204,9 +204,9 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
 
             case FILE_SEND:
                 try {
-                    FileMessage newFileMessage = fileService.sendFile((FileData) wsMessage.getData());
+                    File newFile = fileService.sendFile((FileData) wsMessage.getData());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(new WsMessage(eventCommand,
-                            new FileData(Collections.singletonList(newFileMessage)))));
+                            new FileData(Collections.singletonList(newFile)))));
                 } catch (Exception e) {
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand, e.getMessage()))
