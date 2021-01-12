@@ -157,7 +157,7 @@ class MessageServiceTest {
             assertEquals(e.getMessage(), "Only the author can delete chat");
         }
     }
-
+    
     @Test
     void updateChat() {
 

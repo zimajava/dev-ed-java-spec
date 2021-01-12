@@ -222,7 +222,7 @@ public class MessageService implements IMessageService {
                 user.getChatsId().add(data.getIdChat());
                 userRepository.save(user);
 
-                listIdUsers.add(data.getIdUser());
+                listIdUsers.add(data.getSecondUserId());
                 final Chat finalChat = chatRepository.save(chat);
 
                 finalChat.getIdUsers().parallelStream()
