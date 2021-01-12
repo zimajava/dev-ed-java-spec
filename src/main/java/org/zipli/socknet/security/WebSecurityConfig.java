@@ -1,8 +1,10 @@
 package org.zipli.socknet.security;
 
 import io.netty.handler.codec.http.HttpMethod;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
@@ -17,7 +19,7 @@ import java.util.Arrays;
 
 @Configuration
 @EnableWebFluxSecurity
-//@PropertySource("")
+@PropertySource("classpath:application.properties")
 public class WebSecurityConfig {
 
     private static final String FRONTEND_LOCALHOST = "http://localhost:3000";
@@ -30,7 +32,6 @@ public class WebSecurityConfig {
     public WebSecurityConfig(AuthTokenManager authTokenManager, SecurityContextRepository securityContextRepository) {
         this.authTokenManager = authTokenManager;
         this.securityContextRepository = securityContextRepository;
-
     }
 
     @Bean
@@ -47,14 +48,14 @@ public class WebSecurityConfig {
                 .authenticationManager(authTokenManager)
                 .securityContextRepository(securityContextRepository)
                 .authorizeExchange()
-                .pathMatchers("/zipli/auth/**", "/zipli/auth/**", "/v2/api-docs",
+                .pathMatchers("/zipli/auth/**", "/v2/api-docs",
                         "/configuration/ui",
                         "/swagger-resources/**",
                         "/configuration/security",
                         "/swagger-ui/**",
                         "/webjars/**").permitAll()
                 .anyExchange().authenticated()
-//                .and().oauth2Client()
+                .and().oauth2Login()
                 .and().build();
     }
 
