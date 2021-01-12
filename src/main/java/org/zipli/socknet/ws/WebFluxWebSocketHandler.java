@@ -15,6 +15,8 @@ import org.zipli.socknet.exception.message.MessageSendException;
 import org.zipli.socknet.exception.message.MessageUpdateException;
 import org.zipli.socknet.model.Chat;
 import org.zipli.socknet.model.Message;
+import org.zipli.socknet.service.ws.IChatService;
+import org.zipli.socknet.service.ws.IEmitterService;
 import org.zipli.socknet.service.ws.IMessageService;
 import org.zipli.socknet.util.JsonUtils;
 import reactor.core.publisher.Flux;
@@ -30,9 +32,13 @@ import static org.zipli.socknet.dto.Command.ERROR_CREATE_CONNECT;
 @Component
 public class WebFluxWebSocketHandler implements WebSocketHandler {
     private final IMessageService messageService;
+    private final IEmitterService emitterService;
+    private final IChatService chatService;
 
-    public WebFluxWebSocketHandler(IMessageService messageService) {
+    public WebFluxWebSocketHandler(IMessageService messageService, IEmitterService emitterService, IChatService chatService) {
         this.messageService = messageService;
+        this.emitterService = emitterService;
+        this.chatService = chatService;
     }
 
     @Override
@@ -41,7 +47,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
         Sinks.Many<String> emitter = Sinks.many().multicast().directAllOrNothing();
         final String userId;
         try {
-            userId = messageService.addMessageEmitterByToken(token, emitter);
+            userId = emitterService.addMessageEmitterByToken(token, emitter);
         } catch (CreateSocketException e) {
             String response = JsonUtils.jsonWriteHandle(new WsMessageResponse(ERROR_CREATE_CONNECT, e.getMessage()));
             return webSocketSession.send(Mono.just(webSocketSession.textMessage(response)));
@@ -58,7 +64,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                 })
                 .doOnComplete(() -> {
                     try {
-                        messageService.deleteMessageEmitterByUserId(userId, emitter);
+                        emitterService.deleteMessageEmitterByUserId(userId, emitter);
                     } catch (DeleteSessionException e) {
                         log.error("Error delete session {}", e.getMessage());
                     }
@@ -75,7 +81,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
         switch (eventCommand) {
             case CHAT_GROUP_CREATE:
                 try {
-                    Chat groupChat = messageService.createGroupChat((ChatData) wsMessage.getData());
+                    Chat groupChat = chatService.createGroupChat((ChatData) wsMessage.getData());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(new WsMessage(eventCommand,
                             new ChatData(groupChat.getId(), groupChat.getChatName()))));
                 } catch (CreateChatException e) {
@@ -93,7 +99,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
 
             case CHAT_PRIVATE_CREATE:
                 try {
-                    Chat privateChat = messageService.createPrivateChat((ChatData) wsMessage.getData());
+                    Chat privateChat = chatService.createPrivateChat((ChatData) wsMessage.getData());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(new WsMessage(eventCommand,
                             new ChatData(privateChat.getId(), privateChat.getChatName()))));
                 } catch (CreateChatException e) {
@@ -111,7 +117,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
 
             case CHAT_UPDATE:
                 try {
-                    Chat updatedChat = messageService.updateChat((ChatData) wsMessage.getData());
+                    Chat updatedChat = chatService.updateChat((ChatData) wsMessage.getData());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(new WsMessage(eventCommand,
                             new ChatData(updatedChat.getId(), updatedChat.getChatName()))));
                 } catch (UpdateChatException e) {
@@ -131,7 +137,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
 
             case CHAT_DELETE:
                 try {
-                    messageService.deleteChat((ChatData) wsMessage.getData());
+                    chatService.deleteChat((ChatData) wsMessage.getData());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand, "Chat is successfully deleted")));
                 } catch (DeleteChatException e) {
@@ -150,7 +156,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
 
             case CHAT_LEAVE:
                 try {
-                    Chat leavedChat = messageService.leaveChat((ChatData) wsMessage.getData());
+                    Chat leavedChat = chatService.leaveChat((ChatData) wsMessage.getData());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(new WsMessage(eventCommand,
                             new ChatData(leavedChat.getId(), leavedChat.getChatName()))));
                 } catch (LeaveChatException e) {
@@ -169,7 +175,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
 
             case CHAT_JOIN:
                 try {
-                    Chat joinedChat = messageService.joinChat((ChatData) wsMessage.getData());
+                    Chat joinedChat = chatService.joinChat((ChatData) wsMessage.getData());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(new WsMessage(eventCommand,
                             new ChatData(joinedChat.getId(), joinedChat.getChatName()))));
                 } catch (JoinChatException e) {
@@ -189,7 +195,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
 
             case CHATS_GET_BY_USER_ID:
                 try {
-                    List<Chat> chatsByUserId = messageService.showChatsByUser((ChatData) wsMessage.getData());
+                    List<Chat> chatsByUserId = chatService.showChatsByUser((ChatData) wsMessage.getData());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(new WsMessageResponse(eventCommand,
                             chatsByUserId)));
                 } catch (UserNotFoundException e) {

@@ -35,7 +35,6 @@ class MessageServiceTest {
     private User user;
     private Chat chat;
     private MessageData messageData;
-    private ChatData dataChat;
     private MessageService messageService;
     private Message message;
 
@@ -46,19 +45,12 @@ class MessageServiceTest {
     @Autowired
     ChatRepository chatRepository;
 
-    @MockBean
-    Sinks.Many<String> emitter;
-
-    @MockBean
-    Map<String, Sinks.Many<String>> messageEmitterByUserId;
-
-    @MockBean
-    MessageService messageService1;
+    EmitterService emitterService = new EmitterService(userRepository,new JwtUtils());
 
     @BeforeEach
     void setUp() {
 
-        messageService = new MessageService(userRepository, chatRepository, messageRepository, new JwtUtils());
+        messageService = new MessageService(userRepository, chatRepository, messageRepository, new JwtUtils(), emitterService);
         user = new User("Email@com", "password", "Username", "MoiNik");
         user = userRepository.save(user);
 
@@ -70,9 +62,6 @@ class MessageServiceTest {
                 chat.getId(),
                 "dsadsda",
                 "");
-        dataChat = new ChatData(user.getId(),
-                chat.getId(),
-                "vgtunj");
         message = new Message(user.getId(), chat.getId(), new Date(), "dsadsadsadsads");
     }
 
@@ -86,120 +75,6 @@ class MessageServiceTest {
         assertEquals(messageData.getIdChat(), message.getChatId());
     }
 
-    @Test
-    void createGroupChat_Pass() {
-
-        Chat chat = messageService.createGroupChat(dataChat);
-
-        assertTrue(chatRepository.existsByChatName(chat.getChatName()));
-        chatRepository.deleteAll();
-    }
-
-    @Test
-    void createGroupChat_Fail() {
-
-        try {
-            Chat chatOne = messageService.createGroupChat(dataChat);
-            Chat chatTwo = messageService.createGroupChat(dataChat);
-        } catch (CreateChatException e) {
-            assertEquals(e.getMessage(), "Such a chat already exists");
-        }
-        chatRepository.deleteAll();
-    }
-
-    @Test
-    void createPrivateChat_Pass() {
-
-        User user = userRepository.save(new User("kkkk@gma.vv", "ghjk", "teaama", "morgen"));
-        dataChat.setSecondUserId(user.getId());
-        Chat chat = messageService.createPrivateChat(dataChat);
-
-        assertTrue(chatRepository.existsByChatName(chat.getChatName()));
-        assertEquals(chat.getIdUsers().size(), 2);
-        chatRepository.deleteAll();
-    }
-
-    @Test
-    void removeChat_Pass() {
-
-        User userOne = new User("dddddddd@com", "password", "dsadsadas", "MoiNik");
-        userOne = userRepository.save(userOne);
-
-        Chat chat = new Chat("NameChat", false, userOne.getId());
-        chat.setIdUsers(Collections.singletonList(userOne.getId()));
-        chat = chatRepository.save(chat);
-
-        userOne.setChatsId(Collections.singletonList(chat.getId()));
-        userOne = userRepository.save(userOne);
-        new ChatData(user.getId(),
-                chat.getId(),
-                chat.getChatName());
-        ChatData dataTree = new ChatData(userOne.getId(), chat.getId(), chat.getChatName());
-
-        messageService.deleteChat(dataTree);
-
-        assertFalse(chatRepository.existsByChatName(chat.getChatName()));
-        assertFalse(messageRepository.existsByChatId(chat.getId()));
-
-        chatRepository.deleteAll();
-    }
-
-    @Test
-    void removeChat_Fail() {
-
-        ChatData dataTree = new ChatData("kakoitoId", chat.getId(), chat.getChatName());
-
-        try {
-            messageService.deleteChat(dataTree);
-        } catch (DeleteChatException e) {
-            assertEquals(e.getMessage(), "Only the author can delete chat");
-        }
-    }
-
-    @Test
-    void joinChat() {
-        User user = userRepository.save(new User("dasdasd","gdsg","dgsdg","gdsg"));
-        dataChat = new ChatData(user.getId(),
-                chat.getId(),
-                "vgtunj");
-        Chat chat = messageService.joinChat(dataChat);
-        User userUpdate = userRepository.getUserById(user.getId());
-
-        assertTrue(chat.getIdUsers().contains(dataChat.getIdUser()));
-        assertTrue(userUpdate.getChatsId().contains(chat.getId()));
-    }
-
-    @Test
-    void updateChat() {
-
-        ChatData chatData = new ChatData(user.getId(), chat.getId(), "NewChatName");
-        Chat chat = messageService.updateChat(chatData);
-
-        assertEquals(chat.getChatName(), chatData.getChatName());
-    }
-
-    @Test
-    void showChatsByUser() {
-
-        List<Chat> chats = messageService.showChatsByUser(dataChat);
-
-        assertEquals(user.getChatsId().size(), chats.size());
-    }
-
-    @Test
-    void leaveChat() {
-
-        Chat chat = new Chat("", true, user.getId());
-        chat.getIdUsers().add(user.getId());
-        chat = chatRepository.save(chat);
-
-        dataChat.setIdChat(chat.getId());
-
-        Chat newChat = messageService.leaveChat(dataChat);
-
-        assertEquals(chat.getIdUsers().size() - 1, newChat.getIdUsers().size());
-
-    }
 
     @Test
     void getMessages() {
@@ -302,35 +177,5 @@ class MessageServiceTest {
         }
     }
 
-    @Test
-    void deleteMessageEmitterByUserId_Pass() {
-        String token = "jbkug";
-        String userId = new String();
-        try {
-            userId = Mockito.doReturn(new String())
-                    .when(messageService1)
-                    .addMessageEmitterByToken(token, emitter);
-        } catch (CreateSocketException e) {
-            e.printStackTrace();
-        }
 
-        try {
-            messageService1.deleteMessageEmitterByUserId(userId, emitter);
-        } catch (DeleteSessionException e) {
-            e.printStackTrace();
-        }
-
-        assertFalse(messageEmitterByUserId.containsValue(userId));
-    }
-
-    @Test
-    void deleteMessageEmitterByUserId_Fail() {
-        String userId = "hgjfby";
-
-        try {
-            messageService.deleteMessageEmitterByUserId(userId, emitter);
-        } catch (DeleteSessionException e) {
-            assertEquals(e.getMessage(), "Can't delete message emitter");
-        }
-    }
 }
