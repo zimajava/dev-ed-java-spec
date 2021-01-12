@@ -253,20 +253,20 @@ public class MessageService implements IMessageService {
     public List<Message> getMessages(MessageData data) throws GetMessageException {
 
         Chat chat = chatRepository.findChatById(data.getIdChat());
-        if(chat!=null) {
+        if (chat != null) {
             List<String> listIdMessages = chat.getIdMessages();
             List<Message> messages = new ArrayList<>();
             for (String idMessage : listIdMessages) {
                 messages.add(messageRepository.getMessageById(idMessage));
             }
             return messages;
-        }else {
+        } else {
             throw new GetMessageException("Chat doesn't exist");
         }
     }
 
     @Override
-    public List<Chat> showChatsByUser(ChatData data) throws UserNotFoundException{
+    public List<Chat> showChatsByUser(ChatData data) throws UserNotFoundException {
 
         User user = userRepository.getUserById(data.getIdUser());
         if (user != null) {
@@ -346,7 +346,7 @@ public class MessageService implements IMessageService {
         } else {
             throw new MessageUpdateException("Only the author can update message",
                     WsExceptionMap.CHAT_ACCESS_ERROR.getNumberException()
-                );
+            );
         }
     }
 

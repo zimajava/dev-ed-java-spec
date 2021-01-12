@@ -186,7 +186,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                     log.error(e.getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    e.getMessage())
+                                    WsExceptionMap.CHAT_ACCESS_ERROR.getNumberException())
                             )
                     );
                 } catch (Exception e) {
