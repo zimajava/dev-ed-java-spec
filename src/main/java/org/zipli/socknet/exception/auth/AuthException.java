@@ -1,4 +1,4 @@
-package org.zipli.socknet.exception;
+package org.zipli.socknet.exception.auth;
 
 import org.springframework.security.core.AuthenticationException;
 

@@ -10,6 +10,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.zipli.socknet.dto.ChatData;
 import org.zipli.socknet.dto.MessageData;
 import org.zipli.socknet.exception.*;
+import org.zipli.socknet.exception.chat.CreateChatException;
+import org.zipli.socknet.exception.chat.DeleteChatException;
+import org.zipli.socknet.exception.chat.UpdateChatException;
+import org.zipli.socknet.exception.message.MessageDeleteException;
+import org.zipli.socknet.exception.message.MessageUpdateException;
 import org.zipli.socknet.model.Chat;
 import org.zipli.socknet.model.Message;
 import org.zipli.socknet.model.User;
@@ -19,12 +24,7 @@ import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
 import reactor.core.publisher.Sinks;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BooleanSupplier;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -62,8 +62,9 @@ class MessageServiceTest {
         user = new User("Email@com", "password", "Username", "MoiNik");
         user = userRepository.save(user);
 
-        chat = new Chat("NameGroupChat", true, user.getId());
+        chat = new Chat("NameGroupChat", false,new ArrayList<>(),Collections.singletonList(user.getId()), user.getId());
         chat = chatRepository.save(chat);
+        log.info(String.valueOf(chat));
         messageData = new MessageData(
                 user.getId(),
                 chat.getId(),
@@ -135,7 +136,7 @@ class MessageServiceTest {
                 chat.getChatName());
         ChatData dataTree = new ChatData(userOne.getId(), chat.getId(), chat.getChatName());
 
-        messageService.removeChat(dataTree);
+        messageService.deleteChat(dataTree);
 
         assertFalse(chatRepository.existsByChatName(chat.getChatName()));
         assertFalse(messageRepository.existsByChatId(chat.getId()));
@@ -149,15 +150,18 @@ class MessageServiceTest {
         ChatData dataTree = new ChatData("kakoitoId", chat.getId(), chat.getChatName());
 
         try {
-            messageService.removeChat(dataTree);
-        } catch (RemoveChatException e) {
-            assertEquals(e.getMessage(), "Only the creator can delete");
+            messageService.deleteChat(dataTree);
+        } catch (DeleteChatException e) {
+            assertEquals(e.getMessage(), "Only the author can delete chat");
         }
     }
 
     @Test
     void joinChat() {
-
+        User user = userRepository.save(new User("dasdasd","gdsg","dgsdg","gdsg"));
+        dataChat = new ChatData(user.getId(),
+                chat.getId(),
+                "vgtunj");
         Chat chat = messageService.joinChat(dataChat);
         User userUpdate = userRepository.getUserById(user.getId());
 
@@ -251,7 +255,7 @@ class MessageServiceTest {
         try {
             messageService.updateMessage(data);
         } catch (MessageUpdateException e) {
-            assertEquals(e.getMessage(), "Exception while updating message");
+            assertEquals(e.getMessage(), "Only the author can update message");
         }
     }
 
@@ -294,7 +298,7 @@ class MessageServiceTest {
         try {
             messageService.deleteMessage(data);
         } catch (UpdateChatException e) {
-            assertEquals(e.getMessage(), "There is no such chat");
+            assertEquals(e.getMessage(), "Chat doesn't exist");
         }
     }
 
