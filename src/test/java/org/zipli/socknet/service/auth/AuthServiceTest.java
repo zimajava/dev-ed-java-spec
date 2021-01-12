@@ -12,6 +12,8 @@ import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
 import org.zipli.socknet.security.services.UserDetailsImpl;
 
+import javax.mail.MessagingException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.times;
@@ -32,7 +34,7 @@ public class AuthServiceTest {
     @Test
     public void loginByEmailAndPasswordWithConfirmedEmail_Pass() {
         User user = new User(email, password, userName, "Cat");
-        String expected = jwtUtils.generateJwtToken(new UserDetailsImpl(user));
+        String expected = jwtUtils.generateJwtToken(new UserDetailsImpl(user), email);
         LoginResponse expectedLoginResponse = new LoginResponse(user.getId(), expected, expected);
         user.setConfirm(true);
 
@@ -58,7 +60,7 @@ public class AuthServiceTest {
     @Test
     public void loginByUsernameAndPasswordWithConfirmedEmail_Pass() {
         User user = new User(email, password, userName, "Cat");
-        String expected = jwtUtils.generateJwtToken(new UserDetailsImpl(user));
+        String expected = jwtUtils.generateJwtToken(new UserDetailsImpl(user), email);
         LoginResponse expectedLoginResponse = new LoginResponse(user.getId(), expected, expected);
         user.setConfirm(true);
 

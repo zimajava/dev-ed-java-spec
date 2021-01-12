@@ -1,5 +1,6 @@
 package org.zipli.socknet.service.email;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -13,6 +14,7 @@ import org.zipli.socknet.security.jwt.JwtUtils;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
+@Slf4j
 @Service
 public class EmailConfirmationService {
 
@@ -29,28 +31,36 @@ public class EmailConfirmationService {
     }
 
     @Async
-    public void sendEmail(String email, String token) throws MessagingException {
+    public void sendEmail(String email, String token) {
         MimeMessage message = javaMailSender.createMimeMessage();
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "utf-8");
+            helper.setTo(email);
+            helper.setSubject("Complete Registration!");
+            helper.setFrom("zipli.socknet@gmail.com");
+            String htmlMsg = "<h3>Confirm your mail</h3>"
+                    + "<p style=\"font-size:18px;\">To confirm your account, please click "
+                    + "<strong>"
+                    + "<a href=\"" + deploy + "/confirm-mail?token=" + token + "\" target=\"_blank\">here</a>"
+                    + "</strong>"
+                    + "</p>"
+                    + "<br/>"
+                    + "<br/>"
+                    + "<br/>"
+                    + "<img src='https://i.gifer.com/DfGU.gif'>";
 
-        MimeMessageHelper helper = new MimeMessageHelper(message, true, "utf-8");
-        helper.setTo(email);
-        helper.setSubject("Complete Registration!");
-        helper.setFrom("zipli.socknet@gmail.com");
+            message.setContent(htmlMsg, "text/html");
+            new Thread(() -> {
+                try {
+                    javaMailSender.send(message);
+                } catch (Exception e) {
+                    log.error("Error send message to email {} message {} class {}", email, e.getMessage(), e.getClass().getSimpleName());
+                }
 
-        String htmlMsg = "<h3>Confirm your mail</h3>"
-                + "<p style=\"font-size:18px;\">To confirm your account, please click "
-                + "<strong>"
-                + "<a href=\"" + deploy + "/confirm-mail?token=" + token + "\" target=\"_blank\">here</a>"
-                + "</strong>"
-                + "</p>"
-                + "<br/>"
-                + "<br/>"
-                + "<br/>"
-                +"<img src='http://www.apache.org/images/asf_logo_wide.gif'>";
-
-        message.setContent(htmlMsg, "text/html");
-
-        javaMailSender.send(message);
+            }).start();
+        } catch (MessagingException e) {
+            log.error("Error to create message to email {} message {} class {}", email, e.getMessage(), e.getClass().getSimpleName());
+        }
     }
 
     public String confirmAccount(String token) {
