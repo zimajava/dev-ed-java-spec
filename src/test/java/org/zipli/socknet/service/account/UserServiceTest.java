@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.zipli.socknet.exception.*;
+import org.zipli.socknet.exception.account.*;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.payload.request.AvatarRequest;
 import org.zipli.socknet.payload.request.EmailRequest;
@@ -13,8 +14,6 @@ import org.zipli.socknet.payload.request.NickNameRequest;
 import org.zipli.socknet.payload.request.PasswordRequest;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.service.email.EmailConfirmationService;
-
-import javax.mail.MessagingException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;

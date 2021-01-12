@@ -5,6 +5,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.zipli.socknet.exception.*;
+import org.zipli.socknet.exception.account.*;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.payload.request.AvatarRequest;
 import org.zipli.socknet.payload.request.EmailRequest;
