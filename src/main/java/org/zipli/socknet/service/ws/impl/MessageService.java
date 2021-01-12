@@ -8,7 +8,7 @@ import org.zipli.socknet.dto.MessageData;
 import org.zipli.socknet.dto.WsMessage;
 import org.zipli.socknet.exception.CreateSocketException;
 import org.zipli.socknet.exception.DeleteSessionException;
-import org.zipli.socknet.exception.WsExceptionMap;
+import org.zipli.socknet.exception.WsException;
 import org.zipli.socknet.exception.auth.UserNotFoundException;
 import org.zipli.socknet.exception.chat.*;
 import org.zipli.socknet.exception.message.MessageDeleteException;
@@ -132,12 +132,12 @@ public class MessageService implements IMessageService {
                 return chat;
             } else {
                 throw new UpdateChatException("Only the author can update chat",
-                        WsExceptionMap.CHAT_ACCESS_ERROR.getNumberException()
+                        WsException.CHAT_ACCESS_ERROR.getNumberException()
                 );
             }
         } else {
             throw new UpdateChatException("Chat doesn't exist",
-                    WsExceptionMap.CHAT_NOT_EXIT.getNumberException()
+                    WsException.CHAT_NOT_EXIT.getNumberException()
             );
         }
     }
@@ -170,12 +170,12 @@ public class MessageService implements IMessageService {
                         );
             } else {
                 throw new DeleteChatException("Only the author can delete chat",
-                        WsExceptionMap.CHAT_ACCESS_ERROR.getNumberException()
+                        WsException.CHAT_ACCESS_ERROR.getNumberException()
                 );
             }
         } else {
             throw new DeleteChatException("Chat doesn't exist",
-                    WsExceptionMap.CHAT_NOT_EXIT.getNumberException()
+                    WsException.CHAT_NOT_EXIT.getNumberException()
             );
         }
     }
@@ -221,10 +221,10 @@ public class MessageService implements IMessageService {
                 User user = userRepository.getUserById(data.getIdUser());
                 user.getChatsId().add(data.getIdChat());
                 userRepository.save(user);
-
-                listIdUsers.add(data.getSecondUserId());
+                log.info(String.valueOf(listIdUsers));
+                listIdUsers.add(data.getIdUser());
                 final Chat finalChat = chatRepository.save(chat);
-
+                log.info(String.valueOf(finalChat.getIdUsers()));
                 finalChat.getIdUsers().parallelStream()
                         .forEach(userId -> sendMessageToUser(userId,
                                 new WsMessage(Command.CHAT_JOIN,
@@ -237,12 +237,12 @@ public class MessageService implements IMessageService {
                         );
             } else {
                 throw new JoinChatException("Can't access chat",
-                        WsExceptionMap.CHAT_ACCESS_ERROR.getNumberException()
+                        WsException.CHAT_ACCESS_ERROR.getNumberException()
                 );
             }
         } else {
             throw new JoinChatException("Chat doesn't exist",
-                    WsExceptionMap.CHAT_NOT_EXIT.getNumberException()
+                    WsException.CHAT_NOT_EXIT.getNumberException()
             );
         }
 
@@ -339,13 +339,13 @@ public class MessageService implements IMessageService {
                         );
             } else {
                 throw new MessageUpdateException("Chat doesn't exist",
-                        WsExceptionMap.MESSAGE_NOT_EXIT.getNumberException()
+                        WsException.MESSAGE_NOT_EXIT.getNumberException()
                 );
             }
             return message;
         } else {
             throw new MessageUpdateException("Only the author can update message",
-                    WsExceptionMap.CHAT_ACCESS_ERROR.getNumberException()
+                    WsException.CHAT_ACCESS_ERROR.getNumberException()
             );
         }
     }
@@ -373,7 +373,7 @@ public class MessageService implements IMessageService {
                         );
             } else {
                 throw new UpdateChatException("Chat doesn't exist",
-                        WsExceptionMap.MESSAGE_NOT_EXIT.getNumberException()
+                        WsException.MESSAGE_NOT_EXIT.getNumberException()
                 );
             }
             messageRepository.delete(message);

@@ -1,6 +1,6 @@
 package org.zipli.socknet.exception;
 
-public enum WsExceptionMap {
+public enum WsException {
     CHAT_ACCESS_ERROR(11),
     MESSAGE_ACCESS_ERROR(12),
     ALREADY_EXISTS(13),
@@ -9,13 +9,13 @@ public enum WsExceptionMap {
     UNEXPECTED_EXCEPTION(16),
     USER_NOT_FOUND_EXCEPTION(17);
 
-    private final long numberException;
+    private final int numberException;
 
-    WsExceptionMap(long numberException) {
+    WsException(int numberException) {
         this.numberException = numberException;
     }
 
-    public long getNumberException() {
+    public int getNumberException() {
         return numberException;
     }
 }

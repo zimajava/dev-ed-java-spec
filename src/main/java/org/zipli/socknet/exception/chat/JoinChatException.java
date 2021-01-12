@@ -2,9 +2,9 @@ package org.zipli.socknet.exception.chat;
 
 public class JoinChatException extends RuntimeException {
 
-    private final long numberException;
+    private final int numberException;
 
-    public JoinChatException(String message, long numberException) {
+    public JoinChatException(String message, int numberException) {
         super(message);
         this.numberException = numberException;
     }

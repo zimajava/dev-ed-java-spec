@@ -2,9 +2,9 @@ package org.zipli.socknet.exception.chat;
 
 public class DeleteChatException extends RuntimeException{
 
-    private final long numberException;
+    private final int numberException;
 
-    public DeleteChatException(String message, long numberException) {
+    public DeleteChatException(String message, int numberException) {
         super(message);
         this.numberException = numberException;
     }

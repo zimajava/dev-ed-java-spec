@@ -2,9 +2,9 @@ package org.zipli.socknet.exception.message;
 
 public class MessageUpdateException extends RuntimeException{
 
-    private final long numberException;
+    private final int numberException;
 
-    public MessageUpdateException(String message, long numberException) {
+    public MessageUpdateException(String message, int numberException) {
         super(message);
         this.numberException = numberException;
     }

@@ -24,10 +24,7 @@ import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
 import reactor.core.publisher.Sinks;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -65,8 +62,9 @@ class MessageServiceTest {
         user = new User("Email@com", "password", "Username", "MoiNik");
         user = userRepository.save(user);
 
-        chat = new Chat("NameGroupChat", true, user.getId());
+        chat = new Chat("NameGroupChat", false,new ArrayList<>(),Collections.singletonList(user.getId()), user.getId());
         chat = chatRepository.save(chat);
+        log.info(String.valueOf(chat));
         messageData = new MessageData(
                 user.getId(),
                 chat.getId(),
@@ -157,7 +155,20 @@ class MessageServiceTest {
             assertEquals(e.getMessage(), "Only the author can delete chat");
         }
     }
-    
+
+    @Test
+    void joinChat() {
+        User user = userRepository.save(new User("dasdasd","gdsg","dgsdg","gdsg"));
+        dataChat = new ChatData(user.getId(),
+                chat.getId(),
+                "vgtunj");
+        Chat chat = messageService.joinChat(dataChat);
+        User userUpdate = userRepository.getUserById(user.getId());
+
+        assertTrue(chat.getIdUsers().contains(dataChat.getIdUser()));
+        assertTrue(userUpdate.getChatsId().contains(chat.getId()));
+    }
+
     @Test
     void updateChat() {
 
