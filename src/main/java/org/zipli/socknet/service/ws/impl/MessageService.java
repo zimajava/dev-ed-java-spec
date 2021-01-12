@@ -335,7 +335,7 @@ public class MessageService implements IMessageService {
         }
     }
 
-    private void sendMessageToUser(String userId, WsMessage wsMessage) {
+    void sendMessageToUser(String userId, WsMessage wsMessage) {
         List<Sinks.Many<String>> emittersByUser = messageEmitterByUserId.get(userId);
         if (emittersByUser != null) {
             emittersByUser.forEach(emitter -> emitter.tryEmitNext(JsonUtils.jsonWriteHandle(wsMessage)));
@@ -349,9 +349,9 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public void deleteMessageEmitterByUserId(String userId, Sinks.Many<String> emitter) throws DeleteSessionException{
+    public void deleteMessageEmitterByUserId(String userId, Sinks.Many<String> emitter) throws DeleteSessionException {
         try {
-           messageEmitterByUserId.remove(userId);
+            messageEmitterByUserId.remove(userId);
         } catch (Exception e) {
             throw new DeleteSessionException("Can't delete message emitter");
         }

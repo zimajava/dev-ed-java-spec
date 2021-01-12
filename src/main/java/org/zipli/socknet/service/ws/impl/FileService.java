@@ -8,7 +8,6 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsOperations;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.zipli.socknet.dto.Command;
 import org.zipli.socknet.dto.FileData;
@@ -18,7 +17,6 @@ import org.zipli.socknet.model.Chat;
 import org.zipli.socknet.model.File;
 import org.zipli.socknet.repository.ChatRepository;
 import org.zipli.socknet.repository.FileRepository;
-import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.service.ws.IFileService;
 
 import java.io.IOException;

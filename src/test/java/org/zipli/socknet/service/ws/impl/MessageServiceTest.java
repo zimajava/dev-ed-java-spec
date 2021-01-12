@@ -161,7 +161,7 @@ class MessageServiceTest {
         Chat chat = messageService.joinChat(dataChat);
         User userUpdate = userRepository.getUserById(user.getId());
 
-        assertTrue(chat.getIdUsers().contains(dataChat.getIdUser()));
+        assertTrue(chat.getCreatorUserId().contains(dataChat.getIdUser()));
         assertTrue(userUpdate.getChatsId().contains(chat.getId()));
     }
 
