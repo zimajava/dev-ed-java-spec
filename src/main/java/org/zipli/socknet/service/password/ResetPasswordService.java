@@ -47,26 +47,36 @@ public class ResetPasswordService {
     }
 
     public String generateResetPasswordToken(String email) {
-
-        User user = userRepository.getUserByEmail(email);
-        if (user != null) {
-            String userName = user.getUserName();
-            return jwtUtils.generateJwtToken(userDetailsService.loadUserByUsername(userName), email);
+        if (email == null) {
+            throw new UserNotFoundException(ErrorStatusCode.EMAIL_DOES_NOT_CORRECT);
         } else {
-            throw new UserNotFoundException(ErrorStatusCode.USER_NOT_FOUND.getValue());
+            User user = userRepository.getUserByEmail(email);
+            if (user != null) {
+                String userName = user.getUserName();
+                return jwtUtils.generateJwtToken(userDetailsService.loadUserByUsername(userName), email);
+            } else {
+                throw new UserNotFoundException(ErrorStatusCode.USER_DOES_NOT_EXIST);
+            }
         }
     }
 
     @Transactional
-    public String resetPassword(String newPassword, String token) {
+    public String resetPassword(String token, String newPassword) {
 
+        if (token == null) {
+            throw new UserNotFoundException(ErrorStatusCode.USER_DOES_NOT_EXIST);
+        } else if (newPassword != null) {
             String userName = jwtUtils.getUserNameFromJwtToken(token);
             User user = userRepository.getByUserName(userName);
             String password = user.getPassword();
+
             if (!password.isEmpty()) {
                 user.setPassword(newPassword);
             }
             userRepository.save(user);
             return "Password successfully changed";
+        } else {
+            throw new UserNotFoundException(ErrorStatusCode.PASSWORD_IS_NULL);
+        }
     }
 }

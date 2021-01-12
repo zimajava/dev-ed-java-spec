@@ -1,10 +1,14 @@
 package org.zipli.socknet.exception;
 
 public class UserNotFoundException extends RuntimeException {
-    public UserNotFoundException(int exceptionCode) {
+
+    private ErrorStatusCode errorStatusCode;
+
+    public UserNotFoundException(ErrorStatusCode errorStatusCode) {
+        this.errorStatusCode = errorStatusCode;
     }
 
-    public UserNotFoundException(String message) {
-        super(message);
+    public ErrorStatusCode getErrorStatusCode() {
+        return errorStatusCode;
     }
 }

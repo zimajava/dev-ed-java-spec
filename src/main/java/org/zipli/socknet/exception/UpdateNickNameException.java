@@ -1,11 +1,16 @@
 package org.zipli.socknet.exception;
 
 public class UpdateNickNameException extends RuntimeException {
-    public UpdateNickNameException(int exceptionCode) {
+
+    private ErrorStatusCode errorStatusCode;
+
+    public ErrorStatusCode getErrorStatusCode() {
+        return errorStatusCode;
     }
 
-    public UpdateNickNameException(String message) {
-        super(message);
+    public UpdateNickNameException(ErrorStatusCode errorStatusCode) {
+        this.errorStatusCode = errorStatusCode;
     }
+
 }
 

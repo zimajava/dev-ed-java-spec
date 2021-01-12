@@ -73,7 +73,7 @@ public class EmailConfirmationService {
             userRepository.save(user);
             return "Account verified";
         } else {
-            throw new NotConfirmAccountException(ErrorStatusCode.TOKEN_INVALID_OR_BROKEN.getValue());
+            throw new NotConfirmAccountException(ErrorStatusCode.TOKEN_INVALID_OR_BROKEN);
         }
     }
 }

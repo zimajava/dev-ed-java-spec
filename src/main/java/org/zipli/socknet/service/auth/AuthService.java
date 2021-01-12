@@ -33,9 +33,9 @@ public class AuthService implements IAuthService {
             result = userRepository.findUserByUserNameAndPassword(emailOrUsername, password);
         }
         if (result == null) {
-            throw new AuthException(ErrorStatusCode.USER_DOES_NOT_EXIST.getValue());
+            throw new AuthException(ErrorStatusCode.USER_DOES_NOT_EXIST);
         } else if (!result.isConfirm()) {
-            throw new AuthException(ErrorStatusCode.USER_DOES_NOT_PASS_EMAIL_CONFIRM.getValue());
+            throw new AuthException(ErrorStatusCode.USER_DOES_NOT_PASS_EMAIL_CONFIRM);
         } else {
             String token = jwtUtils.generateJwtToken(new UserDetailsImpl(result), result.getEmail());
             return new LoginResponse(result.getId(), token, token);
@@ -46,7 +46,7 @@ public class AuthService implements IAuthService {
     public void registration(User user) {
         User existingUser = userRepository.getUserByEmail(user.getEmail());
         if (existingUser != null) {
-            throw new AuthException(ErrorStatusCode.EMAIL_ALREADY_EXISTS.getValue());
+            throw new AuthException(ErrorStatusCode.EMAIL_ALREADY_EXISTS);
         } else {
             userRepository.save(user);
             UserDetails userDetails = new UserDetailsImpl(user);

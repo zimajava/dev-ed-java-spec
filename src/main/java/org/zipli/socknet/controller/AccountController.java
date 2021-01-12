@@ -11,7 +11,6 @@ import org.zipli.socknet.payload.request.NickNameRequest;
 import org.zipli.socknet.payload.request.PasswordRequest;
 import org.zipli.socknet.service.account.UserService;
 
-import javax.mail.MessagingException;
 import javax.validation.Valid;
 
 @RestController
@@ -32,9 +31,10 @@ public class AccountController {
         try {
             return ResponseEntity.ok(userService.findUser(userId));
         } catch (GetUserException e) {
+            log.error(e.getErrorStatusCode().getMessage());
             return ResponseEntity
                     .badRequest()
-                    .body(e);
+                    .body(e.getErrorStatusCode().getValue());
         }
     }
 
@@ -43,9 +43,10 @@ public class AccountController {
         try {
             return ResponseEntity.ok(userService.deleteAvatar(userId));
         } catch (DeleteAvatarException e) {
+            log.error(e.getErrorStatusCode().getMessage());
             return ResponseEntity
                     .badRequest()
-                    .body(e);
+                    .body(e.getErrorStatusCode().getValue());
         }
     }
 
@@ -54,9 +55,10 @@ public class AccountController {
         try {
             return ResponseEntity.ok(userService.updateAvatar(data));
         } catch (UpdateAvatarException e) {
+            log.error(e.getErrorStatusCode().getMessage());
             return ResponseEntity
                     .badRequest()
-                    .body(e);
+                    .body(e.getErrorStatusCode().getValue());
         }
     }
 
@@ -65,9 +67,10 @@ public class AccountController {
         try {
             return ResponseEntity.ok(userService.updateNickName(data));
         } catch (UpdateNickNameException e) {
+            log.error(e.getErrorStatusCode().getMessage());
             return ResponseEntity
                     .badRequest()
-                    .body(e);
+                    .body(e.getErrorStatusCode().getValue());
         }
     }
 
@@ -76,9 +79,10 @@ public class AccountController {
         try {
             return ResponseEntity.ok(userService.updateEmail(data));
         } catch (UpdateEmailException e) {
+            log.error(e.getErrorStatusCode().getMessage());
             return ResponseEntity
                     .badRequest()
-                    .body(e);
+                    .body(e.getErrorStatusCode().getValue());
         }
     }
 
@@ -86,10 +90,11 @@ public class AccountController {
     public ResponseEntity<?> updatePassword(@RequestBody @Valid PasswordRequest data) {
         try {
             return ResponseEntity.ok(userService.updatePassword(data));
-        } catch (UpdatePasswordExсeption e) {
+        } catch (UpdatePasswordException e) {
+            log.error(e.getErrorStatusCode().getMessage());
             return ResponseEntity
                     .badRequest()
-                    .body(e);
+                    .body(e.getErrorStatusCode().getValue());
         }
     }
 }

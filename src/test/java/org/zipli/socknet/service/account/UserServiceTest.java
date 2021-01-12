@@ -14,8 +14,6 @@ import org.zipli.socknet.payload.request.PasswordRequest;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.service.email.EmailConfirmationService;
 
-import javax.mail.MessagingException;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -170,14 +168,14 @@ public class UserServiceTest {
 
     @Test
     void updatePasswordTest_BadUserId() {
-        assertThrows(UpdatePasswordExсeption.class, () -> {
+        assertThrows(UpdatePasswordException.class, () -> {
             userService.updatePassword(new PasswordRequest("ddjfdlkfje", "Password4"));
         });
     }
 
     @Test
     void updatePasswordTest_NullUserId() {
-        assertThrows(UpdatePasswordExсeption.class, () -> {
+        assertThrows(UpdatePasswordException.class, () -> {
             userService.updatePassword(new PasswordRequest(null, "Password4"));
         });
     }
@@ -185,7 +183,7 @@ public class UserServiceTest {
     @Test
     void updatePasswordTest_NullPassword() {
         Mockito.when(userRepository.getUserById("ddjfdlkfje")).thenReturn(user);
-        assertThrows(UpdatePasswordExсeption.class, () -> {
+        assertThrows(UpdatePasswordException.class, () -> {
             userService.updatePassword(new PasswordRequest("ddjfdlkfje", null));
         });
     }

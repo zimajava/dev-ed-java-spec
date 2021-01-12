@@ -2,10 +2,13 @@ package org.zipli.socknet.exception;
 
 public class GetUserException extends RuntimeException {
 
-    public GetUserException(int exceptionCode) {
+    private ErrorStatusCode errorStatusCode;
+
+    public GetUserException(ErrorStatusCode errorStatusCode) {
+        this.errorStatusCode = errorStatusCode;
     }
 
-    public GetUserException(String message) {
-        super(message);
+    public ErrorStatusCode getErrorStatusCode() {
+        return errorStatusCode;
     }
 }

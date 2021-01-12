@@ -1,10 +1,14 @@
 package org.zipli.socknet.exception;
 
 public class DeleteAvatarException extends RuntimeException {
-    public DeleteAvatarException(int exceptionCode) {
+
+    private ErrorStatusCode errorStatusCode;
+
+    public DeleteAvatarException(ErrorStatusCode errorStatusCode) {
+        this.errorStatusCode = errorStatusCode;
     }
 
-    public DeleteAvatarException(String message) {
-        super(message);
+    public ErrorStatusCode getErrorStatusCode() {
+        return errorStatusCode;
     }
 }

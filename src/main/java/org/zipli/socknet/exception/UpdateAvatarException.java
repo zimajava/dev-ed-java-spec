@@ -1,10 +1,14 @@
 package org.zipli.socknet.exception;
 
 public class UpdateAvatarException extends RuntimeException {
-    public UpdateAvatarException(int exceptionCode) {
+
+    private ErrorStatusCode errorStatusCode;
+
+    public UpdateAvatarException(ErrorStatusCode errorStatusCode) {
+        this.errorStatusCode = errorStatusCode;
     }
 
-    public UpdateAvatarException(String message) {
-        super(message);
+    public ErrorStatusCode getErrorStatusCode() {
+        return errorStatusCode;
     }
 }

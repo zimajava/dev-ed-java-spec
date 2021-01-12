@@ -2,10 +2,13 @@ package org.zipli.socknet.exception;
 
 public class AuthException extends RuntimeException {
 
-    public AuthException(int exceptionCode) {
+    private ErrorStatusCode errorStatusCode;
+
+    public AuthException(ErrorStatusCode errorStatusCode) {
+        this.errorStatusCode = errorStatusCode;
     }
 
-    public AuthException(String message) {
-        super(message);
+    public ErrorStatusCode getErrorStatusCode() {
+        return errorStatusCode;
     }
 }
