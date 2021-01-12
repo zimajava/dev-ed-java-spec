@@ -158,7 +158,7 @@ public class UserServiceTest {
         Mockito.when(userRepository.getUserById("ddjfdlkfje")).thenReturn(user);
         assertThrows(UpdateEmailException.class, () -> {
             userService.updateEmail(new EmailRequest("ddjfdlkfje", null));
-        })
+        });
     }
 
     @Test
