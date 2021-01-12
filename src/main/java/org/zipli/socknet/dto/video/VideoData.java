@@ -19,17 +19,4 @@ public class VideoData extends BaseData {
         this.chatName = chatName;
         this.signal = signal;
     }
-
-    public VideoData(String userName, String chatName, String signal) {
-        this.userName = userName;
-        this.chatName = chatName;
-        this.signal = signal;
-    }
-
-    public VideoData(String idUser, String userName, String chatName, String signal) {
-        super(idUser);
-        this.userName = userName;
-        this.chatName = chatName;
-        this.signal = signal;
-    }
 }

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketSession;
 import org.zipli.socknet.dto.*;
+import org.zipli.socknet.dto.video.VideoData;
 import org.zipli.socknet.exception.*;
 import org.zipli.socknet.model.Chat;
 import org.zipli.socknet.model.Message;
@@ -17,7 +18,7 @@ import reactor.core.publisher.Sinks;
 import java.util.Collections;
 import java.util.List;
 
-import static org.zipli.socknet.dto.Command.ERROR_CREATE_CONNECT;
+import static org.zipli.socknet.dto.Command.*;
 
 @Slf4j
 @Component
@@ -68,7 +69,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
         switch (eventCommand) {
             case CHAT_GROUP_CREATE:
                 try {
-                    Chat groupChat = messageService.createGroupChat((ChatData) wsMessage.getData());
+                    Chat groupChat = messageService.createGroupChat((ChatGroupData) wsMessage.getData());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(new WsMessage(eventCommand,
                             new ChatData(groupChat.getId(), groupChat.getChatName()))));
                 } catch (CreateChatException e) {
@@ -191,6 +192,36 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                     List<Message> messagesByChatId = messageService.getMessages((MessageData) wsMessage.getData());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(new WsMessage(eventCommand,
                             new MessageData(messagesByChatId))));
+                } catch (Exception e) {
+                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
+                            new WsMessageResponse(eventCommand, e.getMessage()))
+                    );
+                }
+                break;
+
+            case VIDEO_CALL_START:
+                try {
+                    messageService.startVideoCall((VideoData) wsMessage.getData());
+                } catch (Exception e) {
+                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
+                            new WsMessageResponse(eventCommand, e.getMessage()))
+                    );
+                }
+                break;
+
+            case VIDEO_CALL_JOIN:
+                try {
+                    messageService.joinVideoCall((VideoData) wsMessage.getData());
+                } catch (Exception e) {
+                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
+                            new WsMessageResponse(eventCommand, e.getMessage()))
+                    );
+                }
+                break;
+
+            case VIDEO_CALL_EXIT:
+                try {
+                    messageService.exitFromVideoCall(wsMessage.getData());
                 } catch (Exception e) {
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand, e.getMessage()))

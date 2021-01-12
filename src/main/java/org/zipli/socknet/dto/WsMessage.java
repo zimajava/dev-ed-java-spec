@@ -8,8 +8,13 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.zipli.socknet.dto.video.VideoData;
+import org.zipli.socknet.util.JsonUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Getter
 @AllArgsConstructor
@@ -23,16 +28,22 @@ public class WsMessage {
 
         @Override
         public WsMessage deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
-            JsonNode node = jsonParser.getCodec().readTree(jsonParser);
-
+            JsonNode node = JsonUtils.json.readTree(jsonParser);
             Command command = Command.valueOf(node.findValue("command").asText());
             JsonNode data = node.findValue("data");
+            List<String> users = new ArrayList<>();
             switch (command) {
+                case CHAT_GROUP_CREATE:
+                    data.get("groupUsersIds").forEach(x -> users.add(x.asText()));
+                    return new WsMessage(command, new ChatGroupData(
+                            data.findValue("idUser").asText(),
+                            data.findValue("idChat").asText(),
+                            data.findValue("chatName").asText(),
+                            users));
                 case CHAT_DELETE:
                 case CHAT_JOIN:
                 case CHAT_LEAVE:
                 case CHAT_UPDATE:
-                case CHAT_GROUP_CREATE:
                 case CHAT_PRIVATE_CREATE:
                 case CHATS_GET_BY_USER_ID:
                     return new WsMessage(command, new ChatData(
@@ -51,6 +62,15 @@ public class WsMessage {
                             data.findValue("idChat").asText(),
                             data.findValue("messageId").asText(),
                             data.findValue("textMessage").asText()
+                    ));
+                case VIDEO_CALL_START:
+                case VIDEO_CALL_JOIN:
+                    return new WsMessage(command, new VideoData(
+                            data.findValue("idUser").asText(),
+                            data.findValue("idChat").asText(),
+                            data.findValue("userName").asText(),
+                            data.findValue("chatName").asText(),
+                            data.findValue("signal").asText()
                     ));
                 default:
                     return new WsMessage(command, new BaseData(

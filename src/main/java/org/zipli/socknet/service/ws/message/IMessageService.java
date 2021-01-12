@@ -1,7 +1,10 @@
 package org.zipli.socknet.service.ws.message;
 
+import org.zipli.socknet.dto.BaseData;
 import org.zipli.socknet.dto.ChatData;
+import org.zipli.socknet.dto.ChatGroupData;
 import org.zipli.socknet.dto.MessageData;
+import org.zipli.socknet.dto.video.VideoData;
 import org.zipli.socknet.exception.*;
 import org.zipli.socknet.model.Chat;
 import org.zipli.socknet.model.Message;
@@ -11,7 +14,7 @@ import java.util.List;
 
 public interface IMessageService {
 
-    Chat createGroupChat(ChatData data) throws CreateChatException;
+    Chat createGroupChat(ChatGroupData data) throws CreateChatException;
 
     Chat createPrivateChat(ChatData data) throws CreateChatException;
 
@@ -36,4 +39,10 @@ public interface IMessageService {
     void deleteMessage(MessageData data) throws MessageDeleteException, UpdateChatException;
 
     void deleteMessageEmitterByUserId(String userId, Sinks.Many<String> emitter) throws DeleteSessionException;
+
+    VideoData startVideoCall(VideoData videoData);
+
+    VideoData joinVideoCall(VideoData videoData);
+
+    BaseData exitFromVideoCall(BaseData baseData);
 }
