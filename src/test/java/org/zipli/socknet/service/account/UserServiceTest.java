@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.zipli.socknet.exception.*;
-import org.zipli.socknet.exception.account.*;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.payload.request.AvatarRequest;
 import org.zipli.socknet.payload.request.EmailRequest;
@@ -14,6 +13,7 @@ import org.zipli.socknet.payload.request.NickNameRequest;
 import org.zipli.socknet.payload.request.PasswordRequest;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.service.email.EmailConfirmationService;
+
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -134,7 +134,7 @@ public class UserServiceTest {
     @Test
     void updateEmailTest_Pass()  {
         Mockito.when(userRepository.getUserById("ddjfdlkfje")).thenReturn(user);
-        assertEquals(userService.updateEmail(new EmailRequest("ddjfdlkfje", "vlad345@ukr.net")),
+        assertEquals(userService.updateEmail(new EmailRequest("ddjfdlkfje", "vlad3415@ukr.net")),
                 user);
     }
 
@@ -157,6 +157,15 @@ public class UserServiceTest {
         Mockito.when(userRepository.getUserById("ddjfdlkfje")).thenReturn(user);
         assertThrows(UpdateEmailException.class, () -> {
             userService.updateEmail(new EmailRequest("ddjfdlkfje" , null));
+        });
+    }
+
+    @Test
+    void updateEmailTest_DoubleEmail() {
+        Mockito.when(userRepository.getUserById("ddjfdlkfje")).thenReturn(user);
+        Mockito.when(userRepository.getUserByEmail("Vlad@ukr.net")).thenReturn(user);
+        assertThrows(UpdateEmailException.class, () -> {
+            userService.updateEmail(new EmailRequest("ddjfdlkfje" , "Vlad@ukr.net"));
         });
     }
 
@@ -186,6 +195,26 @@ public class UserServiceTest {
         Mockito.when(userRepository.getUserById("ddjfdlkfje")).thenReturn(user);
         assertThrows(UpdatePasswordExсeption.class, () -> {
             userService.updatePassword(new PasswordRequest("ddjfdlkfje", null));
+        });
+    }
+
+    @Test
+    void deleteAccountTest_Pass() {
+        Mockito.when(userRepository.getUserById("ddjfdlkfje")).thenReturn(user);
+        assertEquals(userService.deleteAccount("ddjfdlkfje"), "ddjfdlkfje");
+    }
+
+    @Test
+    void deleteAccountTest_NullUserId() {
+        assertThrows(DeleteAccountException.class, () -> {
+            userService.deleteAccount(null);
+        });
+    }
+
+    @Test
+    void deleteAccountTest_BadUserId() {
+        assertThrows(DeleteAccountException.class, () -> {
+            userService.deleteAccount("ddjfdlkfje");
         });
     }
 }

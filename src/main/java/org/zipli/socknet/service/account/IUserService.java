@@ -23,4 +23,6 @@ public interface IUserService {
 
     User updatePassword(PasswordRequest data);
 
+    String deleteAccount(String userId) ;
+
 }
