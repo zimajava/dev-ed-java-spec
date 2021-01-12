@@ -11,7 +11,6 @@ import org.zipli.socknet.payload.request.NickNameRequest;
 import org.zipli.socknet.payload.request.PasswordRequest;
 import org.zipli.socknet.service.account.UserService;
 
-import javax.mail.MessagingException;
 import javax.validation.Valid;
 
 @RestController
@@ -19,10 +18,10 @@ import javax.validation.Valid;
 @RequestMapping("/zipli/myAccount")
 public class AccountController {
 
-    private UserService userService;
+    private final UserService userService;
 
     @Autowired
-    public  AccountController(UserService userService) {
+    public AccountController(UserService userService) {
         this.userService = userService;
     }
 
@@ -87,6 +86,17 @@ public class AccountController {
         try {
             return ResponseEntity.ok(userService.updatePassword(data));
         } catch (UpdatePasswordExсeption e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(e);
+        }
+    }
+
+    @PostMapping("/delete-account")
+    public ResponseEntity<?> deleteAccount(@RequestParam @Valid String userId) {
+        try {
+            return ResponseEntity.ok(userService.deleteAccount(userId));
+        } catch (DeleteAccountException e) {
             return ResponseEntity
                     .badRequest()
                     .body(e);
