@@ -85,7 +85,7 @@ public class MessageService implements IMessageService {
 
             chat.getIdUsers().parallelStream()
                     .forEach(userId -> sendMessageToUser(userId,
-                            new WsMessage(Command.CHAT_JOIN,
+                            new WsMessageResponse(Command.CHAT_JOIN,
                                     new ChatGroupData(data.getIdUser(),
                                             chat.getId(),
                                             data.getChatName(),
@@ -127,7 +127,7 @@ public class MessageService implements IMessageService {
 
             finalChat.getIdUsers().parallelStream()
                     .forEach(userId -> sendMessageToUser(userId,
-                            new WsMessage(Command.CHAT_JOIN,
+                            new WsMessageResponse(Command.CHAT_JOIN,
                                     new ChatData(userId,
                                             finalChat.getId(),
                                             finalChat.getChatName()
@@ -152,7 +152,7 @@ public class MessageService implements IMessageService {
 
                 finalChat.getIdUsers().parallelStream()
                         .forEach(userId -> sendMessageToUser(userId,
-                                new WsMessage(Command.CHAT_UPDATE,
+                                new WsMessageResponse(Command.CHAT_UPDATE,
                                         new ChatData(userId,
                                                 finalChat.getId(),
                                                 finalChat.getChatName()
@@ -191,7 +191,7 @@ public class MessageService implements IMessageService {
 
                 chat.getIdUsers().parallelStream()
                         .forEach(userId -> sendMessageToUser(userId,
-                                new WsMessage(Command.CHAT_DELETE,
+                                new WsMessageResponse(Command.CHAT_DELETE,
                                         new ChatData(userId,
                                                 chat.getId(),
                                                 chat.getChatName()
@@ -224,7 +224,7 @@ public class MessageService implements IMessageService {
 
             finalChat.getIdUsers().parallelStream()
                     .forEach(userId -> sendMessageToUser(userId,
-                            new WsMessage(Command.CHAT_LEAVE,
+                            new WsMessageResponse(Command.CHAT_LEAVE,
                                     new ChatData(userId,
                                             finalChat.getId(),
                                             finalChat.getChatName(),
@@ -257,7 +257,7 @@ public class MessageService implements IMessageService {
                 log.info(String.valueOf(finalChat.getIdUsers()));
                 finalChat.getIdUsers().parallelStream()
                         .forEach(userId -> sendMessageToUser(userId,
-                                new WsMessage(Command.CHAT_JOIN,
+                                new WsMessageResponse(Command.CHAT_JOIN,
                                         new ChatData(userId,
                                                 finalChat.getId(),
                                                 finalChat.getChatName(),
@@ -330,7 +330,7 @@ public class MessageService implements IMessageService {
 
             chat.getIdUsers().parallelStream()
                     .forEach(userId -> sendMessageToUser(userId,
-                            new WsMessage(Command.MESSAGE_SEND,
+                            new WsMessageResponse(Command.MESSAGE_SEND,
                                     new MessageData(userId,
                                             chat.getId(),
                                             finalMessage.getId(),
@@ -359,7 +359,7 @@ public class MessageService implements IMessageService {
                 final Message finalMessage = messageRepository.save(message);
                 finalChat.getIdUsers().parallelStream()
                         .forEach(userId -> sendMessageToUser(userId,
-                                new WsMessage(Command.MESSAGE_UPDATE,
+                                new WsMessageResponse(Command.MESSAGE_UPDATE,
                                         new MessageData(userId,
                                                 finalChat.getId(),
                                                 finalMessage.getId(),
@@ -393,7 +393,7 @@ public class MessageService implements IMessageService {
 
                 finalChat.getIdUsers().parallelStream()
                         .forEach(userId -> sendMessageToUser(userId,
-                                new WsMessage(Command.MESSAGE_DELETE,
+                                new WsMessageResponse(Command.MESSAGE_DELETE,
                                         new MessageData(userId,
                                                 finalChat.getId(),
                                                 message.getId(),
@@ -425,7 +425,7 @@ public class MessageService implements IMessageService {
         }
         chat.getIdUsers().parallelStream()
                 .forEach(userId -> sendMessageToUser(userId,
-                        new WsMessage(Command.VIDEO_CALL_START, videoData)));
+                        new WsMessageResponse(Command.VIDEO_CALL_START, videoData)));
 
         List<String> lisOfUsers = videoCallStorage.get(videoData.getIdChat()).getIdUsersWhoIsNotOnline();
         lisOfUsers.addAll(chat.getIdUsers());
@@ -454,7 +454,7 @@ public class MessageService implements IMessageService {
 
         chat.getIdUsers().parallelStream()
                 .forEach(userId -> sendMessageToUser(userId,
-                        new WsMessage(Command.VIDEO_CALL_JOIN, videoData)));
+                        new WsMessageResponse(Command.VIDEO_CALL_JOIN, videoData)));
 
         log.info("User {} successfully joined videoCall in Chat {}.", videoData.getUserName(), videoData.getChatName());
         log.debug(videoCallState.toString());
@@ -488,17 +488,17 @@ public class MessageService implements IMessageService {
 
         chat.getIdUsers().parallelStream()
                 .forEach(userId -> sendMessageToUser(userId,
-                        new WsMessage(Command.VIDEO_CALL_EXIT, baseData)));
+                        new WsMessageResponse(Command.VIDEO_CALL_EXIT, baseData)));
         return baseData;
     }
 
-    private void sendMessageToUser(String userId, WsMessage wsMessage) {
+    private void sendMessageToUser(String userId, WsMessageResponse wsMessage) {
         List<Sinks.Many<String>> emittersByUser = messageEmitterByUserId.get(userId);
         if (emittersByUser != null) {
             emittersByUser.forEach(emitter -> emitter.tryEmitNext(JsonUtils.jsonWriteHandle(wsMessage)));
         } else {
             if (wsMessage.getCommand().equals(Command.CHAT_LEAVE) || wsMessage.getCommand().equals(Command.CHAT_JOIN)) {
-                log.info("User = {userId: {} isn't online: {}, user: {} not sent.}", userId, wsMessage.getCommand(), wsMessage.getData().getIdUser());
+                log.info("User = {userId: {} isn't online, the command {} not sent.}", userId, wsMessage.getCommand());
             } else {
                 log.info("User = {userId: {} isn't online: {} not sent.}", userId, wsMessage.getCommand());
             }
