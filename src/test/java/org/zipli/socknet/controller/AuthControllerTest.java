@@ -151,11 +151,10 @@ class AuthControllerTest {
     void processResetPassword_TokenIsValid() {
         String newPassword = "ugyur2Wa4";
         User user = new User("gmail.com", "kRol1", "userName", "nick");
-        String username = user.getUserName();
 
         Mockito.doReturn(user)
                 .when(userRepository)
-                .getUserByUserName(username);
+                .getUserByUserName(user.getUserName());
 
         Mockito.doReturn(token)
                 .when(jwtUtils)
