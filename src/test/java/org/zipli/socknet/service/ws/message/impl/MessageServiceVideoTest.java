@@ -7,8 +7,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.zipli.socknet.dto.BaseData;
 import org.zipli.socknet.dto.video.VideoData;
-import org.zipli.socknet.exception.ChatNotFoundException;
-import org.zipli.socknet.exception.VideoCallException;
+import org.zipli.socknet.exception.chat.ChatNotFoundException;
+import org.zipli.socknet.exception.video.VideoCallException;
 import org.zipli.socknet.model.Chat;
 import org.zipli.socknet.repository.ChatRepository;
 

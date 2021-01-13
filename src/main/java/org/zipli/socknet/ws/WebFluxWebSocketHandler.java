@@ -5,8 +5,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketSession;
 import org.zipli.socknet.dto.*;
+import org.zipli.socknet.dto.video.VideoData;
 import org.zipli.socknet.exception.CreateSocketException;
 import org.zipli.socknet.exception.DeleteSessionException;
+import org.zipli.socknet.exception.video.VideoCallException;
 import org.zipli.socknet.exception.WsException;
 import org.zipli.socknet.exception.auth.UserNotFoundException;
 import org.zipli.socknet.exception.chat.*;
@@ -286,9 +288,13 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
             case VIDEO_CALL_START:
                 try {
                     messageService.startVideoCall((VideoData) wsMessage.getData());
-                } catch (Exception e) {
+                } catch (VideoCallException e) {
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand, e.getMessage()))
+                    );
+                } catch (ChatNotFoundException e) {
+                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
+                            new WsMessageResponse(eventCommand, WsException.CHAT_NOT_FOUND_EXCEPTION.getNumberException()))
                     );
                 }
                 break;
@@ -296,9 +302,13 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
             case VIDEO_CALL_JOIN:
                 try {
                     messageService.joinVideoCall((VideoData) wsMessage.getData());
-                } catch (Exception e) {
+                } catch (VideoCallException e) {
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
-                            new WsMessageResponse(eventCommand, e.getMessage()))
+                            new WsMessageResponse(eventCommand, WsException.VIDEO_CALL_EXCEPTION.getNumberException())
+                    ));
+                } catch (ChatNotFoundException e) {
+                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
+                            new WsMessageResponse(eventCommand, WsException.CHAT_NOT_FOUND_EXCEPTION.getNumberException()))
                     );
                 }
                 break;
@@ -306,9 +316,13 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
             case VIDEO_CALL_EXIT:
                 try {
                     messageService.exitFromVideoCall(wsMessage.getData());
-                } catch (Exception e) {
+                } catch (VideoCallException e) {
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
-                            new WsMessageResponse(eventCommand, e.getMessage()))
+                            new WsMessageResponse(eventCommand, WsException.VIDEO_CALL_EXCEPTION.getNumberException())
+                    ));
+                } catch (ChatNotFoundException e) {
+                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
+                            new WsMessageResponse(eventCommand, WsException.CHAT_NOT_FOUND_EXCEPTION.getNumberException()))
                     );
                 }
                 break;

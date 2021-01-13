@@ -31,9 +31,9 @@ public class WsMessage {
             JsonNode node = JsonUtils.json.readTree(jsonParser);
             Command command = Command.valueOf(node.findValue("command").asText());
             JsonNode data = node.findValue("data");
-            List<String> users = new ArrayList<>();
             switch (command) {
                 case CHAT_GROUP_CREATE:
+                    List<String> users = new ArrayList<>();
                     data.get("groupUsersIds").forEach(x -> users.add(x.asText()));
                     return new WsMessage(command, new ChatGroupData(
                             data.findValue("idUser").asText(),
