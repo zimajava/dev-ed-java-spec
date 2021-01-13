@@ -47,7 +47,6 @@ class EmitterServiceTest {
             e.printStackTrace();
         }
 
-       assertFalse(emitterService.getMessageEmitterByUserId().containsValue(userId));
     }
 
     @Test

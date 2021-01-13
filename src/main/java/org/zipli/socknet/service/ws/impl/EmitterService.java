@@ -7,12 +7,9 @@ import org.zipli.socknet.dto.WsMessage;
 import org.zipli.socknet.exception.CreateSocketException;
 import org.zipli.socknet.exception.DeleteSessionException;
 import org.zipli.socknet.model.User;
-import org.zipli.socknet.repository.ChatRepository;
-import org.zipli.socknet.repository.MessageRepository;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
 import org.zipli.socknet.service.ws.IEmitterService;
-import org.zipli.socknet.service.ws.IMessageService;
 import org.zipli.socknet.util.JsonUtils;
 import reactor.core.publisher.Sinks;
 
@@ -36,8 +33,8 @@ public class EmitterService implements IEmitterService {
         this.jwtUtils = jwtUtils;
     }
 
-    public Map<String, List<Sinks.Many<String>>> getMessageEmitterByUserId(){
-        return messageEmitterByUserId;
+    public List<Sinks.Many<String>> getMessageEmitterByUserId(String userId) {
+        return messageEmitterByUserId.get(userId);
     }
 
     @Override
@@ -53,7 +50,7 @@ public class EmitterService implements IEmitterService {
         }
     }
 
-    void sendMessageToUser(String userId, WsMessage wsMessage) {
+    public void sendMessageToUser(String userId, WsMessage wsMessage) {
         List<Sinks.Many<String>> emittersByUser = messageEmitterByUserId.get(userId);
         if (emittersByUser != null) {
             emittersByUser.forEach(emitter -> emitter.tryEmitNext(JsonUtils.jsonWriteHandle(wsMessage)));

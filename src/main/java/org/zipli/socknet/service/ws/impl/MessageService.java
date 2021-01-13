@@ -21,6 +21,7 @@ import org.zipli.socknet.repository.ChatRepository;
 import org.zipli.socknet.repository.MessageRepository;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
+import org.zipli.socknet.service.ws.IEmitterService;
 import org.zipli.socknet.service.ws.IMessageService;
 
 import java.util.*;
@@ -31,7 +32,7 @@ public class MessageService  implements IMessageService {
 
     private final ChatRepository chatRepository;
     private final MessageRepository messageRepository;
-    private final EmitterService emitterService;
+    private final IEmitterService emitterService;
 
     public MessageService(UserRepository userRepository, ChatRepository chatRepository, MessageRepository messageRepository, JwtUtils jwtUtils,EmitterService emitterService) {
         this.chatRepository = chatRepository;

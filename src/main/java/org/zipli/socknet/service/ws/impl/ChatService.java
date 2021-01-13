@@ -14,6 +14,7 @@ import org.zipli.socknet.repository.ChatRepository;
 import org.zipli.socknet.repository.MessageRepository;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.service.ws.IChatService;
+import org.zipli.socknet.service.ws.IEmitterService;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -25,7 +26,7 @@ public class ChatService implements IChatService {
     private final UserRepository userRepository;
     private final ChatRepository chatRepository;
     private final MessageRepository messageRepository;
-    private final EmitterService emitterService;
+    private final IEmitterService emitterService;
 
     public ChatService(UserRepository userRepository, ChatRepository chatRepository, MessageRepository messageRepository,EmitterService emitterService) {
         this.userRepository = userRepository;
