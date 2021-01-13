@@ -80,6 +80,7 @@ class MessageServiceTest {
                 chat.getId(),
                 "vgtunj");
         message = new Message(user.getId(), chat.getId(), new Date(), "dsadsadsadsads");
+        chatGroupData = new ChatGroupData(user.getId(), "1", "NameGroupChatOther",new ArrayList<>());
     }
 
     @Test
