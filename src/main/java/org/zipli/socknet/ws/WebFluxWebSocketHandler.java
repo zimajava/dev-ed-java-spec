@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketSession;
 import org.zipli.socknet.dto.*;
+import org.zipli.socknet.dto.video.VideoData;
 import org.zipli.socknet.exception.CreateSocketException;
 import org.zipli.socknet.exception.DeleteSessionException;
 import org.zipli.socknet.exception.WsException;
@@ -13,11 +14,13 @@ import org.zipli.socknet.exception.chat.*;
 import org.zipli.socknet.exception.message.MessageDeleteException;
 import org.zipli.socknet.exception.message.MessageSendException;
 import org.zipli.socknet.exception.message.MessageUpdateException;
+import org.zipli.socknet.exception.video.VideoCallException;
 import org.zipli.socknet.model.Chat;
 import org.zipli.socknet.model.Message;
 import org.zipli.socknet.service.ws.IChatService;
 import org.zipli.socknet.service.ws.IEmitterService;
 import org.zipli.socknet.service.ws.IMessageService;
+import org.zipli.socknet.service.ws.IVideoService;
 import org.zipli.socknet.util.JsonUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -34,11 +37,13 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
     private final IMessageService messageService;
     private final IEmitterService emitterService;
     private final IChatService chatService;
+    private final IVideoService videoService;
 
-    public WebFluxWebSocketHandler(IMessageService messageService, IEmitterService emitterService, IChatService chatService) {
+    public WebFluxWebSocketHandler(IMessageService messageService, IEmitterService emitterService, IChatService chatService, IVideoService videoService) {
         this.messageService = messageService;
         this.emitterService = emitterService;
         this.chatService = chatService;
+        this.videoService = videoService;
     }
 
     @Override
@@ -285,6 +290,47 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                 } catch (Exception e) {
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand, e.getMessage()))
+                    );
+                }
+                break;
+            case VIDEO_CALL_START:
+                try {
+                    videoService.startVideoCall((VideoData) wsMessage.getData());
+                } catch (VideoCallException e) {
+                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
+                            new WsMessageResponse(eventCommand, WsException.VIDEO_CALL_EXCEPTION.getNumberException()))
+                    );
+                } catch (ChatNotFoundException e) {
+                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
+                            new WsMessageResponse(eventCommand, WsException.CHAT_NOT_FOUND_EXCEPTION.getNumberException()))
+                    );
+                }
+                break;
+
+            case VIDEO_CALL_JOIN:
+                try {
+                    videoService.joinVideoCall((VideoData) wsMessage.getData());
+                } catch (VideoCallException e) {
+                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
+                            new WsMessageResponse(eventCommand, WsException.VIDEO_CALL_EXCEPTION.getNumberException())
+                    ));
+                } catch (ChatNotFoundException e) {
+                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
+                            new WsMessageResponse(eventCommand, WsException.CHAT_NOT_FOUND_EXCEPTION.getNumberException()))
+                    );
+                }
+                break;
+
+            case VIDEO_CALL_EXIT:
+                try {
+                    videoService.exitFromVideoCall(wsMessage.getData());
+                } catch (VideoCallException e) {
+                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
+                            new WsMessageResponse(eventCommand, WsException.VIDEO_CALL_EXCEPTION.getNumberException())
+                    ));
+                } catch (ChatNotFoundException e) {
+                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
+                            new WsMessageResponse(eventCommand, WsException.CHAT_NOT_FOUND_EXCEPTION.getNumberException()))
                     );
                 }
                 break;
