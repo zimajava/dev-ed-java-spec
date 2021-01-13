@@ -33,6 +33,14 @@ public class Chat {
         this.creatorUserId = creatorUserId;
     }
 
+    public Chat(String chatName, boolean isPrivate, List<String> idUsers, String creatorUserId) {
+        this.chatName = chatName;
+        this.isPrivate = isPrivate;
+        this.idMessages = new ArrayList<>();
+        this.idUsers = idUsers;
+        this.creatorUserId = creatorUserId;
+    }
+
     public Chat(String chatName, boolean isPrivate, String creatorUserId) {
         this.chatName = chatName;
         this.isPrivate = isPrivate;

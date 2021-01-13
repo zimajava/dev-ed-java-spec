@@ -1,4 +1,4 @@
-package org.zipli.socknet.service.ws.impl;
+package org.zipli.socknet.service.ws.message.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.zipli.socknet.dto.ChatData;
+import org.zipli.socknet.dto.ChatGroupData;
 import org.zipli.socknet.dto.MessageData;
 import org.zipli.socknet.exception.*;
 import org.zipli.socknet.exception.chat.CreateChatException;
@@ -25,6 +26,10 @@ import org.zipli.socknet.security.jwt.JwtUtils;
 import reactor.core.publisher.Sinks;
 
 import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -36,6 +41,7 @@ class MessageServiceTest {
     private Chat chat;
     private MessageData messageData;
     private ChatData dataChat;
+    private ChatGroupData chatGroupData;
     private MessageService messageService;
     private Message message;
 
@@ -89,7 +95,7 @@ class MessageServiceTest {
     @Test
     void createGroupChat_Pass() {
 
-        Chat chat = messageService.createGroupChat(dataChat);
+        Chat chat = messageService.createGroupChat(chatGroupData);
 
         assertTrue(chatRepository.existsByChatName(chat.getChatName()));
         chatRepository.deleteAll();
@@ -99,8 +105,8 @@ class MessageServiceTest {
     void createGroupChat_Fail() {
 
         try {
-            Chat chatOne = messageService.createGroupChat(dataChat);
-            Chat chatTwo = messageService.createGroupChat(dataChat);
+            Chat chatOne = messageService.createGroupChat(chatGroupData);
+            Chat chatTwo = messageService.createGroupChat(chatGroupData);
         } catch (CreateChatException e) {
             assertEquals(e.getMessage(), "Such a chat already exists");
         }
