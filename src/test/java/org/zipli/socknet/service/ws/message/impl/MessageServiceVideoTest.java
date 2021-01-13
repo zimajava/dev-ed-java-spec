@@ -70,6 +70,17 @@ public class MessageServiceVideoTest {
     }
 
     @Test
+    public void exitFromVideoCall_Pass() {
+        Mockito.when(chatRepository.findChatById(videoData.getIdChat())).thenReturn(chat);
+        messageService.startVideoCall(videoData);
+
+        BaseData actualVideoData = messageService.exitFromVideoCall(videoData);
+
+        assertEquals(videoData.getIdChat(), actualVideoData.getIdChat());
+        assertEquals(videoData.getIdUser(), actualVideoData.getIdUser());
+    }
+
+    @Test
     void exitFromVideoCall_Fail() {
         Mockito.when(chatRepository.findChatById(videoData.getIdChat())).thenReturn(null);
 

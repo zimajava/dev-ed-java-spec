@@ -290,7 +290,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                     messageService.startVideoCall((VideoData) wsMessage.getData());
                 } catch (VideoCallException e) {
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
-                            new WsMessageResponse(eventCommand, e.getMessage()))
+                            new WsMessageResponse(eventCommand, WsException.VIDEO_CALL_EXCEPTION.getNumberException()))
                     );
                 } catch (ChatNotFoundException e) {
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(

@@ -72,11 +72,13 @@ public class MessageService implements IMessageService {
 
             for (String userInGroup : data.getGroupUsersIds()) {
                 User user = userRepository.getUserById(userInGroup);
-                if (user == null) {
-                    throw new UserNotFoundException("Such user does not exist");
+                if (user != null) {
+                    user.getChatsId().add(chat.getId());
+                    userRepository.save(user);
+                } else {
+                    log.error("User {} does not exist!", userInGroup);
                 }
-                user.getChatsId().add(chat.getId());
-                userRepository.save(user);
+
             }
 
             log.info("GroupChat {} successfully created", data.getChatName());
