@@ -1,10 +1,10 @@
-package org.zipli.socknet.exception;
+package org.zipli.socknet.exception.auth;
 
-public class DeleteAvatarException extends RuntimeException {
+public class UserNotFoundException extends RuntimeException {
 
     private ErrorStatusCode errorStatusCode;
 
-    public DeleteAvatarException(ErrorStatusCode errorStatusCode) {
+    public UserNotFoundException(ErrorStatusCode errorStatusCode) {
         this.errorStatusCode = errorStatusCode;
     }
 

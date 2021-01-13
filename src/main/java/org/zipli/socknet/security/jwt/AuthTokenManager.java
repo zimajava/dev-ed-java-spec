@@ -8,7 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
-import org.zipli.socknet.exception.AuthenticationException;
+import org.zipli.socknet.exception.auth.AuthenticationException;
 import reactor.core.publisher.Mono;
 
 @Slf4j

@@ -1,10 +1,10 @@
-package org.zipli.socknet.exception;
+package org.zipli.socknet.exception.account;
 
-public class NotConfirmAccountException extends RuntimeException {
+public class DeleteAvatarException extends RuntimeException {
 
     private ErrorStatusCode errorStatusCode;
 
-    public NotConfirmAccountException(ErrorStatusCode errorStatusCode) {
+    public DeleteAvatarException(ErrorStatusCode errorStatusCode) {
         this.errorStatusCode = errorStatusCode;
     }
 

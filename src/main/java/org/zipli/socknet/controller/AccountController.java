@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.zipli.socknet.exception.*;
+import org.zipli.socknet.exception.account.*;
 import org.zipli.socknet.payload.request.AvatarRequest;
 import org.zipli.socknet.payload.request.EmailRequest;
 import org.zipli.socknet.payload.request.NickNameRequest;
@@ -18,16 +19,16 @@ import javax.validation.Valid;
 @RequestMapping("/zipli/myAccount")
 public class AccountController {
 
-    private UserService userService;
+    private final UserService userService;
 
     @Autowired
-    public  AccountController(UserService userService) {
+    public AccountController(UserService userService) {
         this.userService = userService;
     }
 
 
     @GetMapping("/getUser")
-    public ResponseEntity<?> getUser(@RequestParam @Valid String userId) {
+    public ResponseEntity<?> getUser(@RequestParam String userId) {
         try {
             return ResponseEntity.ok(userService.findUser(userId));
         } catch (GetUserException e) {
@@ -39,7 +40,7 @@ public class AccountController {
     }
 
     @PutMapping("/delete-avatar")
-    public ResponseEntity<?> deleteAvatar(@RequestParam @Valid String userId) {
+    public ResponseEntity<?> deleteAvatar(@RequestParam String userId) {
         try {
             return ResponseEntity.ok(userService.deleteAvatar(userId));
         } catch (DeleteAvatarException e) {
@@ -95,6 +96,17 @@ public class AccountController {
             return ResponseEntity
                     .badRequest()
                     .body(e.getErrorStatusCode().getValue());
+        }
+    }
+
+    @PostMapping("/delete-account")
+    public ResponseEntity<?> deleteAccount(@RequestParam String userId) {
+        try {
+            return ResponseEntity.ok(userService.deleteAccount(userId));
+        } catch (DeleteAccountException e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(e);
         }
     }
 }

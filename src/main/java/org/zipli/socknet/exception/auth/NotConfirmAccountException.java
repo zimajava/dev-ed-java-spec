@@ -1,10 +1,10 @@
-package org.zipli.socknet.exception;
+package org.zipli.socknet.exception.auth;
 
-public class AuthException extends RuntimeException {
+public class NotConfirmAccountException extends RuntimeException {
 
     private ErrorStatusCode errorStatusCode;
 
-    public AuthException(ErrorStatusCode errorStatusCode) {
+    public NotConfirmAccountException(ErrorStatusCode errorStatusCode) {
         this.errorStatusCode = errorStatusCode;
     }
 

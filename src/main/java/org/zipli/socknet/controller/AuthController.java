@@ -16,7 +16,6 @@ import org.zipli.socknet.service.auth.AuthService;
 import org.zipli.socknet.service.email.EmailConfirmationService;
 import org.zipli.socknet.service.password.ResetPasswordService;
 
-import javax.mail.MessagingException;
 import javax.validation.Valid;
 
 @Slf4j

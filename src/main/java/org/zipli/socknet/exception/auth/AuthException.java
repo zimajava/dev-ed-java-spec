@@ -1,10 +1,10 @@
-package org.zipli.socknet.exception;
+package org.zipli.socknet.exception.auth;
 
-public class UserNotFoundException extends RuntimeException {
+public class AuthException extends RuntimeException {
 
     private ErrorStatusCode errorStatusCode;
 
-    public UserNotFoundException(ErrorStatusCode errorStatusCode) {
+    public AuthException(ErrorStatusCode errorStatusCode) {
         this.errorStatusCode = errorStatusCode;
     }
 
