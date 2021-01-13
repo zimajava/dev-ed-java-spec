@@ -25,19 +25,23 @@ import org.zipli.socknet.service.ws.IEmitterService;
 import org.zipli.socknet.service.ws.IMessageService;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class MessageService  implements IMessageService {
-
+public class MessageService implements IMessageService {
+    private final UserRepository userRepository;
     private final ChatRepository chatRepository;
     private final MessageRepository messageRepository;
     private final IEmitterService emitterService;
 
-    public MessageService(UserRepository userRepository, ChatRepository chatRepository, MessageRepository messageRepository, JwtUtils jwtUtils,EmitterService emitterService) {
+    public MessageService(UserRepository userRepository, ChatRepository chatRepository, MessageRepository messageRepository, JwtUtils jwtUtils) {
+        this.userRepository = userRepository;
         this.chatRepository = chatRepository;
         this.messageRepository = messageRepository;
-        this.emitterService = emitterService;
+        this.jwtUtils = jwtUtils;
     }
 
 
@@ -67,8 +71,8 @@ public class MessageService  implements IMessageService {
             chat.getIdMessages().add(message.getId());
 
             chat.getIdUsers().parallelStream()
-                    .forEach(userId -> emitterService.sendMessageToUser(userId,
-                            new WsMessage(Command.MESSAGE_SEND,
+                    .forEach(userId -> sendMessageToUser(userId,
+                            new WsMessageResponse(Command.MESSAGE_SEND,
                                     new MessageData(userId,
                                             chat.getId(),
                                             finalMessage.getId(),
@@ -96,8 +100,8 @@ public class MessageService  implements IMessageService {
                 message.setTextMessage(data.getTextMessage());
                 final Message finalMessage = messageRepository.save(message);
                 finalChat.getIdUsers().parallelStream()
-                        .forEach(userId -> emitterService.sendMessageToUser(userId,
-                                new WsMessage(Command.MESSAGE_UPDATE,
+                        .forEach(userId -> sendMessageToUser(userId,
+                                new WsMessageResponse(Command.MESSAGE_UPDATE,
                                         new MessageData(userId,
                                                 finalChat.getId(),
                                                 finalMessage.getId(),
@@ -130,8 +134,8 @@ public class MessageService  implements IMessageService {
                 final Chat finalChat = chatRepository.save(chat);
 
                 finalChat.getIdUsers().parallelStream()
-                        .forEach(userId -> emitterService.sendMessageToUser(userId,
-                                new WsMessage(Command.MESSAGE_DELETE,
+                        .forEach(userId -> sendMessageToUser(userId,
+                                new WsMessageResponse(Command.MESSAGE_DELETE,
                                         new MessageData(userId,
                                                 finalChat.getId(),
                                                 message.getId(),
@@ -149,6 +153,5 @@ public class MessageService  implements IMessageService {
             throw new MessageDeleteException("Only the author can delete message");
         }
     }
-
 
 }
