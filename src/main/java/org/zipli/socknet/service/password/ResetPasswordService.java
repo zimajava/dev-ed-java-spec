@@ -3,6 +3,7 @@ package org.zipli.socknet.service.password;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.zipli.socknet.exception.ErrorStatusCode;
@@ -53,7 +54,9 @@ public class ResetPasswordService {
             User user = userRepository.getUserByEmail(email);
             if (user != null) {
                 String userName = user.getUserName();
-                return jwtUtils.generateJwtToken(userDetailsService.loadUserByUsername(userName), email);
+                UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
+                String token = jwtUtils.generateJwtToken(userDetails, email);
+           return token;
             } else {
                 throw new UserNotFoundException(ErrorStatusCode.USER_DOES_NOT_EXIST);
             }
@@ -66,13 +69,16 @@ public class ResetPasswordService {
         if (token == null) {
             throw new UserNotFoundException(ErrorStatusCode.USER_DOES_NOT_EXIST);
         } else if (newPassword != null) {
-            String userName = jwtUtils.getUserNameFromJwtToken(token);
-            User user = userRepository.getByUserName(userName);
-            String password = user.getPassword();
 
-            if (!password.isEmpty()) {
+            String userName = jwtUtils.getUserNameFromJwtToken(token);
+            User user = userRepository.getUserByUserName(userName);
+
+            if (user != null) {
                 user.setPassword(newPassword);
+            } else {
+                throw new UserNotFoundException(ErrorStatusCode.USER_DOES_NOT_EXIST);
             }
+
             userRepository.save(user);
             return "Password successfully changed";
         } else {

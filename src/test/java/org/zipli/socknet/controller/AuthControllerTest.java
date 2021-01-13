@@ -15,11 +15,13 @@ import org.zipli.socknet.payload.request.LoginRequest;
 import org.zipli.socknet.payload.request.SignupRequest;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
+import org.zipli.socknet.security.services.UserDetailsImpl;
 import org.zipli.socknet.service.auth.AuthService;
 import org.zipli.socknet.service.email.EmailConfirmationService;
 import org.zipli.socknet.service.password.ResetPasswordService;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 class AuthControllerTest {
@@ -30,7 +32,7 @@ class AuthControllerTest {
     EmailConfirmationService emailConfirmationService;
     @MockBean
     AuthService authService;
-    @Autowired
+    @MockBean
     ResetPasswordService resetPasswordService;
     @MockBean
     JavaMailSender javaMailSender;
@@ -38,6 +40,7 @@ class AuthControllerTest {
     UserRepository userRepository;
     @MockBean
     JwtUtils jwtUtils;
+
     private LoginRequest loginRequest;
     private LoginRequest validRequest;
     private LoginResponse loginResponse;
@@ -103,7 +106,7 @@ class AuthControllerTest {
                 .getUserNameFromJwtToken(token);
         Mockito.doReturn(new User())
                 .when(userRepository)
-                .getByUserName(username);
+                .getUserByUserName(username);
 
         assertEquals(authController.emailConfirm(token), ResponseEntity.ok("Account verified"));
     }
@@ -125,38 +128,50 @@ class AuthControllerTest {
     void processForgotPassword_UserIsRegisteredInDatabase() {
         String email = "registeredUser@gmail.com";
 
-        assertEquals(authController.processForgotPassword(email),
-                ResponseEntity.ok("Password can be changed"));
+        assertEquals(ResponseEntity.ok("Password can be changed"),
+                authController.processForgotPassword(email));
     }
 
     @Test
     void processForgotPassword_UserIsNotFound() {
 
-        assertEquals(authController.processForgotPassword(email),
-                ResponseEntity.badRequest()
-                        .body(ErrorStatusCode.EMAIL_DOES_NOT_CORRECT.getValue()));
+        Mockito.doThrow(new UserNotFoundException(ErrorStatusCode.EMAIL_DOES_NOT_CORRECT))
+                .when(resetPasswordService).generateResetPasswordToken(email);
+
+        assertEquals(ResponseEntity
+                .badRequest()
+                .body(ErrorStatusCode.EMAIL_DOES_NOT_CORRECT.getValue()),
+                authController.processForgotPassword(email));
     }
 
     @Test
     void processResetPassword_TokenIsValid() {
         String newPassword = "ugyur2Wa4";
-        String token = "5ff9d401190f3424d01b3e6d";
-        String userName = "YaroslavS";
+        User user = new User("gmail.com", "kRol1", "userName", "nick");
+        String username = user.getUserName();
 
-        Mockito.doReturn(new User())
+        Mockito.doReturn(user)
                 .when(userRepository)
-                .getUserByEmail("registeredUser@gmail.com");
+                .getUserByUserName(username);
+
+        Mockito.doReturn(token)
+                .when(jwtUtils)
+                .generateJwtToken(new UserDetailsImpl(user), user.getEmail());
 
         assertEquals(ResponseEntity.ok("Password successfully changed"),
                 authController.processResetPassword(token, newPassword));
     }
 
     @Test
-    void processResetPassword_NullParameters() {
+    void processResetPassword_NullParameter() {
 
-        assertEquals(ResponseEntity.badRequest()
-                        .body(ErrorStatusCode.USER_DOES_NOT_EXIST.getValue()),
-                authController.processResetPassword(null, null));
+        Mockito.doThrow(new UserNotFoundException(ErrorStatusCode.USER_DOES_NOT_EXIST))
+                .when(resetPasswordService).resetPassword(token, newPassword);
+
+        assertEquals(ResponseEntity
+                .badRequest()
+                .body(ErrorStatusCode.USER_DOES_NOT_EXIST.getValue()),
+                authController.processResetPassword(token, newPassword));
     }
 
     @Test
@@ -177,6 +192,6 @@ class AuthControllerTest {
                 .login(loginRequest.getLogin(), loginRequest.getPassword());
 
         assertEquals(ResponseEntity.badRequest()
-                        .body(ErrorStatusCode.USER_DOES_NOT_EXIST.getValue()), authController.authenticateUser(loginRequest));
+                .body(ErrorStatusCode.USER_DOES_NOT_EXIST.getValue()), authController.authenticateUser(loginRequest));
     }
 }
