@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.zipli.socknet.dto.ChatData;
+import org.zipli.socknet.dto.ChatGroupData;
 import org.zipli.socknet.exception.chat.CreateChatException;
 import org.zipli.socknet.exception.chat.DeleteChatException;
 import org.zipli.socknet.model.Chat;
@@ -30,6 +31,7 @@ class ChatServiceTest {
 
     private ChatData dataChat;
     private ChatService chatService;
+    private ChatGroupData chatGroupData;
 
     @Autowired
     UserRepository userRepository;
@@ -53,12 +55,13 @@ class ChatServiceTest {
         dataChat = new ChatData(user.getId(),
                 chat.getId(),
                 "vgtunj");
+        chatGroupData = new ChatGroupData(user.getId(), "1", "NameGroupChatOther",new ArrayList<>());
     }
 
     @Test
     void createGroupChat_Pass() {
 
-        Chat chat = chatService.createGroupChat(dataChat);
+        Chat chat = chatService.createGroupChat(chatGroupData);
 
         assertTrue(chatRepository.existsByChatName(chat.getChatName()));
         chatRepository.deleteAll();
@@ -68,8 +71,8 @@ class ChatServiceTest {
     void createGroupChat_Fail() {
 
         try {
-            Chat chatOne = chatService.createGroupChat(dataChat);
-            Chat chatTwo = chatService.createGroupChat(dataChat);
+            Chat chatOne = chatService.createGroupChat(chatGroupData);
+            Chat chatTwo = chatService.createGroupChat(chatGroupData);
         } catch (CreateChatException e) {
             assertEquals(e.getMessage(), "Such a chat already exists");
         }

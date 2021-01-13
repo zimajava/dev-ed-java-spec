@@ -2,10 +2,7 @@ package org.zipli.socknet.service.ws.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.zipli.socknet.dto.ChatData;
-import org.zipli.socknet.dto.Command;
-import org.zipli.socknet.dto.WsMessage;
-import org.zipli.socknet.dto.WsMessageResponse;
+import org.zipli.socknet.dto.*;
 import org.zipli.socknet.exception.WsException;
 import org.zipli.socknet.exception.auth.UserNotFoundException;
 import org.zipli.socknet.exception.chat.*;
@@ -36,27 +33,53 @@ public class ChatService implements IChatService {
         this.emitterService = emitterService;
     }
 
-    @Override
-    public Chat createGroupChat(ChatData data) throws CreateChatException {
 
+    @Override
+    public Chat createGroupChat(ChatGroupData data) throws CreateChatException, UserNotFoundException {
         if (!chatRepository.existsByChatName(data.getChatName())) {
 
             Chat chat = new Chat(data.getChatName(),
                     false,
-                    new ArrayList<>(),
-                    Collections.singletonList(data.getIdUser()),
+                    data.getGroupUsersIds(),
                     data.getIdUser());
+            chat.getIdUsers().add(data.getIdUser());
+            chatRepository.save(chat);
 
-            chat = chatRepository.save(chat);
+            User userCreator = userRepository.getUserById(data.getIdUser());
+            if (userCreator == null) {
+                throw new UserNotFoundException("Such user does not exist");
+            }
+            userCreator.getChatsId().add(chat.getId());
+            userRepository.save(userCreator);
 
-            User user = userRepository.getUserById(data.getIdUser());
-            user.getChatsId().add(chat.getId());
-            userRepository.save(user);
+            for (String userInGroup : data.getGroupUsersIds()) {
+                User user = userRepository.getUserById(userInGroup);
+                if (user != null) {
+                    user.getChatsId().add(chat.getId());
+                    userRepository.save(user);
+                } else {
+                    log.error("User {} does not exist!", userInGroup);
+                }
 
+            }
+
+            log.info("GroupChat {} successfully created", data.getChatName());
+
+            chat.getIdUsers().parallelStream()
+                    .forEach(userId -> emitterService.sendMessageToUser(userId,
+                            new WsMessageResponse(Command.CHAT_JOIN,
+                                    new ChatGroupData(data.getIdUser(),
+                                            chat.getId(),
+                                            data.getChatName(),
+                                            chat.getIdUsers()
+                                    )
+                            ))
+                    );
             return chat;
         } else {
             throw new CreateChatException("Such a chat already exists");
         }
+
     }
 
     @Override

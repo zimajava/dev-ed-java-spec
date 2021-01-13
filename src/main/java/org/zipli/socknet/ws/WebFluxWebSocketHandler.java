@@ -86,7 +86,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
         switch (eventCommand) {
             case CHAT_GROUP_CREATE:
                 try {
-                    Chat groupChat = chatService.createGroupChat((ChatData) wsMessage.getData());
+                    Chat groupChat = chatService.createGroupChat((ChatGroupData) wsMessage.getData());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(new WsMessage(eventCommand,
                             new ChatData(groupChat.getId(), groupChat.getChatName()))));
                 } catch (CreateChatException e) {
