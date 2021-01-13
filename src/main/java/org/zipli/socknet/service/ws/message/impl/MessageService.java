@@ -77,7 +77,6 @@ public class MessageService implements IMessageService {
                     userRepository.save(user);
                 } else {
                     log.error("User {} does not exist!", userInGroup);
-                    continue;
                 }
 
             }
