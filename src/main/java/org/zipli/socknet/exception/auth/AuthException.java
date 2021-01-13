@@ -1,5 +1,7 @@
 package org.zipli.socknet.exception.auth;
 
+import org.zipli.socknet.exception.ErrorStatusCode;
+
 public class AuthException extends RuntimeException {
 
     private ErrorStatusCode errorStatusCode;

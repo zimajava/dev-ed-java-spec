@@ -1,5 +1,7 @@
 package org.zipli.socknet.exception.account;
 
+import org.zipli.socknet.exception.ErrorStatusCode;
+
 public class DeleteAvatarException extends RuntimeException {
 
     private ErrorStatusCode errorStatusCode;

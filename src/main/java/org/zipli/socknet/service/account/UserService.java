@@ -107,7 +107,7 @@ public class UserService implements IUserService {
         }
         User existingUser = userRepository.getUserByEmail(data.getEmail());
         if (existingUser != null) {
-            throw new UpdateEmailException("This email already exists!");
+            throw new UpdateEmailException(ErrorStatusCode.EMAIL_ALREADY_EXISTS);
         }
         user.setEmail(data.getEmail());
         user.setConfirm(false);
@@ -138,11 +138,11 @@ public class UserService implements IUserService {
     @Transactional
     public String deleteAccount(String userId) throws DeleteAccountException {
         if (userId == null) {
-            throw new DeleteAccountException("UserId is null");
+            throw new DeleteAccountException(ErrorStatusCode.USER_ID_NULL);
         }
         User user = userRepository.getUserById(userId);
         if (user == null) {
-            throw new DeleteAccountException("not correct id");
+            throw new DeleteAccountException(ErrorStatusCode.USER_ID_DOES_NOT_CORRECT);
         }
         user.setEmail(null);
         user.setUserName(userId);

@@ -106,7 +106,7 @@ public class AccountController {
         } catch (DeleteAccountException e) {
             return ResponseEntity
                     .badRequest()
-                    .body(e);
+                    .body(e.getErrorStatusCode().getValue());
         }
     }
 }

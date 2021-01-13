@@ -1,7 +1,14 @@
 package org.zipli.socknet.exception;
 
 public class DeleteAccountException extends RuntimeException {
-    public DeleteAccountException(String message) {
-        super(message);
+
+    private ErrorStatusCode errorStatusCode;
+
+    public DeleteAccountException(ErrorStatusCode errorStatusCode) {
+        this.errorStatusCode = errorStatusCode;
+    }
+
+    public ErrorStatusCode getErrorStatusCode() {
+        return errorStatusCode;
     }
 }

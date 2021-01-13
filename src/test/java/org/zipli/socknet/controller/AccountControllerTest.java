@@ -182,11 +182,11 @@ public class AccountControllerTest {
 
     @Test
     void updateEmailTest_DoubleEmail() {
-        UpdateEmailException e = new UpdateEmailException("This email already exists!");
+        UpdateEmailException e = new UpdateEmailException(ErrorStatusCode.EMAIL_ALREADY_EXISTS);
         Mockito.doThrow(e)
                 .when(userService)
                 .updateEmail(emailRequest);
-        assertEquals(accountController.updateEmail(emailRequest), ResponseEntity.badRequest().body(e));
+        assertEquals(accountController.updateEmail(emailRequest), ResponseEntity.badRequest().body(e.getErrorStatusCode().getValue()));
     }
 
     @Test
@@ -236,20 +236,22 @@ public class AccountControllerTest {
 
     @Test
     void deleteAccountTest_NullId() {
-        DeleteAccountException e = new DeleteAccountException("UserId is null");
+        DeleteAccountException e = new DeleteAccountException(ErrorStatusCode.USER_ID_NULL);
         Mockito.doThrow(e)
                 .when(userService)
                 .deleteAccount(null);
-        assertEquals(accountController.deleteAccount(null), ResponseEntity.badRequest().body(e));
+        assertEquals(ResponseEntity.badRequest()
+                .body(ErrorStatusCode.USER_ID_NULL.getValue()), accountController.deleteAccount(null));
     }
 
     @Test
     void deleteAccountTest_BadId() {
-        DeleteAccountException e = new DeleteAccountException("not correct id");
+        DeleteAccountException e = new DeleteAccountException(ErrorStatusCode.USER_ID_DOES_NOT_CORRECT);
         Mockito.doThrow(e)
                 .when(userService)
                 .deleteAccount("212");
-        assertEquals(accountController.deleteAccount("212"), ResponseEntity.badRequest().body(e));
+        assertEquals(ResponseEntity.badRequest()
+                .body(ErrorStatusCode.USER_ID_DOES_NOT_CORRECT.getValue()), accountController.deleteAccount("212"));
     }
 
 }

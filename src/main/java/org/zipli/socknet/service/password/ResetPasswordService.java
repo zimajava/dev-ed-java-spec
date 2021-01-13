@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.zipli.socknet.exception.ErrorStatusCode;
-import org.zipli.socknet.exception.UserNotFoundException;
+import org.zipli.socknet.exception.auth.UserNotFoundException;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
