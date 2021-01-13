@@ -22,4 +22,6 @@ public interface ChatRepository extends MongoRepository<Chat, String> {
     void deleteById(String id);
 
     List<Chat> getChatsByIdIn(Collection<String> id);
+
+    Chat getByIdAndCreatorUserId(String id, String creatorUserId);
 }

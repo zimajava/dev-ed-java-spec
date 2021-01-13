@@ -24,6 +24,8 @@ public class WebSecurityConfig {
     @Value("${cors.urls}")
     private List<String> corsUrls;
 
+    @Value("${cors.path}")
+    private String corsPath;
 
     private final AuthTokenManager authTokenManager;
     private final SecurityContextRepository securityContextRepository;
@@ -68,7 +70,7 @@ public class WebSecurityConfig {
         corsConfig.setAllowedOrigins(corsUrls);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("*", corsConfig);
+        source.registerCorsConfiguration(corsPath, corsConfig);
         return source;
     }
 }

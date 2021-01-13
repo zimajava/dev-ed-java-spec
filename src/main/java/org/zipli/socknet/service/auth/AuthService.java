@@ -3,7 +3,7 @@ package org.zipli.socknet.service.auth;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.zipli.socknet.dto.response.LoginResponse;
-import org.zipli.socknet.exception.AuthException;
+import org.zipli.socknet.exception.auth.AuthException;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;

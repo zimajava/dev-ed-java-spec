@@ -6,7 +6,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.zipli.socknet.exception.NotConfirmAccountException;
+import org.zipli.socknet.exception.auth.NotConfirmAccountException;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;

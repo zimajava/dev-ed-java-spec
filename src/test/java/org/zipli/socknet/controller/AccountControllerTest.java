@@ -8,14 +8,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.ResponseEntity;
 import org.zipli.socknet.exception.*;
+import org.zipli.socknet.exception.account.*;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.payload.request.AvatarRequest;
 import org.zipli.socknet.payload.request.EmailRequest;
 import org.zipli.socknet.payload.request.NickNameRequest;
 import org.zipli.socknet.payload.request.PasswordRequest;
 import org.zipli.socknet.service.account.UserService;
-
-import javax.mail.MessagingException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -179,6 +178,15 @@ public class AccountControllerTest {
     }
 
     @Test
+    void updateEmailTest_DoubleEmail() {
+        UpdateEmailException e = new UpdateEmailException("This email already exists!");
+        Mockito.doThrow(e)
+                .when(userService)
+                .updateEmail(emailRequest);
+        assertEquals(accountController.updateEmail(emailRequest), ResponseEntity.badRequest().body(e));
+    }
+
+    @Test
     void updateEmailTest_BadEmail() {
         UpdateEmailException e = new UpdateEmailException("not correct email");
         Mockito.doThrow(e)
@@ -213,4 +221,32 @@ public class AccountControllerTest {
                 .updatePassword(passwordRequest);
         assertEquals(accountController.updatePassword(passwordRequest), ResponseEntity.badRequest().body(e));
     }
+
+    @Test
+    void deleteAccountTest_Pass()  {
+        Mockito.doReturn(user.getId())
+                .when(userService)
+                .deleteAccount("ddjfdlkfje");
+        assertEquals(accountController.deleteAccount("ddjfdlkfje"),
+                ResponseEntity.ok(userService.deleteAccount("ddjfdlkfje")));
+    }
+
+    @Test
+    void deleteAccountTest_NullId() {
+        DeleteAccountException e = new DeleteAccountException("UserId is null");
+        Mockito.doThrow(e)
+                .when(userService)
+                .deleteAccount(null);
+        assertEquals(accountController.deleteAccount(null), ResponseEntity.badRequest().body(e));
+    }
+
+    @Test
+    void deleteAccountTest_BadId() {
+        DeleteAccountException e = new DeleteAccountException("not correct id");
+        Mockito.doThrow(e)
+                .when(userService)
+                .deleteAccount("212");
+        assertEquals(accountController.deleteAccount("212"), ResponseEntity.badRequest().body(e));
+    }
+
 }

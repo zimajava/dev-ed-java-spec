@@ -6,6 +6,9 @@ import org.zipli.socknet.dto.ChatGroupData;
 import org.zipli.socknet.dto.MessageData;
 import org.zipli.socknet.dto.video.VideoData;
 import org.zipli.socknet.exception.*;
+import org.zipli.socknet.exception.chat.*;
+import org.zipli.socknet.exception.message.MessageDeleteException;
+import org.zipli.socknet.exception.message.MessageSendException;
 import org.zipli.socknet.model.Chat;
 import org.zipli.socknet.model.Message;
 import reactor.core.publisher.Sinks;
@@ -20,17 +23,17 @@ public interface IMessageService {
 
     Chat updateChat(ChatData data) throws UpdateChatException;
 
-    void removeChat(ChatData data) throws RemoveChatException;
+    void deleteChat(ChatData data) throws DeleteChatException;
 
     List<Chat> showChatsByUser(ChatData data);
 
-    Chat leaveChat(ChatData data);
+    Chat leaveChat(ChatData data) throws LeaveChatException;
 
-    Chat joinChat(ChatData data);
+    Chat joinChat(ChatData data) throws JoinChatException;
 
     List<Message> getMessages(MessageData data);
 
-    Message sendMessage(MessageData data);
+    Message sendMessage(MessageData data) throws MessageSendException;
 
     String addMessageEmitterByToken(String token, Sinks.Many<String> emitter) throws CreateSocketException;
 

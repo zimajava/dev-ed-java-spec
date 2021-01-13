@@ -4,9 +4,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.zipli.socknet.dto.response.LoginResponse;
-import org.zipli.socknet.exception.AuthException;
-import org.zipli.socknet.exception.NotConfirmAccountException;
-import org.zipli.socknet.exception.UserNotFoundException;
+import org.zipli.socknet.exception.auth.AuthException;
+import org.zipli.socknet.exception.auth.NotConfirmAccountException;
+import org.zipli.socknet.exception.auth.UserNotFoundException;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.payload.request.LoginRequest;
 import org.zipli.socknet.payload.request.SignupRequest;
@@ -14,7 +14,6 @@ import org.zipli.socknet.service.auth.AuthService;
 import org.zipli.socknet.service.email.EmailConfirmationService;
 import org.zipli.socknet.service.password.ResetPasswordService;
 
-import javax.mail.MessagingException;
 import javax.validation.Valid;
 
 @RestController
