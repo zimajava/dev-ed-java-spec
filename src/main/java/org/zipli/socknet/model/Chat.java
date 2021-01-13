@@ -21,21 +21,24 @@ public class Chat {
     private String id;
     private String chatName;
     private boolean isPrivate;
+    private boolean isRoom;
     private List<String> idMessages;
     private List<String> idUsers;
     private String creatorUserId;
 
-    public Chat(String chatName, boolean isPrivate, List<String> idMessages, List<String> idUsers, String creatorUserId) {
+    public Chat(String chatName, boolean isPrivate, boolean isRoom, List<String> idMessages, List<String> idUsers, String creatorUserId) {
         this.chatName = chatName;
         this.isPrivate = isPrivate;
+        this.isRoom = isRoom;
         this.idMessages = idMessages;
         this.idUsers = idUsers;
         this.creatorUserId = creatorUserId;
     }
 
-    public Chat(String chatName, boolean isPrivate, String creatorUserId) {
+    public Chat(String chatName, boolean isPrivate, boolean isRoom, String creatorUserId) {
         this.chatName = chatName;
         this.isPrivate = isPrivate;
+        this.isRoom = isRoom;
         this.idMessages = new ArrayList<>();
         this.idUsers = new ArrayList<>();
         this.creatorUserId = creatorUserId;

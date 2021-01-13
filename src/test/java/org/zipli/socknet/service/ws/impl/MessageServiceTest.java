@@ -62,7 +62,7 @@ class MessageServiceTest {
         user = new User("Email@com", "password", "Username", "MoiNik");
         user = userRepository.save(user);
 
-        chat = new Chat("NameGroupChat", false,new ArrayList<>(),Collections.singletonList(user.getId()), user.getId());
+        chat = new Chat("NameGroupChat", false,false, new ArrayList<>(),Collections.singletonList(user.getId()), user.getId());
         chat = chatRepository.save(chat);
         log.info(String.valueOf(chat));
         messageData = new MessageData(
@@ -72,7 +72,8 @@ class MessageServiceTest {
                 "");
         dataChat = new ChatData(user.getId(),
                 chat.getId(),
-                "vgtunj");
+                "vgtunj",
+                false);
         message = new Message(user.getId(), chat.getId(), new Date(), "dsadsadsadsads");
     }
 
@@ -125,7 +126,7 @@ class MessageServiceTest {
         User userOne = new User("dddddddd@com", "password", "dsadsadas", "MoiNik");
         userOne = userRepository.save(userOne);
 
-        Chat chat = new Chat("NameChat", false, userOne.getId());
+        Chat chat = new Chat("NameChat", false, false, userOne.getId());
         chat.setIdUsers(Collections.singletonList(userOne.getId()));
         chat = chatRepository.save(chat);
 
@@ -133,8 +134,9 @@ class MessageServiceTest {
         userOne = userRepository.save(userOne);
         new ChatData(user.getId(),
                 chat.getId(),
-                chat.getChatName());
-        ChatData dataTree = new ChatData(userOne.getId(), chat.getId(), chat.getChatName());
+                chat.getChatName(),
+                chat.isRoom());
+        ChatData dataTree = new ChatData(userOne.getId(), chat.getId(), chat.getChatName(), chat.isRoom());
 
         messageService.deleteChat(dataTree);
 
@@ -147,7 +149,7 @@ class MessageServiceTest {
     @Test
     void removeChat_Fail() {
 
-        ChatData dataTree = new ChatData("kakoitoId", chat.getId(), chat.getChatName());
+        ChatData dataTree = new ChatData("kakoitoId", chat.getId(), chat.getChatName(), chat.isRoom());
 
         try {
             messageService.deleteChat(dataTree);
@@ -161,7 +163,8 @@ class MessageServiceTest {
         User user = userRepository.save(new User("dasdasd","gdsg","dgsdg","gdsg"));
         dataChat = new ChatData(user.getId(),
                 chat.getId(),
-                "vgtunj");
+                "vgtunj",
+                false);
         Chat chat = messageService.joinChat(dataChat);
         User userUpdate = userRepository.getUserById(user.getId());
 
@@ -172,7 +175,7 @@ class MessageServiceTest {
     @Test
     void updateChat() {
 
-        ChatData chatData = new ChatData(user.getId(), chat.getId(), "NewChatName");
+        ChatData chatData = new ChatData(user.getId(), chat.getId(), "NewChatName", false);
         Chat chat = messageService.updateChat(chatData);
 
         assertEquals(chat.getChatName(), chatData.getChatName());
@@ -189,7 +192,7 @@ class MessageServiceTest {
     @Test
     void leaveChat() {
 
-        Chat chat = new Chat("", true, user.getId());
+        Chat chat = new Chat("", true, false, user.getId());
         chat.getIdUsers().add(user.getId());
         chat = chatRepository.save(chat);
 
@@ -204,7 +207,7 @@ class MessageServiceTest {
     @Test
     void getMessages() {
 
-        Chat chat = new Chat("ChatBuGetMessage", false, user.getId());
+        Chat chat = new Chat("ChatBuGetMessage", false, false, user.getId());
         chat = chatRepository.save(chat);
 
         Message messageOne = new Message(user.getId(), chat.getId(), new Date(), "dasdfs");

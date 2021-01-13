@@ -50,24 +50,44 @@ public class MessageService implements IMessageService {
     public Chat createGroupChat(ChatData data) throws CreateChatException {
 
         if (!chatRepository.existsByChatName(data.getChatName())) {
+            if (!data.isRoom()) {
+                Chat chat = new Chat(data.getChatName(),
+                        false,
+                        false,
+                        new ArrayList<>(),
+                        Collections.singletonList(data.getIdUser()),
+                        data.getIdUser());
 
-            Chat chat = new Chat(data.getChatName(),
-                    false,
-                    new ArrayList<>(),
-                    Collections.singletonList(data.getIdUser()),
-                    data.getIdUser());
+                chat = chatRepository.save(chat);
 
-            chat = chatRepository.save(chat);
+                User user = userRepository.getUserById(data.getIdUser());
+                user.getChatsId()
+                    .add(chat.getId());
+                userRepository.save(user);
 
-            User user = userRepository.getUserById(data.getIdUser());
-            user.getChatsId().add(chat.getId());
-            userRepository.save(user);
+                return chat;
+            } else if (data.isRoom()) {
+                Chat room = new Chat(data.getChatName(),
+                        false,
+                        true,
+                        new ArrayList<>(),
+                        Collections.singletonList(data.getIdUser()),
+                        data.getIdUser());
 
-            return chat;
+                room = chatRepository.save(room);
+
+                User user = userRepository.getUserById(data.getIdUser());
+                user.getChatsId()
+                    .add(room.getId());
+                userRepository.save(user);
+
+                return room;
+            } else {
+                throw new CreateChatException("Such a chat already exists");
+            }
         } else {
             throw new CreateChatException("Such a chat already exists");
         }
-
     }
 
     @Override
@@ -80,6 +100,7 @@ public class MessageService implements IMessageService {
 
             Chat chat = new Chat(data.getChatName(),
                     true,
+                    false,
                     data.getIdUser());
 
             chat.getIdUsers().add(creatorUser.getId());
@@ -100,7 +121,8 @@ public class MessageService implements IMessageService {
                             new WsMessage(Command.CHAT_JOIN,
                                     new ChatData(userId,
                                             finalChat.getId(),
-                                            finalChat.getChatName()
+                                            finalChat.getChatName(),
+                                            finalChat.isRoom()
                                     )
                             ))
                     );
@@ -125,7 +147,8 @@ public class MessageService implements IMessageService {
                                 new WsMessage(Command.CHAT_UPDATE,
                                         new ChatData(userId,
                                                 finalChat.getId(),
-                                                finalChat.getChatName()
+                                                finalChat.getChatName(),
+                                                finalChat.isRoom()
                                         )
                                 ))
                         );
@@ -137,7 +160,7 @@ public class MessageService implements IMessageService {
             }
         } else {
             throw new UpdateChatException("Chat doesn't exist",
-                    WsException.CHAT_NOT_EXIT.getNumberException()
+                    WsException.CHAT_NOT_EXISTS.getNumberException()
             );
         }
     }
@@ -164,7 +187,8 @@ public class MessageService implements IMessageService {
                                 new WsMessage(Command.CHAT_DELETE,
                                         new ChatData(userId,
                                                 chat.getId(),
-                                                chat.getChatName()
+                                                chat.getChatName(),
+                                                chat.isRoom()
                                         )
                                 ))
                         );
@@ -175,7 +199,7 @@ public class MessageService implements IMessageService {
             }
         } else {
             throw new DeleteChatException("Chat doesn't exist",
-                    WsException.CHAT_NOT_EXIT.getNumberException()
+                    WsException.CHAT_NOT_EXISTS.getNumberException()
             );
         }
     }
@@ -198,7 +222,8 @@ public class MessageService implements IMessageService {
                                     new ChatData(userId,
                                             finalChat.getId(),
                                             finalChat.getChatName(),
-                                            data.getIdUser()
+                                            data.getIdUser(),
+                                            data.isRoom()
                                     )
                             ))
                     );
@@ -231,7 +256,8 @@ public class MessageService implements IMessageService {
                                         new ChatData(userId,
                                                 finalChat.getId(),
                                                 finalChat.getChatName(),
-                                                data.getIdUser()
+                                                data.getIdUser(),
+                                                data.isRoom()
                                         )
                                 ))
                         );
@@ -242,7 +268,7 @@ public class MessageService implements IMessageService {
             }
         } else {
             throw new JoinChatException("Chat doesn't exist",
-                    WsException.CHAT_NOT_EXIT.getNumberException()
+                    WsException.CHAT_NOT_EXISTS.getNumberException()
             );
         }
 
@@ -339,7 +365,7 @@ public class MessageService implements IMessageService {
                         );
             } else {
                 throw new MessageUpdateException("Chat doesn't exist",
-                        WsException.MESSAGE_NOT_EXIT.getNumberException()
+                        WsException.MESSAGE_NOT_EXISTS.getNumberException()
                 );
             }
             return message;
@@ -373,7 +399,7 @@ public class MessageService implements IMessageService {
                         );
             } else {
                 throw new UpdateChatException("Chat doesn't exist",
-                        WsException.MESSAGE_NOT_EXIT.getNumberException()
+                        WsException.MESSAGE_NOT_EXISTS.getNumberException()
                 );
             }
             messageRepository.delete(message);

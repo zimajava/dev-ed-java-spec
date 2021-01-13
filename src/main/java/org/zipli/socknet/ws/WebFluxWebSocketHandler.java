@@ -77,7 +77,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                 try {
                     Chat groupChat = messageService.createGroupChat((ChatData) wsMessage.getData());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(new WsMessage(eventCommand,
-                            new ChatData(groupChat.getId(), groupChat.getChatName()))));
+                            new ChatData(groupChat.getId(), groupChat.getChatName(), groupChat.isRoom()))));
                 } catch (CreateChatException e) {
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
@@ -95,7 +95,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                 try {
                     Chat privateChat = messageService.createPrivateChat((ChatData) wsMessage.getData());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(new WsMessage(eventCommand,
-                            new ChatData(privateChat.getId(), privateChat.getChatName()))));
+                            new ChatData(privateChat.getId(), privateChat.getChatName(), privateChat.isRoom()))));
                 } catch (CreateChatException e) {
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
@@ -113,7 +113,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                 try {
                     Chat updatedChat = messageService.updateChat((ChatData) wsMessage.getData());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(new WsMessage(eventCommand,
-                            new ChatData(updatedChat.getId(), updatedChat.getChatName()))));
+                            new ChatData(updatedChat.getId(), updatedChat.getChatName(), updatedChat.isRoom()))));
                 } catch (UpdateChatException e) {
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
@@ -152,11 +152,11 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                 try {
                     Chat leavedChat = messageService.leaveChat((ChatData) wsMessage.getData());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(new WsMessage(eventCommand,
-                            new ChatData(leavedChat.getId(), leavedChat.getChatName()))));
+                            new ChatData(leavedChat.getId(), leavedChat.getChatName(), leavedChat.isRoom()))));
                 } catch (LeaveChatException e) {
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    WsException.CHAT_NOT_EXIT.getNumberException())
+                                    WsException.CHAT_NOT_EXISTS.getNumberException())
                             )
                     );
                 } catch (Exception e) {
@@ -171,7 +171,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                 try {
                     Chat joinedChat = messageService.joinChat((ChatData) wsMessage.getData());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(new WsMessage(eventCommand,
-                            new ChatData(joinedChat.getId(), joinedChat.getChatName()))));
+                            new ChatData(joinedChat.getId(), joinedChat.getChatName(), joinedChat.isRoom()))));
                 } catch (JoinChatException e) {
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
@@ -215,7 +215,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                 } catch (MessageSendException e) {
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    WsException.CHAT_NOT_EXIT.getNumberException()))
+                                    WsException.CHAT_NOT_EXISTS.getNumberException()))
                     );
                 } catch (Exception e) {
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
@@ -256,7 +256,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                 } catch (UpdateChatException e) {
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    WsException.CHAT_NOT_EXIT.getNumberException()))
+                                    WsException.CHAT_NOT_EXISTS.getNumberException()))
                     );
                 } catch (Exception e) {
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
@@ -274,7 +274,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                 } catch (GetMessageException e) {
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    WsException.CHAT_NOT_EXIT.getNumberException()))
+                                    WsException.CHAT_NOT_EXISTS.getNumberException()))
                     );
                 } catch (Exception e) {
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(

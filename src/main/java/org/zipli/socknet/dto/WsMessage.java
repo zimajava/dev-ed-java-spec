@@ -39,7 +39,8 @@ public class WsMessage {
                             data.findValue("idUser").asText(),
                             data.findValue("idChat").asText(),
                             data.findValue("chatName").asText(),
-                            data.findValue("secondUserId").asText()
+                            data.findValue("secondUserId").asText(),
+                            data.findValue("isRoom").asBoolean()
                     ));
                 case MESSAGE_DELETE:
                 case MESSAGE_READ:
