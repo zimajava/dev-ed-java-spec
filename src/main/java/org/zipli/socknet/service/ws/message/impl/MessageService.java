@@ -14,6 +14,10 @@ import org.zipli.socknet.exception.chat.*;
 import org.zipli.socknet.exception.message.MessageDeleteException;
 import org.zipli.socknet.exception.message.MessageSendException;
 import org.zipli.socknet.exception.message.MessageUpdateException;
+import org.zipli.socknet.dto.*;
+import org.zipli.socknet.dto.video.VideoCallState;
+import org.zipli.socknet.dto.video.VideoData;
+import org.zipli.socknet.exception.video.VideoCallException;
 import org.zipli.socknet.model.Chat;
 import org.zipli.socknet.model.Message;
 import org.zipli.socknet.model.User;
@@ -37,6 +41,7 @@ public class MessageService implements IMessageService {
     private final ChatRepository chatRepository;
     private final MessageRepository messageRepository;
     private final JwtUtils jwtUtils;
+    private final Map<String, VideoCallState> videoCallStorage = new ConcurrentHashMap<>();
     private final Map<String, List<Sinks.Many<String>>> messageEmitterByUserId = new ConcurrentHashMap<>();
 
     public MessageService(UserRepository userRepository, ChatRepository chatRepository, MessageRepository messageRepository, JwtUtils jwtUtils) {
@@ -47,21 +52,47 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public Chat createGroupChat(ChatData data) throws CreateChatException {
+    public Chat createGroupChat(ChatGroupData data) throws CreateChatException, UserNotFoundException {
 
         if (!chatRepository.existsByChatName(data.getChatName())) {
 
             Chat chat = new Chat(data.getChatName(),
                     false,
-                    Collections.singletonList(data.getIdUser()),
+                    data.getGroupUsersIds(),
                     data.getIdUser());
+            chat.getIdUsers().add(data.getIdUser());
+            chatRepository.save(chat);
 
-            chat = chatRepository.save(chat);
+            User userCreator = userRepository.getUserById(data.getIdUser());
+            if (userCreator == null) {
+                throw new UserNotFoundException("Such user does not exist");
+            }
+            userCreator.getChatsId().add(chat.getId());
+            userRepository.save(userCreator);
 
-            User user = userRepository.getUserById(data.getIdUser());
-            user.getChatsId().add(chat.getId());
-            userRepository.save(user);
+            for (String userInGroup : data.getGroupUsersIds()) {
+                User user = userRepository.getUserById(userInGroup);
+                if (user != null) {
+                    user.getChatsId().add(chat.getId());
+                    userRepository.save(user);
+                } else {
+                    log.error("User {} does not exist!", userInGroup);
+                }
 
+            }
+
+            log.info("GroupChat {} successfully created", data.getChatName());
+
+            chat.getIdUsers().parallelStream()
+                    .forEach(userId -> sendMessageToUser(userId,
+                            new WsMessage(Command.CHAT_JOIN,
+                                    new ChatGroupData(data.getIdUser(),
+                                            chat.getId(),
+                                            data.getChatName(),
+                                            chat.getIdUsers()
+                                    )
+                            ))
+                    );
             return chat;
         } else {
             throw new CreateChatException("Such a chat already exists");
@@ -379,6 +410,86 @@ public class MessageService implements IMessageService {
         } else {
             throw new MessageDeleteException("Only the author can delete message");
         }
+    }
+
+
+    public VideoData startVideoCall(VideoData videoData) {
+        VideoCallState videoCallState = new VideoCallState(videoData.getIdUser(), new CopyOnWriteArrayList<>(), new CopyOnWriteArrayList<>());
+        videoCallState.getIdUsersInCall().add(videoData.getIdUser());
+        videoCallStorage.put(videoData.getIdChat(), videoCallState);
+
+        Chat chat = chatRepository.findChatById(videoData.getIdChat());
+        if (chat == null) {
+            throw new ChatNotFoundException("Chat doesn't exist",
+                    WsException.CHAT_NOT_FOUND_EXCEPTION.getNumberException());
+        }
+        chat.getIdUsers().parallelStream()
+                .forEach(userId -> sendMessageToUser(userId,
+                        new WsMessage(Command.VIDEO_CALL_START, videoData)));
+
+        List<String> lisOfUsers = videoCallStorage.get(videoData.getIdChat()).getIdUsersWhoIsNotOnline();
+        lisOfUsers.addAll(chat.getIdUsers());
+        lisOfUsers.removeAll(messageEmitterByUserId.keySet());
+
+        log.info("Start VideoCall in Chat {} by user {}.", videoData.getChatName(), videoData.getUserName());
+        log.debug(videoCallStorage.get(videoData.getIdChat()).toString());
+
+        return videoData;
+    }
+
+    public VideoData joinVideoCall(VideoData videoData) {
+        VideoCallState videoCallState = videoCallStorage.get(videoData.getIdChat());
+        if (videoCallState == null) {
+            throw new VideoCallException("VideoCall doesn't exist",
+                    WsException.VIDEO_CALL_EXCEPTION.getNumberException());
+        }
+        videoCallState.getIdUsersInCall()
+                .add(videoData.getIdUser());
+        videoCallState.getIdUsersWhoIsNotOnline().remove(videoData.getIdUser());
+        Chat chat = chatRepository.findChatById(videoData.getIdChat());
+        if (chat == null) {
+            throw new ChatNotFoundException("Chat doesn't exist",
+                    WsException.CHAT_NOT_FOUND_EXCEPTION.getNumberException());
+        }
+
+        chat.getIdUsers().parallelStream()
+                .forEach(userId -> sendMessageToUser(userId,
+                        new WsMessage(Command.VIDEO_CALL_JOIN, videoData)));
+
+        log.info("User {} successfully joined videoCall in Chat {}.", videoData.getUserName(), videoData.getChatName());
+        log.debug(videoCallState.toString());
+
+        return videoData;
+    }
+
+    public BaseData exitFromVideoCall(BaseData baseData) {
+        VideoCallState videoCallState = videoCallStorage.get(baseData.getIdChat());
+        if (videoCallState == null) {
+            throw new VideoCallException("VideoCall doesn't exist",
+                    WsException.VIDEO_CALL_EXCEPTION.getNumberException());
+        }
+        videoCallState.getIdUsersInCall()
+                .remove(baseData.getIdUser());
+        log.debug(videoCallState.toString());
+        log.info("User {} leaved from videoCall in chat {}", baseData.getIdUser(), baseData.getIdChat());
+
+        if (videoCallStorage
+                .get(baseData.getIdChat())
+                .getIdUsersInCall()
+                .size() < 2) {
+            videoCallStorage.remove(baseData.getIdChat());
+            log.info("VideoCall in chat {} is over", baseData.getIdChat());
+        }
+        Chat chat = chatRepository.findChatById(baseData.getIdChat());
+        if (chat == null) {
+            throw new ChatNotFoundException("Chat doesn't exist",
+                    WsException.CHAT_NOT_FOUND_EXCEPTION.getNumberException());
+        }
+
+        chat.getIdUsers().parallelStream()
+                .forEach(userId -> sendMessageToUser(userId,
+                        new WsMessage(Command.VIDEO_CALL_EXIT, baseData)));
+        return baseData;
     }
 
     void sendMessageToUser(String userId, WsMessage wsMessage) {

@@ -10,6 +10,7 @@ import org.zipli.socknet.security.jwt.JwtUtils;
 import org.zipli.socknet.security.services.UserDetailsImpl;
 import org.zipli.socknet.service.email.EmailConfirmationService;
 
+
 @Service
 public class AuthService implements IAuthService {
 
