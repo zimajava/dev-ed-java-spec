@@ -70,7 +70,7 @@ public class MessageServiceVideoTest {
     }
 
     @Test
-    public void exitVideoCall_Pass() {
+    public void exitFromVideoCall_Pass() {
         Mockito.when(chatRepository.findChatById(videoData.getIdChat())).thenReturn(chat);
         messageService.startVideoCall(videoData);
 
