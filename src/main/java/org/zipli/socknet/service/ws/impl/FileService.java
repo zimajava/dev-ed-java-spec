@@ -13,6 +13,8 @@ import org.zipli.socknet.dto.Command;
 import org.zipli.socknet.dto.FileData;
 import org.zipli.socknet.dto.WsMessage;
 import org.zipli.socknet.exception.*;
+import org.zipli.socknet.exception.chat.UpdateChatException;
+import org.zipli.socknet.exception.message.MessageSendException;
 import org.zipli.socknet.model.Chat;
 import org.zipli.socknet.model.File;
 import org.zipli.socknet.repository.ChatRepository;
@@ -25,17 +27,15 @@ import java.util.Date;
 @Service
 public class FileService implements IFileService {
 
-//    private final UserRepository userRepository;
     private final ChatRepository chatRepository;
     private final FileRepository fileRepository;
     private final MessageService messageService;
     private final GridFsTemplate gridFsTemplate;
     private final GridFsOperations operations;
 
-    public FileService(ChatRepository chatRepository,
-                       FileRepository fileRepository, MessageService messageService,
-                       GridFsTemplate gridFsTemplate, GridFsOperations operations) {
-//        this.userRepository = userRepository;
+    public FileService(ChatRepository chatRepository, FileRepository fileRepository,
+                       MessageService messageService, GridFsTemplate gridFsTemplate,
+                       GridFsOperations operations) {
         this.chatRepository = chatRepository;
         this.fileRepository = fileRepository;
         this.messageService = messageService;
@@ -54,8 +54,7 @@ public class FileService implements IFileService {
             metaData.put("title", data.getTitle());
             ObjectId id = gridFsTemplate.store(
                     data.getInputStream(),
-//                    data.getTitle(),
-//                    data.getContentType(),
+                    data.getTitle(),
                     metaData
             );
             GridFSFile gridFSFile = gridFsTemplate.findOne(new Query(Criteria.where("_id").is(id)));
@@ -65,18 +64,22 @@ public class FileService implements IFileService {
 
                 final File finalFile = fileRepository.save(file);
                 chat = chatRepository.findChatById(data.getIdChat());
-                chat.getIdFiles().add(file.getId());
+                if (chat != null) {
+                    chat.getIdFiles().add(file.getId());
 
-                chat.getIdUsers().parallelStream()
-                        .forEach(userId -> messageService.sendMessageToUser(userId,
-                                new WsMessage(Command.FILE_SEND,
-                                        new FileData(userId,
-                                                chat.getId(),
-                                                finalFile.getId(),
-                                                finalFile.getTitle(),
-                                                data.getInputStream())
-                                ))
-                        );
+                    chat.getIdUsers().parallelStream()
+                            .forEach(userId -> messageService.sendMessageToUser(userId,
+                                    new WsMessage(Command.FILE_SEND,
+                                            new FileData(userId,
+                                                    chat.getId(),
+                                                    finalFile.getId(),
+                                                    finalFile.getTitle(),
+                                                    data.getInputStream())
+                                    ))
+                            );
+                } else {
+                    throw new MessageSendException("Chat doesn't exist");
+                }
             } else {
                 throw new SendFileException("GridFSFile is null!");
             }
@@ -111,8 +114,10 @@ public class FileService implements IFileService {
                                 ))
                         );
             } else {
-                throw new UpdateChatException("There is no such chat");
+                throw new UpdateChatException("There is no such chat",
+                        WsException.CHAT_NOT_EXIT.getNumberException());
             }
+            gridFsTemplate.delete(new Query(Criteria.where("_id").is(data.getFileId())));
             fileRepository.delete(file);
         } else {
             throw new FileDeleteException("Only the author can delete the file");

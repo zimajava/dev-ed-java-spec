@@ -7,6 +7,7 @@ import org.springframework.web.reactive.socket.WebSocketSession;
 import org.zipli.socknet.dto.*;
 import org.zipli.socknet.exception.CreateSocketException;
 import org.zipli.socknet.exception.DeleteSessionException;
+import org.zipli.socknet.exception.FileDeleteException;
 import org.zipli.socknet.exception.WsException;
 import org.zipli.socknet.exception.auth.UserNotFoundException;
 import org.zipli.socknet.exception.chat.*;

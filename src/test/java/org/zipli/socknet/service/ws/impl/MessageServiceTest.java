@@ -62,7 +62,7 @@ class MessageServiceTest {
         user = new User("Email@com", "password", "Username", "MoiNik");
         user = userRepository.save(user);
 
-        chat = new Chat("NameGroupChat", false,new ArrayList<>(),Collections.singletonList(user.getId()), user.getId());
+        chat = new Chat("NameGroupChat", false, Collections.singletonList(user.getId()), user.getId());
         chat = chatRepository.save(chat);
         log.info(String.valueOf(chat));
         messageData = new MessageData(

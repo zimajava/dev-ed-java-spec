@@ -1,32 +1,36 @@
 package org.zipli.socknet.service.ws.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.DBObject;
 import com.mongodb.client.gridfs.model.GridFSFile;
 import org.bson.*;
+import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.stubbing.OngoingStubbing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.gridfs.GridFsOperations;
+import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.zipli.socknet.dto.FileData;
-import org.zipli.socknet.dto.MessageData;
 import org.zipli.socknet.exception.*;
+import org.zipli.socknet.exception.chat.UpdateChatException;
+import org.zipli.socknet.exception.message.MessageSendException;
 import org.zipli.socknet.model.Chat;
 import org.zipli.socknet.model.File;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.repository.ChatRepository;
 import org.zipli.socknet.repository.FileRepository;
-import org.zipli.socknet.repository.UserRepository;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -43,13 +47,19 @@ class FileServiceTest {
     @MockBean
     ChatRepository chatRepository;
     @MockBean
-    UserRepository userRepository;
-
+    BsonValue value;
     @MockBean
     GridFsTemplate gridFsTemplate;
-
     @MockBean
     InputStream inputStream;
+    @MockBean
+    List<String> idFiles;
+    @MockBean
+    Document metadata;
+//    @MockBean
+//    GridFsResource gridFsResource;
+//    @MockBean
+//    ObjectId objectId;
 
 
     @BeforeEach
@@ -65,28 +75,26 @@ class FileServiceTest {
 
     @Test
     void sendFile_Pass() throws IOException {
-        Mockito.doReturn(new Chat("NameGroupChat", true, fileData.getIdUser()))
-                .when(chatRepository)
-                .findChatById("chatId");
 
-//        byte[] bytes = {(byte) 0xCF, (byte) 0xF0, (byte) 0xE8, (byte) 0xE2, (byte) 0xE5, (byte) 0xF2,
-//                (byte) 0xCF, (byte) 0xF0, (byte) 0xE8, (byte) 0xE2, (byte) 0xE5, (byte) 0xF2};
-//
-//       ObjectId id = Mockito.doReturn(bytes)
-//                .when(gridFsTemplate)
-//                .store(fileData.getInputStream(), fileData.getTitle());
-
-        Map<String, Object> result =
-                new ObjectMapper().readValue(
-                        "{\"rollNumber\":21 , \"firstName\":\"Saurabh\" , \"lastName\":\"Gupta\"}", HashMap.class);
-
-        BSONObject object = new BasicBSONObject();
-        object.putAll(result);
-//        BsonValue id= get()
-
-        Mockito.doReturn(new GridFSFile((BsonValue) object, "kkk", 3, 3, new Date(), null))
+        Mockito.doReturn(new GridFSFile(value, "name", 1, 1, new Date(), metadata))
                 .when(gridFsTemplate)
-                .findOne(new Query(Criteria.where("_id").is(1)));
+                .findOne(new Query(Criteria.where("_id").is(null)));
+
+//        File fileTest1 = new File(fileData.getIdUser(), fileData.getIdChat(), new Date(), gridFsTemplate.getResource(new GridFSFile(value, "name", 1, 1, new Date(), metadata)).getInputStream());
+//        File fileTest2 = new File(fileData.getIdUser(), fileData.getIdChat(), new Date(), fileData.getInputStream());
+//        Mockito.when(fileTest1)
+//                .thenReturn(fileTest2);
+        Mockito.doReturn(inputStream)
+                .when(gridFsTemplate)
+                .getResource(new GridFSFile(value, "name", 1, 1, new Date(), metadata))
+                .getInputStream();
+
+        User user = new User("email@gmail.com", "password", "userName", "nickName");
+        user.setId("1");
+
+        Mockito.doReturn(new Chat("chatName", false, Collections.singletonList(user.getId()), "userId"))
+                .when(chatRepository)
+                .findChatById(fileData.getIdChat());
 
         final File file = fileService.sendFile(fileData);
 
@@ -104,6 +112,17 @@ class FileServiceTest {
     }
 
     @Test
+    void sendFile_FailMessageSendException() {
+        Mockito.doReturn(new GridFSFile(value, "name", 1, 1, new Date(), metadata))
+                .when(gridFsTemplate)
+                .findOne(new Query(Criteria.where("_id").is(null)));
+
+        assertThrows(MessageSendException.class, () -> {
+            fileService.sendFile(fileData);
+        });
+    }
+
+    @Test
     void sendFile_FailIOException() {
 
         assertThrows(IOException.class, () -> {
@@ -113,30 +132,51 @@ class FileServiceTest {
 
     @Test
     void deleteFile_Pass() {
-        Chat chat = new Chat("chatName", true, "userId");
-//       final Chat chat = chatRepository.save(chatt);
         User user = new User("email@gmail.com", "password", "userName", "nickName");
-//final User user = userRepository.save(userr);
-        Mockito.doReturn("chatId")
+        user.setId("1");
+
+        Chat chat = new Chat("chatName", false, Collections.singletonList(user.getId()), "userId");
+        chat.setId("2");
+
+        Mockito.doReturn(true)
                 .when(chatRepository)
                 .save(chat);
+
+        File fileDelete = new File(user.getId(), chat.getId(), new Date(), "title");
+        fileDelete.setId("3");
+
+        Mockito.doReturn(true)
+                .when(fileRepository)
+                .save(fileDelete);
+
+        Mockito.doReturn(fileDelete)
+                .when(fileRepository)
+                .getFileById(fileDelete.getId());
+
         Mockito.doReturn(chat)
                 .when(chatRepository)
-                .findChatById(fileData.getIdChat());
-////        final
-        File fileDelete = new File(chat.getCreatorUserId(), chat.getId(), new Date(12), "hello.txt");
-    final File file= fileRepository.save(fileDelete);
-        FileData data = new FileData(user.getId(), chat.getId(), file.getId(), "dsad");
-//        Mockito.doReturn(fileDelete)
-//                .when(fileRepository)
-//                .getFileById(fileData.getFileId());
+                .findChatById(chat.getId());
+
+        chat.setIdFiles(idFiles);
+
+        Mockito.doReturn(true)
+                .when(idFiles)
+                .remove(fileDelete.getId());
+
+        Chat finalChat = new Chat("chatName", false, Collections.singletonList(user.getId()), "userId");
+
+        Mockito.doReturn(finalChat)
+                .when(chatRepository)
+                .save(chat);
+
+        FileData data = new FileData(user.getId(), chat.getId(), fileDelete.getId(), "title");
         fileService.deleteFile(data);
 
         assertFalse(fileRepository.existsById(fileDelete.getId()));
-//        assertFalse(chatRepository
-//                .findChatById(data.getIdChat())
-//                .getIdFiles()
-//                .contains(fileDelete.getId()));
+        assertFalse(chatRepository
+                .findChatById(data.getIdChat())
+                .getIdFiles()
+                .contains(fileDelete.getId()));
     }
 
     @Test

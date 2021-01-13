@@ -53,9 +53,7 @@ public class MessageService implements IMessageService {
 
             Chat chat = new Chat(data.getChatName(),
                     false,
-                    new ArrayList<>(),
                     Collections.singletonList(data.getIdUser()),
-                    null,
                     data.getIdUser());
 
             chat = chatRepository.save(chat);
