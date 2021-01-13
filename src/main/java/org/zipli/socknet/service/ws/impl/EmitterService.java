@@ -33,10 +33,6 @@ public class EmitterService implements IEmitterService {
         this.jwtUtils = jwtUtils;
     }
 
-    public List<Sinks.Many<String>> getMessageEmitterByUserId(String userId) {
-        return messageEmitterByUserId.get(userId);
-    }
-
     @Override
     public Map<String, List<Sinks.Many<String>>> getMessageEmitter() {
         return messageEmitterByUserId;

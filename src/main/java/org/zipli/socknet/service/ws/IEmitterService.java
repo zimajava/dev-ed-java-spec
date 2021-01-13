@@ -15,8 +15,6 @@ public interface IEmitterService {
 
     void deleteMessageEmitterByUserId(String userId, Sinks.Many<String> emitter) throws DeleteSessionException;
 
-    List<Sinks.Many<String>> getMessageEmitterByUserId(String userId);
-
     Map<String, List<Sinks.Many<String>>> getMessageEmitter();
 
     void sendMessageToUser(String userId, WsMessageResponse wsMessage);
