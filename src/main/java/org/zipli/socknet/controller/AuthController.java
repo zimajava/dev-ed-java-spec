@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.zipli.socknet.dto.response.LoginResponse;
 import org.zipli.socknet.exception.auth.AuthException;
-import org.zipli.socknet.exception.ErrorStatusCode;
 import org.zipli.socknet.exception.auth.NotConfirmAccountException;
 import org.zipli.socknet.exception.auth.UserNotFoundException;
 import org.zipli.socknet.model.User;
@@ -42,7 +41,9 @@ public class AuthController {
         try {
             authService.registration(user);
         } catch (AuthException e) {
-            log.error(e.getErrorStatusCode().getMessage());
+            log.error(e.getErrorStatusCode().getMessage(),
+                    "Failed registration by email {}, userName {}, nickName {}", signupRequest.getEmail(),
+                    signupRequest.getUserName(), signupRequest.getNickName());
             return ResponseEntity
                     .badRequest()
                     .body(e.getErrorStatusCode().getValue());
@@ -55,7 +56,8 @@ public class AuthController {
         try {
             emailConfirmationService.confirmAccount(token);
         } catch (NotConfirmAccountException e) {
-            log.error(e.getErrorStatusCode().getMessage());
+            log.error(e.getErrorStatusCode().getMessage(),
+                    "Failed confirm email by token {}", token);
             return ResponseEntity
                     .badRequest()
                     .body(e.getErrorStatusCode().getValue());
@@ -68,7 +70,8 @@ public class AuthController {
             try {
                 resetPasswordService.generateResetPasswordToken(email);
             } catch (UserNotFoundException e) {
-                log.error(e.getErrorStatusCode().getMessage());
+                log.error(e.getErrorStatusCode().getMessage(),
+                        "Failed restore password by email {}", email);
                 return ResponseEntity
                         .badRequest()
                         .body(e.getErrorStatusCode().getValue());
@@ -82,7 +85,8 @@ public class AuthController {
         try {
             resetPasswordService.resetPassword(token, newPassword);
         } catch (UserNotFoundException e) {
-            log.error(e.getErrorStatusCode().getMessage());
+            log.error(e.getErrorStatusCode().getMessage(),
+                    "Failed update password by token {}, newPassword {}", token, newPassword);
             return ResponseEntity
                     .badRequest()
                     .body(e.getErrorStatusCode().getValue());
@@ -96,7 +100,8 @@ public class AuthController {
         try {
             loginResponse = authService.login(loginRequest.getLogin(), loginRequest.getPassword());
         } catch (AuthException e) {
-            log.error(e.getErrorStatusCode().getMessage());
+            log.error(e.getErrorStatusCode().getMessage(),
+                    "Failed authenticate user by login {}, password {}", loginRequest.getLogin(), loginRequest.getPassword());
             return ResponseEntity
                     .badRequest()
                     .body(e.getErrorStatusCode().getValue());

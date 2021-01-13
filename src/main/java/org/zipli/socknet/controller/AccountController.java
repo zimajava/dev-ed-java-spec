@@ -32,7 +32,7 @@ public class AccountController {
         try {
             return ResponseEntity.ok(userService.findUser(userId));
         } catch (GetUserException e) {
-            log.error(e.getErrorStatusCode().getMessage());
+            log.error(e.getErrorStatusCode().getMessage(), "Failed get user by userId {}", userId);
             return ResponseEntity
                     .badRequest()
                     .body(e.getErrorStatusCode().getValue());
@@ -44,7 +44,7 @@ public class AccountController {
         try {
             return ResponseEntity.ok(userService.deleteAvatar(userId));
         } catch (DeleteAvatarException e) {
-            log.error(e.getErrorStatusCode().getMessage());
+            log.error(e.getErrorStatusCode().getMessage(), "Failed to delete avatar by userId {}", userId);
             return ResponseEntity
                     .badRequest()
                     .body(e.getErrorStatusCode().getValue());
@@ -56,7 +56,8 @@ public class AccountController {
         try {
             return ResponseEntity.ok(userService.updateAvatar(data));
         } catch (UpdateAvatarException e) {
-            log.error(e.getErrorStatusCode().getMessage());
+            log.error(e.getErrorStatusCode().getMessage(),
+                    "Failed update avatar by userId {}, avatar {}", data.getUserId(), data.getAvatar());
             return ResponseEntity
                     .badRequest()
                     .body(e.getErrorStatusCode().getValue());
@@ -68,7 +69,8 @@ public class AccountController {
         try {
             return ResponseEntity.ok(userService.updateNickName(data));
         } catch (UpdateNickNameException e) {
-            log.error(e.getErrorStatusCode().getMessage());
+            log.error(e.getErrorStatusCode().getMessage(),
+                    "Failed update nickName by userId {}, nickName {}", data.getUserId(), data.getNickName());
             return ResponseEntity
                     .badRequest()
                     .body(e.getErrorStatusCode().getValue());
@@ -80,7 +82,8 @@ public class AccountController {
         try {
             return ResponseEntity.ok(userService.updateEmail(data));
         } catch (UpdateEmailException e) {
-            log.error(e.getErrorStatusCode().getMessage());
+            log.error(e.getErrorStatusCode().getMessage(),
+                    "Failed update email by userId {}, email {}", data.getUserId(), data.getEmail());
             return ResponseEntity
                     .badRequest()
                     .body(e.getErrorStatusCode().getValue());
@@ -92,7 +95,8 @@ public class AccountController {
         try {
             return ResponseEntity.ok(userService.updatePassword(data));
         } catch (UpdatePasswordException e) {
-            log.error(e.getErrorStatusCode().getMessage());
+            log.error(e.getErrorStatusCode().getMessage(),
+                    "Failed update password by userId {}, password {}", data.getUserId(), data.getPassword());
             return ResponseEntity
                     .badRequest()
                     .body(e.getErrorStatusCode().getValue());
@@ -104,6 +108,8 @@ public class AccountController {
         try {
             return ResponseEntity.ok(userService.deleteAccount(userId));
         } catch (DeleteAccountException e) {
+            log.error(e.getErrorStatusCode().getMessage(),
+                    "Failed delete account by userId {}", userId);
             return ResponseEntity
                     .badRequest()
                     .body(e.getErrorStatusCode().getValue());

@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import org.zipli.socknet.dto.ChatData;
 import org.zipli.socknet.dto.Command;
 import org.zipli.socknet.dto.MessageData;
-import org.zipli.socknet.dto.WsMessage;
 import org.zipli.socknet.exception.CreateSocketException;
 import org.zipli.socknet.exception.DeleteSessionException;
 import org.zipli.socknet.exception.ErrorStatusCode;
@@ -66,7 +65,7 @@ public class MessageService implements IMessageService {
 
             User userCreator = userRepository.getUserById(data.getIdUser());
             if (userCreator == null) {
-                throw new UserNotFoundException("Such user does not exist");
+                throw new UserNotFoundException(ErrorStatusCode.USER_DOES_NOT_EXIST);
             }
             userCreator.getChatsId().add(chat.getId());
             userRepository.save(userCreator);
@@ -511,7 +510,7 @@ public class MessageService implements IMessageService {
         try {
             messageEmitterByUserId.getOrDefault(userId, new CopyOnWriteArrayList<>()).remove(emitter);
         } catch (Exception e) {
-            throw new DeleteSessionException(ErrorStatusCode.FORBIDDEN_DELETE_MESSAGE);
+            throw new DeleteSessionException("Can't delete message emitter");
         }
     }
 }
