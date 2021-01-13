@@ -2,21 +2,16 @@ package org.zipli.socknet.service.ws.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.zipli.socknet.dto.ChatData;
 import org.zipli.socknet.dto.Command;
 import org.zipli.socknet.dto.MessageData;
-import org.zipli.socknet.dto.WsMessage;
-import org.zipli.socknet.exception.CreateSocketException;
-import org.zipli.socknet.exception.DeleteSessionException;
+import org.zipli.socknet.dto.WsMessageResponse;
 import org.zipli.socknet.exception.WsException;
-import org.zipli.socknet.exception.auth.UserNotFoundException;
 import org.zipli.socknet.exception.chat.*;
 import org.zipli.socknet.exception.message.MessageDeleteException;
 import org.zipli.socknet.exception.message.MessageSendException;
 import org.zipli.socknet.exception.message.MessageUpdateException;
 import org.zipli.socknet.model.Chat;
 import org.zipli.socknet.model.Message;
-import org.zipli.socknet.model.User;
 import org.zipli.socknet.repository.ChatRepository;
 import org.zipli.socknet.repository.MessageRepository;
 import org.zipli.socknet.repository.UserRepository;
@@ -25,23 +20,18 @@ import org.zipli.socknet.service.ws.IEmitterService;
 import org.zipli.socknet.service.ws.IMessageService;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 public class MessageService implements IMessageService {
-    private final UserRepository userRepository;
     private final ChatRepository chatRepository;
     private final MessageRepository messageRepository;
     private final IEmitterService emitterService;
 
-    public MessageService(UserRepository userRepository, ChatRepository chatRepository, MessageRepository messageRepository, JwtUtils jwtUtils) {
-        this.userRepository = userRepository;
+    public MessageService( ChatRepository chatRepository, MessageRepository messageRepository, IEmitterService emitterService) {
         this.chatRepository = chatRepository;
         this.messageRepository = messageRepository;
-        this.jwtUtils = jwtUtils;
+        this.emitterService = emitterService;
     }
 
 
@@ -71,7 +61,7 @@ public class MessageService implements IMessageService {
             chat.getIdMessages().add(message.getId());
 
             chat.getIdUsers().parallelStream()
-                    .forEach(userId -> sendMessageToUser(userId,
+                    .forEach(userId -> emitterService.sendMessageToUser(userId,
                             new WsMessageResponse(Command.MESSAGE_SEND,
                                     new MessageData(userId,
                                             chat.getId(),
@@ -100,7 +90,7 @@ public class MessageService implements IMessageService {
                 message.setTextMessage(data.getTextMessage());
                 final Message finalMessage = messageRepository.save(message);
                 finalChat.getIdUsers().parallelStream()
-                        .forEach(userId -> sendMessageToUser(userId,
+                        .forEach(userId -> emitterService.sendMessageToUser(userId,
                                 new WsMessageResponse(Command.MESSAGE_UPDATE,
                                         new MessageData(userId,
                                                 finalChat.getId(),
@@ -134,7 +124,7 @@ public class MessageService implements IMessageService {
                 final Chat finalChat = chatRepository.save(chat);
 
                 finalChat.getIdUsers().parallelStream()
-                        .forEach(userId -> sendMessageToUser(userId,
+                        .forEach(userId -> emitterService.sendMessageToUser(userId,
                                 new WsMessageResponse(Command.MESSAGE_DELETE,
                                         new MessageData(userId,
                                                 finalChat.getId(),

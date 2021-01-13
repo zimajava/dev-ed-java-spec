@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.zipli.socknet.dto.ChatData;
 import org.zipli.socknet.dto.Command;
 import org.zipli.socknet.dto.WsMessage;
+import org.zipli.socknet.dto.WsMessageResponse;
 import org.zipli.socknet.exception.WsException;
 import org.zipli.socknet.exception.auth.UserNotFoundException;
 import org.zipli.socknet.exception.chat.*;
@@ -85,7 +86,7 @@ public class ChatService implements IChatService {
 
             finalChat.getIdUsers().parallelStream()
                     .forEach(userId -> emitterService.sendMessageToUser(userId,
-                            new WsMessage(Command.CHAT_JOIN,
+                            new WsMessageResponse(Command.CHAT_JOIN,
                                     new ChatData(userId,
                                             finalChat.getId(),
                                             finalChat.getChatName()
@@ -110,7 +111,7 @@ public class ChatService implements IChatService {
 
                 finalChat.getIdUsers().parallelStream()
                         .forEach(userId -> emitterService.sendMessageToUser(userId,
-                                new WsMessage(Command.CHAT_UPDATE,
+                                new WsMessageResponse(Command.CHAT_UPDATE,
                                         new ChatData(userId,
                                                 finalChat.getId(),
                                                 finalChat.getChatName()
@@ -149,7 +150,7 @@ public class ChatService implements IChatService {
 
                 chat.getIdUsers().parallelStream()
                         .forEach(userId -> emitterService.sendMessageToUser(userId,
-                                new WsMessage(Command.CHAT_DELETE,
+                                new WsMessageResponse(Command.CHAT_DELETE,
                                         new ChatData(userId,
                                                 chat.getId(),
                                                 chat.getChatName()
@@ -182,7 +183,7 @@ public class ChatService implements IChatService {
 
             finalChat.getIdUsers().parallelStream()
                     .forEach(userId -> emitterService.sendMessageToUser(userId,
-                            new WsMessage(Command.CHAT_LEAVE,
+                            new WsMessageResponse(Command.CHAT_LEAVE,
                                     new ChatData(userId,
                                             finalChat.getId(),
                                             finalChat.getChatName(),
@@ -215,7 +216,7 @@ public class ChatService implements IChatService {
                 log.info(String.valueOf(finalChat.getIdUsers()));
                 finalChat.getIdUsers().parallelStream()
                         .forEach(userId -> emitterService.sendMessageToUser(userId,
-                                new WsMessage(Command.CHAT_JOIN,
+                                new WsMessageResponse(Command.CHAT_JOIN,
                                         new ChatData(userId,
                                                 finalChat.getId(),
                                                 finalChat.getChatName(),

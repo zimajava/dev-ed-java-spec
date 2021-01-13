@@ -50,7 +50,7 @@ class MessageServiceTest {
     @BeforeEach
     void setUp() {
 
-        messageService = new MessageService(userRepository, chatRepository, messageRepository, new JwtUtils(), emitterService);
+        messageService = new MessageService(chatRepository, messageRepository, emitterService);
         user = new User("Email@com", "password", "Username", "MoiNik");
         user = userRepository.save(user);
 

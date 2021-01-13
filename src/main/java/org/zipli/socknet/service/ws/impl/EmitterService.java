@@ -3,7 +3,7 @@ package org.zipli.socknet.service.ws.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.zipli.socknet.dto.Command;
-import org.zipli.socknet.dto.WsMessage;
+import org.zipli.socknet.dto.WsMessageResponse;
 import org.zipli.socknet.exception.CreateSocketException;
 import org.zipli.socknet.exception.DeleteSessionException;
 import org.zipli.socknet.model.User;
@@ -38,6 +38,25 @@ public class EmitterService implements IEmitterService {
     }
 
     @Override
+    public Map<String, List<Sinks.Many<String>>> getMessageEmitter() {
+        return messageEmitterByUserId;
+    }
+
+    @Override
+    public void sendMessageToUser(String userId, WsMessageResponse wsMessage) {
+        List<Sinks.Many<String>> emittersByUser = messageEmitterByUserId.get(userId);
+        if (emittersByUser != null) {
+            emittersByUser.forEach(emitter -> emitter.tryEmitNext(JsonUtils.jsonWriteHandle(wsMessage)));
+        } else {
+            if (wsMessage.getCommand().equals(Command.CHAT_LEAVE) || wsMessage.getCommand().equals(Command.CHAT_JOIN)) {
+                log.info("User = {userId: {} isn't online: {}, not sent.}", userId, wsMessage.getCommand());
+            } else {
+                log.info("User = {userId: {} isn't online: {} not sent.}", userId, wsMessage.getCommand());
+            }
+        }
+    }
+
+    @Override
     public String addMessageEmitterByToken(String token, Sinks.Many<String> emitter) throws CreateSocketException {
         try {
             String username = jwtUtils.getUserNameFromJwtToken(token);
@@ -47,19 +66,6 @@ public class EmitterService implements IEmitterService {
             return userId;
         } catch (Exception e) {
             throw new CreateSocketException("Can't create connect to user, Exception cause: " + e.getMessage() + " on class " + e.getClass().getSimpleName());
-        }
-    }
-
-    public void sendMessageToUser(String userId, WsMessage wsMessage) {
-        List<Sinks.Many<String>> emittersByUser = messageEmitterByUserId.get(userId);
-        if (emittersByUser != null) {
-            emittersByUser.forEach(emitter -> emitter.tryEmitNext(JsonUtils.jsonWriteHandle(wsMessage)));
-        } else {
-            if (wsMessage.getCommand().equals(Command.CHAT_LEAVE) || wsMessage.getCommand().equals(Command.CHAT_JOIN)) {
-                log.info("User = {userId: {} isn't online: {}, user: {} not sent.}", userId, wsMessage.getCommand(), wsMessage.getData().getIdUser());
-            } else {
-                log.info("User = {userId: {} isn't online: {} not sent.}", userId, wsMessage.getCommand());
-            }
         }
     }
 

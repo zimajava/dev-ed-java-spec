@@ -1,4 +1,4 @@
-package org.zipli.socknet.service.ws.message.impl;
+package org.zipli.socknet.service.ws.impl;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -17,14 +17,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
-public class MessageServiceVideoTest {
+public class VideoServiceTest {
 
     private final VideoData videoData = new VideoData("123", "456", "Drew", "ChatName", "Signal");
     private Chat chat = new Chat(videoData.getChatName(), false, videoData.getIdUser());
     private BaseData baseData = new BaseData(videoData.getIdUser(), videoData.getIdChat());
 
     @Autowired
-    MessageService messageService;
+    VideoService videoService;
 
     @MockBean
     ChatRepository chatRepository;
@@ -33,7 +33,7 @@ public class MessageServiceVideoTest {
     public void startVideoCall_Pass() {
         Mockito.when(chatRepository.findChatById(videoData.getIdChat())).thenReturn(chat);
 
-        VideoData actualVideoData = messageService.startVideoCall(videoData);
+        VideoData actualVideoData = videoService.startVideoCall(videoData);
 
         assertEquals(videoData.getIdChat(), actualVideoData.getIdChat());
         assertEquals(videoData.getIdUser(), actualVideoData.getIdUser());
@@ -46,14 +46,14 @@ public class MessageServiceVideoTest {
     public void startVideoCall_Fail() {
         Mockito.when(chatRepository.findChatById(videoData.getIdChat())).thenReturn(null);
 
-        assertThrows(ChatNotFoundException.class, () -> messageService.startVideoCall(videoData));
+        assertThrows(ChatNotFoundException.class, () -> videoService.startVideoCall(videoData));
     }
 
     @Test
     public void joinVideoCall_Pass() {
         Mockito.when(chatRepository.findChatById(videoData.getIdChat())).thenReturn(chat);
-        messageService.startVideoCall(videoData);
-        VideoData actualVideoData = messageService.joinVideoCall(videoData);
+        videoService.startVideoCall(videoData);
+        VideoData actualVideoData = videoService.joinVideoCall(videoData);
 
         assertEquals(videoData.getIdChat(), actualVideoData.getIdChat());
         assertEquals(videoData.getIdUser(), actualVideoData.getIdUser());
@@ -66,15 +66,15 @@ public class MessageServiceVideoTest {
     public void joinVideoCall_Fail() {
         Mockito.when(chatRepository.findChatById(videoData.getIdChat())).thenReturn(null);
 
-        assertThrows(ChatNotFoundException.class, () -> messageService.joinVideoCall(videoData));
+        assertThrows(ChatNotFoundException.class, () -> videoService.joinVideoCall(videoData));
     }
 
     @Test
     public void exitFromVideoCall_Pass() {
         Mockito.when(chatRepository.findChatById(videoData.getIdChat())).thenReturn(chat);
-        messageService.startVideoCall(videoData);
+        videoService.startVideoCall(videoData);
 
-        BaseData actualVideoData = messageService.exitFromVideoCall(videoData);
+        BaseData actualVideoData = videoService.exitFromVideoCall(videoData);
 
         assertEquals(videoData.getIdChat(), actualVideoData.getIdChat());
         assertEquals(videoData.getIdUser(), actualVideoData.getIdUser());
@@ -84,6 +84,6 @@ public class MessageServiceVideoTest {
     void exitFromVideoCall_Fail() {
         Mockito.when(chatRepository.findChatById(videoData.getIdChat())).thenReturn(null);
 
-        assertThrows(VideoCallException.class, () -> messageService.exitFromVideoCall(baseData));
+        assertThrows(VideoCallException.class, () -> videoService.exitFromVideoCall(baseData));
     }
 }

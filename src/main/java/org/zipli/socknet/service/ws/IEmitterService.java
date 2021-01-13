@@ -1,11 +1,13 @@
 package org.zipli.socknet.service.ws;
 
 import org.zipli.socknet.dto.WsMessage;
+import org.zipli.socknet.dto.WsMessageResponse;
 import org.zipli.socknet.exception.CreateSocketException;
 import org.zipli.socknet.exception.DeleteSessionException;
 import reactor.core.publisher.Sinks;
 
 import java.util.List;
+import java.util.Map;
 
 public interface IEmitterService {
 
@@ -15,5 +17,7 @@ public interface IEmitterService {
 
     List<Sinks.Many<String>> getMessageEmitterByUserId(String userId);
 
-    void sendMessageToUser(String userId, WsMessage wsMessage);
+    Map<String, List<Sinks.Many<String>>> getMessageEmitter();
+
+    void sendMessageToUser(String userId, WsMessageResponse wsMessage);
 }
