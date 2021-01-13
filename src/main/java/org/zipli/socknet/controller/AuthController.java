@@ -67,18 +67,18 @@ public class AuthController {
 
     @PostMapping("/forgot_password")
     public ResponseEntity<?> processForgotPassword(@Valid @RequestParam("email") String email) throws UserNotFoundException {
-            try {
-                resetPasswordService.generateResetPasswordToken(email);
-            } catch (UserNotFoundException e) {
-                log.error(e.getErrorStatusCode().getMessage(),
-                        "Failed restore password by email {}", email);
-                return ResponseEntity
-                        .badRequest()
-                        .body(e.getErrorStatusCode().getValue());
-            }
-            resetPasswordService.sendEmailForChangingPassword(email);
-            return ResponseEntity.ok("Password can be changed");
+        try {
+            resetPasswordService.generateResetPasswordToken(email);
+        } catch (UserNotFoundException e) {
+            log.error(e.getErrorStatusCode().getMessage(),
+                    "Failed restore password by email {}", email);
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getErrorStatusCode().getValue());
         }
+        resetPasswordService.sendEmailForChangingPassword(email);
+        return ResponseEntity.ok("Password can be changed");
+    }
 
     @PostMapping("/reset_password")
     public ResponseEntity<?> processResetPassword(@Valid @RequestParam("token") String token, String newPassword) {
