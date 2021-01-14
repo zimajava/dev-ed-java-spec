@@ -2,6 +2,7 @@ package org.zipli.socknet.service.ws.impl;
 
 import com.mongodb.DBObject;
 import com.mongodb.client.gridfs.model.GridFSFile;
+import com.sun.mail.iap.ByteArray;
 import org.bson.*;
 import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,8 +52,6 @@ class FileServiceTest {
     @MockBean
     GridFsTemplate gridFsTemplate;
     @MockBean
-    InputStream inputStream;
-    @MockBean
     List<String> idFiles;
     @MockBean
     Document metadata;
@@ -64,13 +63,13 @@ class FileServiceTest {
 
     @BeforeEach
     void setup() {
-
+        byte[] bytes = "string".getBytes();
         fileData = new FileData(
                 "userId",
                 "chatId",
                 "fileId",
                 "hello.txt",
-                inputStream);
+                bytes);
     }
 
     @Test

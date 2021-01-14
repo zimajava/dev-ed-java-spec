@@ -3,6 +3,7 @@ package org.zipli.socknet.service.ws.impl;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.mongodb.client.gridfs.model.GridFSFile;
+import com.sun.mail.iap.ByteArray;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -23,6 +24,7 @@ import org.zipli.socknet.repository.FileRepository;
 import org.zipli.socknet.service.ws.IFileService;
 import org.zipli.socknet.service.ws.message.impl.MessageService;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Date;
 
@@ -54,8 +56,10 @@ public class FileService implements IFileService {
             DBObject metaData = new BasicDBObject();
             metaData.put("type", "file");
             metaData.put("title", data.getTitle());
+            ByteArray byteArray = new ByteArray(data.getBytes().length);
+            ByteArrayInputStream inputStream = byteArray.toByteArrayInputStream();
             ObjectId id = gridFsTemplate.store(
-                    data.getInputStream(),
+                    inputStream,
                     data.getTitle(),
                     metaData
             );
@@ -76,7 +80,7 @@ public class FileService implements IFileService {
                                                     chat.getId(),
                                                     finalFile.getId(),
                                                     finalFile.getTitle(),
-                                                    data.getInputStream())
+                                                    data.getBytes())
                                     ))
                             );
                 } else {
@@ -111,7 +115,7 @@ public class FileService implements IFileService {
                                                 finalChat.getId(),
                                                 file.getId(),
                                                 file.getTitle(),
-                                                data.getInputStream()
+                                                data.getBytes()
                                         )
                                 ))
                         );
