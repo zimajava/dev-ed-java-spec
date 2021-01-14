@@ -1,5 +1,6 @@
 package org.zipli.socknet.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ import org.zipli.socknet.service.password.ResetPasswordService;
 
 import javax.validation.Valid;
 
+@Slf4j
 @RestController
 @RequestMapping(value = "/zipli/auth", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AuthController {
@@ -39,9 +41,12 @@ public class AuthController {
         try {
             authService.registration(user);
         } catch (AuthException e) {
+            log.error(e.getErrorStatusCode().getMessage(),
+                    "Failed registration by email {}, userName {}, nickName {}", signupRequest.getEmail(),
+                    signupRequest.getUserName(), signupRequest.getNickName());
             return ResponseEntity
                     .badRequest()
-                    .body(e);
+                    .body(e.getErrorStatusCode().getValue());
         }
         return ResponseEntity.ok("User registered successfully!");
     }
@@ -51,40 +56,42 @@ public class AuthController {
         try {
             emailConfirmationService.confirmAccount(token);
         } catch (NotConfirmAccountException e) {
+            log.error(e.getErrorStatusCode().getMessage(),
+                    "Failed confirm email by token {}", token);
             return ResponseEntity
                     .badRequest()
-                    .body(e);
+                    .body(e.getErrorStatusCode().getValue());
         }
         return ResponseEntity.ok("Account verified");
     }
 
     @PostMapping("/forgot_password")
     public ResponseEntity<?> processForgotPassword(@Valid @RequestParam("email") String email) throws UserNotFoundException {
-        if (email == null) {
-            throw new UserNotFoundException("Error. User is not found");
-        } else {
-            try {
-                resetPasswordService.generateResetPasswordToken(email);
-            } catch (UserNotFoundException e) {
-                return ResponseEntity
-                        .badRequest()
-                        .body(e);
-            }
-            resetPasswordService.sendEmailForChangingPassword(email);
-            return ResponseEntity.ok("Password can be changed");
+        try {
+            resetPasswordService.generateResetPasswordToken(email);
+        } catch (UserNotFoundException e) {
+            log.error(e.getErrorStatusCode().getMessage(),
+                    "Failed restore password by email {}", email);
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getErrorStatusCode().getValue());
         }
+        resetPasswordService.sendEmailForChangingPassword(email);
+        return ResponseEntity.ok("Password can be changed");
     }
 
     @PostMapping("/reset_password")
     public ResponseEntity<?> processResetPassword(@Valid @RequestParam("token") String token, String newPassword) {
-        if (token == null) {
-            throw new UserNotFoundException("Error. User is not found");
-        } else if (newPassword == null) {
-            throw new UserNotFoundException("Error. Password can't be null");
-        } else {
+        try {
             resetPasswordService.resetPassword(token, newPassword);
-            return ResponseEntity.ok("Password successfully changed");
+        } catch (UserNotFoundException e) {
+            log.error(e.getErrorStatusCode().getMessage(),
+                    "Failed update password by token {}, newPassword {}", token, newPassword);
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getErrorStatusCode().getValue());
         }
+        return ResponseEntity.ok("Password successfully changed");
     }
 
     @PostMapping("/signin")
@@ -93,9 +100,11 @@ public class AuthController {
         try {
             loginResponse = authService.login(loginRequest.getLogin(), loginRequest.getPassword());
         } catch (AuthException e) {
+            log.error(e.getErrorStatusCode().getMessage(),
+                    "Failed authenticate user by login {}, password {}", loginRequest.getLogin(), loginRequest.getPassword());
             return ResponseEntity
                     .badRequest()
-                    .body(e);
+                    .body(e.getErrorStatusCode().getValue());
         }
         return ResponseEntity.ok(loginResponse);
     }

@@ -3,8 +3,10 @@ package org.zipli.socknet.service.password;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.zipli.socknet.exception.ErrorStatusCode;
 import org.zipli.socknet.exception.auth.UserNotFoundException;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.repository.UserRepository;
@@ -46,26 +48,41 @@ public class ResetPasswordService {
     }
 
     public String generateResetPasswordToken(String email) {
-
-        User user = userRepository.getUserByEmail(email);
-        if (user != null) {
-            String userName = user.getUserName();
-            return jwtUtils.generateJwtToken(userDetailsService.loadUserByUsername(userName), email);
+        if (email == null) {
+            throw new UserNotFoundException(ErrorStatusCode.EMAIL_DOES_NOT_CORRECT);
         } else {
-            throw new UserNotFoundException("Error. User is not founded.");
+            User user = userRepository.getUserByEmail(email);
+            if (user != null) {
+                String userName = user.getUserName();
+                UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
+                String token = jwtUtils.generateJwtToken(userDetails, email);
+           return token;
+            } else {
+                throw new UserNotFoundException(ErrorStatusCode.USER_DOES_NOT_EXIST);
+            }
         }
     }
 
     @Transactional
-    public String resetPassword(String newPassword, String token) {
+    public String resetPassword(String token, String newPassword) {
+
+        if (token == null) {
+            throw new UserNotFoundException(ErrorStatusCode.USER_DOES_NOT_EXIST);
+        } else if (newPassword != null) {
 
             String userName = jwtUtils.getUserNameFromJwtToken(token);
-            User user = userRepository.getByUserName(userName);
-            String password = user.getPassword();
-            if (!password.isEmpty()) {
+            User user = userRepository.getUserByUserName(userName);
+
+            if (user != null) {
                 user.setPassword(newPassword);
+            } else {
+                throw new UserNotFoundException(ErrorStatusCode.USER_DOES_NOT_EXIST);
             }
+
             userRepository.save(user);
             return "Password successfully changed";
+        } else {
+            throw new UserNotFoundException(ErrorStatusCode.PASSWORD_IS_NULL);
+        }
     }
 }

@@ -179,14 +179,14 @@ public class UserServiceTest {
 
     @Test
     void updatePasswordTest_BadUserId() {
-        assertThrows(UpdatePasswordExсeption.class, () -> {
+        assertThrows(UpdatePasswordException.class, () -> {
             userService.updatePassword(new PasswordRequest("ddjfdlkfje", "Password4"));
         });
     }
 
     @Test
     void updatePasswordTest_NullUserId() {
-        assertThrows(UpdatePasswordExсeption.class, () -> {
+        assertThrows(UpdatePasswordException.class, () -> {
             userService.updatePassword(new PasswordRequest(null, "Password4"));
         });
     }
@@ -194,7 +194,7 @@ public class UserServiceTest {
     @Test
     void updatePasswordTest_NullPassword() {
         Mockito.when(userRepository.getUserById("ddjfdlkfje")).thenReturn(user);
-        assertThrows(UpdatePasswordExсeption.class, () -> {
+        assertThrows(UpdatePasswordException.class, () -> {
             userService.updatePassword(new PasswordRequest("ddjfdlkfje", null));
         });
     }

@@ -1,16 +1,16 @@
 package org.zipli.socknet.exception.auth;
 
-import org.springframework.security.core.AuthenticationException;
+import org.zipli.socknet.exception.ErrorStatusCode;
 
 public class AuthException extends RuntimeException {
 
-    private int exceptionCode;
+    private ErrorStatusCode errorStatusCode;
 
-    public AuthException(int exceptionCode) {
-        this.exceptionCode = exceptionCode;
+    public AuthException(ErrorStatusCode errorStatusCode) {
+        this.errorStatusCode = errorStatusCode;
     }
 
-    public AuthException(String message) {
-        super(message);
+    public ErrorStatusCode getErrorStatusCode() {
+        return errorStatusCode;
     }
 }
