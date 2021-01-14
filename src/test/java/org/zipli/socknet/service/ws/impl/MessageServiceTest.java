@@ -3,17 +3,10 @@ package org.zipli.socknet.service.ws.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.zipli.socknet.dto.ChatData;
 import org.zipli.socknet.dto.MessageData;
-import org.zipli.socknet.exception.*;
 import org.zipli.socknet.exception.chat.ChatNotFoundException;
-import org.zipli.socknet.exception.chat.CreateChatException;
-import org.zipli.socknet.exception.chat.DeleteChatException;
-import org.zipli.socknet.exception.chat.UpdateChatException;
 import org.zipli.socknet.exception.message.MessageDeleteException;
 import org.zipli.socknet.exception.message.MessageUpdateException;
 import org.zipli.socknet.model.Chat;
@@ -23,11 +16,14 @@ import org.zipli.socknet.repository.ChatRepository;
 import org.zipli.socknet.repository.MessageRepository;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
-import reactor.core.publisher.Sinks;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @Slf4j
 @DataMongoTest
@@ -46,7 +42,7 @@ class MessageServiceTest {
     @Autowired
     ChatRepository chatRepository;
 
-    EmitterService emitterService = new EmitterService(userRepository,new JwtUtils());
+    EmitterService emitterService = new EmitterService(userRepository, new JwtUtils());
 
     @BeforeEach
     void setUp() {
@@ -55,7 +51,7 @@ class MessageServiceTest {
         user = new User("Email@com", "password", "Username", "MoiNik");
         user = userRepository.save(user);
 
-        chat = new Chat("NameGroupChat", false,new ArrayList<>(),Collections.singletonList(user.getId()), user.getId());
+        chat = new Chat("NameGroupChat", false, new ArrayList<>(), Collections.singletonList(user.getId()), user.getId());
         chat = chatRepository.save(chat);
         log.info(String.valueOf(chat));
         messageData = new MessageData(
@@ -177,6 +173,5 @@ class MessageServiceTest {
             assertEquals(e.getMessage(), "Chat {} doesn't exist");
         }
     }
-
 
 }

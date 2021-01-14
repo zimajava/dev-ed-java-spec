@@ -14,7 +14,8 @@ import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
 import reactor.core.publisher.Sinks;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @Slf4j
 @SpringBootTest
@@ -82,7 +83,7 @@ class EmitterServiceTest {
             e.printStackTrace();
         }
 
-        assertEquals(emitterService.getMessageEmitter().size(),1);
+        assertEquals(emitterService.getMessageEmitter().size(), 1);
     }
 
     @Test
@@ -91,7 +92,7 @@ class EmitterServiceTest {
         try {
             userId = emitterService.addMessageEmitterByToken(token, emitter);
         } catch (CreateSocketException e) {
-            assertEquals(e.getMessage(),"Can't create connect to user, Exception cause: null on class NullPointerException");
+            assertEquals(e.getMessage(), "Can't create connect to user, Exception cause: null on class NullPointerException");
         }
 
     }

@@ -14,7 +14,6 @@ import org.zipli.socknet.model.Chat;
 import org.zipli.socknet.repository.ChatRepository;
 import org.zipli.socknet.service.ws.IEmitterService;
 import org.zipli.socknet.service.ws.IVideoService;
-import reactor.core.publisher.Sinks;
 
 import java.util.List;
 import java.util.Map;

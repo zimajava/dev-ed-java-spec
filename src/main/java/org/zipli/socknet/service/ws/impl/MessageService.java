@@ -6,7 +6,9 @@ import org.zipli.socknet.dto.Command;
 import org.zipli.socknet.dto.MessageData;
 import org.zipli.socknet.dto.WsMessageResponse;
 import org.zipli.socknet.exception.WsException;
-import org.zipli.socknet.exception.chat.*;
+import org.zipli.socknet.exception.chat.ChatNotFoundException;
+import org.zipli.socknet.exception.chat.GetMessageException;
+import org.zipli.socknet.exception.chat.UpdateChatException;
 import org.zipli.socknet.exception.message.MessageDeleteException;
 import org.zipli.socknet.exception.message.MessageSendException;
 import org.zipli.socknet.exception.message.MessageUpdateException;
@@ -14,12 +16,12 @@ import org.zipli.socknet.model.Chat;
 import org.zipli.socknet.model.Message;
 import org.zipli.socknet.repository.ChatRepository;
 import org.zipli.socknet.repository.MessageRepository;
-import org.zipli.socknet.repository.UserRepository;
-import org.zipli.socknet.security.jwt.JwtUtils;
 import org.zipli.socknet.service.ws.IEmitterService;
 import org.zipli.socknet.service.ws.IMessageService;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -28,7 +30,7 @@ public class MessageService implements IMessageService {
     private final MessageRepository messageRepository;
     private final IEmitterService emitterService;
 
-    public MessageService( ChatRepository chatRepository, MessageRepository messageRepository, IEmitterService emitterService) {
+    public MessageService(ChatRepository chatRepository, MessageRepository messageRepository, IEmitterService emitterService) {
         this.chatRepository = chatRepository;
         this.messageRepository = messageRepository;
         this.emitterService = emitterService;
@@ -52,7 +54,7 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public Message sendMessage(MessageData data) throws MessageSendException,ChatNotFoundException {
+    public Message sendMessage(MessageData data) throws MessageSendException, ChatNotFoundException {
 
         Message message = new Message(data.getIdUser(), data.getIdChat(), new Date(), data.getTextMessage());
         final Message finalMessage = messageRepository.save(message);
@@ -80,7 +82,7 @@ public class MessageService implements IMessageService {
     }
 
     @Override
-    public Message updateMessage(MessageData data) throws MessageUpdateException,ChatNotFoundException {
+    public Message updateMessage(MessageData data) throws MessageUpdateException, ChatNotFoundException {
 
         Message message = messageRepository.getMessageByIdAndAuthorId(data.getMessageId(), data.getIdUser());
 

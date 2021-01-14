@@ -12,7 +12,6 @@ import org.zipli.socknet.exception.video.VideoCallException;
 import org.zipli.socknet.model.Chat;
 import org.zipli.socknet.repository.ChatRepository;
 
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 

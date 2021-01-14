@@ -2,7 +2,10 @@ package org.zipli.socknet.service.ws.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.zipli.socknet.dto.*;
+import org.zipli.socknet.dto.ChatData;
+import org.zipli.socknet.dto.ChatGroupData;
+import org.zipli.socknet.dto.Command;
+import org.zipli.socknet.dto.WsMessageResponse;
 import org.zipli.socknet.exception.WsException;
 import org.zipli.socknet.exception.auth.UserNotFoundException;
 import org.zipli.socknet.exception.chat.*;
@@ -14,7 +17,9 @@ import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.service.ws.IChatService;
 import org.zipli.socknet.service.ws.IEmitterService;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -26,7 +31,7 @@ public class ChatService implements IChatService {
     private final MessageRepository messageRepository;
     private final IEmitterService emitterService;
 
-    public ChatService(UserRepository userRepository, ChatRepository chatRepository, MessageRepository messageRepository,EmitterService emitterService) {
+    public ChatService(UserRepository userRepository, ChatRepository chatRepository, MessageRepository messageRepository, EmitterService emitterService) {
         this.userRepository = userRepository;
         this.chatRepository = chatRepository;
         this.messageRepository = messageRepository;

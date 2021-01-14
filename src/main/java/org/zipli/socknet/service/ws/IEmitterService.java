@@ -1,6 +1,5 @@
 package org.zipli.socknet.service.ws;
 
-import org.zipli.socknet.dto.WsMessage;
 import org.zipli.socknet.dto.WsMessageResponse;
 import org.zipli.socknet.exception.CreateSocketException;
 import org.zipli.socknet.exception.DeleteSessionException;

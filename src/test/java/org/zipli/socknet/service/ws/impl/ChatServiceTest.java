@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.zipli.socknet.dto.ChatData;
 import org.zipli.socknet.dto.ChatGroupData;
 import org.zipli.socknet.exception.chat.CreateChatException;
@@ -16,12 +15,12 @@ import org.zipli.socknet.repository.ChatRepository;
 import org.zipli.socknet.repository.MessageRepository;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
-import reactor.core.publisher.Sinks;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Slf4j
 @DataMongoTest
@@ -40,22 +39,22 @@ class ChatServiceTest {
     @Autowired
     MessageRepository messageRepository;
 
-    EmitterService emitterService = new EmitterService(userRepository,new JwtUtils());
+    EmitterService emitterService = new EmitterService(userRepository, new JwtUtils());
 
     @BeforeEach
     void setUp() {
-        chatService = new ChatService(userRepository,chatRepository,messageRepository,emitterService);
+        chatService = new ChatService(userRepository, chatRepository, messageRepository, emitterService);
         user = new User("Email@com", "password", "Username", "MoiNik");
         user = userRepository.save(user);
 
-        chat = new Chat("NameGroupChat", false,new ArrayList<>(), Collections.singletonList(user.getId()), user.getId());
+        chat = new Chat("NameGroupChat", false, new ArrayList<>(), Collections.singletonList(user.getId()), user.getId());
         chat = chatRepository.save(chat);
         log.info(String.valueOf(chat));
 
         dataChat = new ChatData(user.getId(),
                 chat.getId(),
                 "vgtunj");
-        chatGroupData = new ChatGroupData(user.getId(), "1", "NameGroupChatOther",new ArrayList<>());
+        chatGroupData = new ChatGroupData(user.getId(), "1", "NameGroupChatOther", new ArrayList<>());
     }
 
     @Test
@@ -130,7 +129,7 @@ class ChatServiceTest {
 
     @Test
     void joinChat() {
-        User user = userRepository.save(new User("dasdasd","gdsg","dgsdg","gdsg"));
+        User user = userRepository.save(new User("dasdasd", "gdsg", "dgsdg", "gdsg"));
         dataChat = new ChatData(user.getId(),
                 chat.getId(),
                 "vgtunj");

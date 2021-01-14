@@ -1,7 +1,7 @@
 package org.zipli.socknet.service.ws;
 
 import org.zipli.socknet.dto.MessageData;
-import org.zipli.socknet.exception.chat.*;
+import org.zipli.socknet.exception.chat.UpdateChatException;
 import org.zipli.socknet.exception.message.MessageDeleteException;
 import org.zipli.socknet.exception.message.MessageSendException;
 import org.zipli.socknet.model.Message;
