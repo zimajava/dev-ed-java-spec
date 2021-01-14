@@ -7,6 +7,8 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.zipli.socknet.dto.Command;
+import org.zipli.socknet.dto.MessageData;
 import org.zipli.socknet.dto.WsMessageResponse;
 import org.zipli.socknet.exception.CreateSocketException;
 import org.zipli.socknet.exception.DeleteSessionException;
@@ -15,8 +17,7 @@ import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
 import reactor.core.publisher.Sinks;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 @SpringBootTest
@@ -44,8 +45,11 @@ class EmitterServiceTest {
 
     @Test
     void deleteMessageEmitterByUserId_Pass() throws CreateSocketException, DeleteSessionException {
-            userId = emitterService.addMessageEmitterByToken(token, emitter);
-            emitterService.deleteMessageEmitterByUserId(userId, emitter);
+        Mockito.when(jwtUtils.getUserNameFromJwtToken(token)).thenReturn(user.getUserName());
+        Mockito.when(userRepository.findUserByUserName(user.getUserName())).thenReturn(user);
+
+        userId = emitterService.addMessageEmitterByToken(token, emitter);
+        emitterService.deleteMessageEmitterByUserId(userId, emitter);
         assertFalse(emitterService.getMessageEmitter().containsValue(userId));
     }
 
@@ -64,17 +68,8 @@ class EmitterServiceTest {
 
         Mockito.when(jwtUtils.getUserNameFromJwtToken(token)).thenReturn(user.getUserName());
         Mockito.when(userRepository.findUserByUserName(user.getUserName())).thenReturn(user);
-            userId = emitterService.addMessageEmitterByToken(token, emitter);
+        userId = emitterService.addMessageEmitterByToken(token, emitter);
         assertEquals(emitterService.getMessageEmitter().size(), 1);
-    }
-
-    @Test
-    void addMessageEmitterByToken_Fail() {
-        try {
-            userId = emitterService.addMessageEmitterByToken(token, emitter);
-        } catch (CreateSocketException e) {
-            assertEquals(e.getMessage(), "Can't create connect to user, Exception cause: null on class NullPointerException");
-        }
     }
 
     @Test
@@ -82,13 +77,18 @@ class EmitterServiceTest {
         Mockito.when(jwtUtils.getUserNameFromJwtToken(token)).thenReturn(user.getUserName());
         Mockito.when(userRepository.findUserByUserName(user.getUserName())).thenReturn(user);
 
-            userId = emitterService.addMessageEmitterByToken(token, emitter);
+        userId = emitterService.addMessageEmitterByToken(token, emitter);
 
         emitterService.sendMessageToUser(userId, new WsMessageResponse());
     }
 
     @Test
     void sendMessageToUser_Fail() {
-        emitterService.sendMessageToUser(userId, new WsMessageResponse());
+        emitterService.sendMessageToUser(userId, new WsMessageResponse(Command.MESSAGE_SEND, new MessageData()));
+    }
+
+    @Test
+    void getMessageEmitter() {
+        assertNotNull(emitterService.getMessageEmitter());
     }
 }

@@ -6,6 +6,7 @@ import org.zipli.socknet.dto.ChatData;
 import org.zipli.socknet.dto.ChatGroupData;
 import org.zipli.socknet.dto.Command;
 import org.zipli.socknet.dto.WsMessageResponse;
+import org.zipli.socknet.exception.ErrorStatusCode;
 import org.zipli.socknet.exception.WsException;
 import org.zipli.socknet.exception.auth.UserNotFoundException;
 import org.zipli.socknet.exception.chat.*;
@@ -52,7 +53,7 @@ public class ChatService implements IChatService {
 
             User userCreator = userRepository.getUserById(data.getIdUser());
             if (userCreator == null) {
-                throw new UserNotFoundException("Such user{} does not exist");
+                throw new UserNotFoundException(ErrorStatusCode.USER_DOES_NOT_EXIST);
             }
             userCreator.getChatsId().add(chat.getId());
             userRepository.save(userCreator);
@@ -273,7 +274,7 @@ public class ChatService implements IChatService {
         if (user != null) {
             return chatRepository.getChatsByIdIn(user.getChatsId());
         } else {
-            throw new UserNotFoundException("User {} does not exist");
+            throw new UserNotFoundException(ErrorStatusCode.USER_DOES_NOT_EXIST);
         }
     }
 

@@ -107,7 +107,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                                     WsException.ALREADY_EXISTS.getNumberException()))
                     );
                 } catch (UserNotFoundException e) {
-                    log.error(commandFail, eventCommand, groupData.getIdUser() + e.getMessage(), groupData.getIdUser());
+                    log.error(commandFail, eventCommand, groupData.getIdUser() + e.getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
                                     WsException.USER_NOT_FOUND_EXCEPTION.getNumberException()))
@@ -265,7 +265,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                             eventCommand,
                             chatData.getIdUser());
                 } catch (UserNotFoundException e) {
-                    log.error(commandFail, eventCommand, messageData.getIdUser() + e.getMessage(), chatData.getIdUser());
+                    log.error(commandFail, eventCommand, messageData.getIdUser() + e.getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
                                     WsException.USER_NOT_FOUND_EXCEPTION.getNumberException())
