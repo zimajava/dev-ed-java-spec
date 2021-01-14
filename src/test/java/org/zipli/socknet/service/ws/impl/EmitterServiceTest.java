@@ -10,7 +10,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.zipli.socknet.dto.WsMessageResponse;
 import org.zipli.socknet.exception.CreateSocketException;
 import org.zipli.socknet.exception.DeleteSessionException;
-import org.zipli.socknet.exception.SendMessageException;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
@@ -44,15 +43,9 @@ class EmitterServiceTest {
     }
 
     @Test
-    void deleteMessageEmitterByUserId_Pass() {
-
-        try {
+    void deleteMessageEmitterByUserId_Pass() throws CreateSocketException, DeleteSessionException {
             userId = emitterService.addMessageEmitterByToken(token, emitter);
             emitterService.deleteMessageEmitterByUserId(userId, emitter);
-        } catch (DeleteSessionException | CreateSocketException e) {
-            e.printStackTrace();
-        }
-
         assertFalse(emitterService.getMessageEmitter().containsValue(userId));
     }
 
@@ -67,16 +60,11 @@ class EmitterServiceTest {
     }
 
     @Test
-    void addMessageEmitterByToken_Pass() {
+    void addMessageEmitterByToken_Pass() throws CreateSocketException {
 
         Mockito.when(jwtUtils.getUserNameFromJwtToken(token)).thenReturn(user.getUserName());
         Mockito.when(userRepository.findUserByUserName(user.getUserName())).thenReturn(user);
-        try {
             userId = emitterService.addMessageEmitterByToken(token, emitter);
-        } catch (CreateSocketException e) {
-            e.printStackTrace();
-        }
-
         assertEquals(emitterService.getMessageEmitter().size(), 1);
     }
 
@@ -90,15 +78,13 @@ class EmitterServiceTest {
     }
 
     @Test
-    void sendMessageToUser_Pass() {
+    void sendMessageToUser_Pass() throws CreateSocketException {
         Mockito.when(jwtUtils.getUserNameFromJwtToken(token)).thenReturn(user.getUserName());
         Mockito.when(userRepository.findUserByUserName(user.getUserName())).thenReturn(user);
-        try {
+
             userId = emitterService.addMessageEmitterByToken(token, emitter);
-        } catch (CreateSocketException e) {
-            e.printStackTrace();
-        }
-        emitterService.sendMessageToUser(userId,new WsMessageResponse());
+
+        emitterService.sendMessageToUser(userId, new WsMessageResponse());
     }
 
     @Test
