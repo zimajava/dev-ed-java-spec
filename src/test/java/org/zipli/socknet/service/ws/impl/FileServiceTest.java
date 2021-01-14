@@ -1,23 +1,15 @@
 package org.zipli.socknet.service.ws.impl;
 
-import com.mongodb.DBObject;
 import com.mongodb.client.gridfs.model.GridFSFile;
-import com.sun.mail.iap.ByteArray;
 import org.bson.*;
-import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.stubbing.OngoingStubbing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.gridfs.GridFsOperations;
-import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.zipli.socknet.dto.FileData;
 import org.zipli.socknet.exception.*;
@@ -30,7 +22,6 @@ import org.zipli.socknet.repository.ChatRepository;
 import org.zipli.socknet.repository.FileRepository;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -55,11 +46,8 @@ class FileServiceTest {
     List<String> idFiles;
     @MockBean
     Document metadata;
-//    @MockBean
-//    GridFsResource gridFsResource;
-//    @MockBean
-//    ObjectId objectId;
-
+    @MockBean
+    Chat chat;
 
     @BeforeEach
     void setup() {
@@ -75,28 +63,28 @@ class FileServiceTest {
     @Test
     void sendFile_Pass() throws IOException {
 
-        GridFSFile gridFSFile = Mockito.doReturn(new GridFSFile(value, "name", 1, 1, new Date(), metadata))
+        Mockito.doReturn(new GridFSFile(value, "name", 1, 1, new Date(), metadata))
                 .when(gridFsTemplate)
                 .findOne(new Query(Criteria.where("_id").is(null)));
-
-//        File fileTest1 = new File(fileData.getIdUser(), fileData.getIdChat(), new Date(), gridFsTemplate.getResource(new GridFSFile(value, "name", 1, 1, new Date(), metadata)).getInputStream());
-//        File fileTest2 = new File(fileData.getIdUser(), fileData.getIdChat(), new Date(), fileData.getInputStream());
-//        Mockito.when(fileTest1)
-
-//                .thenReturn(fileTest2);
-//        Mockito.when(gridFsTemplate.getResource(gridFSFile)
-//                .getInputStream()).thenReturn(inputStream);
 
         User user = new User("email@gmail.com", "password", "userName", "nickName");
         user.setId("1");
 
-        Mockito.doReturn(new Chat("chatName", false, Collections.singletonList(user.getId()), "userId"))
+        Mockito.doReturn(chat)
                 .when(chatRepository)
                 .findChatById(fileData.getIdChat());
 
+        chat.setIdFiles(idFiles);
+
+        File fileAdd = new File(user.getId(), chat.getId(), new Date(), "title");
+        fileAdd.setId("3");
+
+        Mockito.doReturn(true)
+                .when(idFiles)
+                .add(fileAdd.getId());
+
         final File file = fileService.sendFile(fileData);
 
-        assertEquals(fileData.getTitle(), file.getTitle());
         assertEquals(fileData.getIdUser(), file.getAuthorId());
         assertEquals(fileData.getIdChat(), file.getChatId());
     }

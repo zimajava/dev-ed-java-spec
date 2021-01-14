@@ -7,12 +7,10 @@ import com.sun.mail.iap.ByteArray;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.gridfs.GridFsOperations;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Service;
 import org.zipli.socknet.dto.Command;
 import org.zipli.socknet.dto.FileData;
-import org.zipli.socknet.dto.WsMessage;
 import org.zipli.socknet.dto.WsMessageResponse;
 import org.zipli.socknet.exception.*;
 import org.zipli.socknet.exception.chat.UpdateChatException;
@@ -35,16 +33,15 @@ public class FileService implements IFileService {
     private final FileRepository fileRepository;
     private final MessageService messageService;
     private final GridFsTemplate gridFsTemplate;
-    private final GridFsOperations operations;
+//    private final GridFsOperations operations;
 
     public FileService(ChatRepository chatRepository, FileRepository fileRepository,
-                       MessageService messageService, GridFsTemplate gridFsTemplate,
-                       GridFsOperations operations) {
+                       MessageService messageService, GridFsTemplate gridFsTemplate) {
         this.chatRepository = chatRepository;
         this.fileRepository = fileRepository;
         this.messageService = messageService;
         this.gridFsTemplate = gridFsTemplate;
-        this.operations = operations;
+//        this.operations = operations;
     }
 
 
@@ -61,12 +58,12 @@ public class FileService implements IFileService {
             ObjectId id = gridFsTemplate.store(
                     inputStream,
                     data.getTitle(),
-                    metaData
-            );
+                    metaData);
+
             GridFSFile gridFSFile = gridFsTemplate.findOne(new Query(Criteria.where("_id").is(id)));
             if (gridFSFile != null) {
-                file = new File(data.getIdUser(), data.getIdChat(), new Date(),
-                        operations.getResource(gridFSFile).getInputStream());
+                file = new File(data.getIdUser(), data.getIdChat(), new Date(), inputStream);
+//                        operations.getResource(gridFSFile).getInputStream());
 
                 final File finalFile = fileRepository.save(file);
                 chat = chatRepository.findChatById(data.getIdChat());

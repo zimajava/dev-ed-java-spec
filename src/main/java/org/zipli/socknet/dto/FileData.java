@@ -1,15 +1,11 @@
 package org.zipli.socknet.dto;
 
-import com.sun.mail.iap.ByteArray;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.web.multipart.MultipartFile;
 import org.zipli.socknet.model.File;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.List;
 
 @Getter
