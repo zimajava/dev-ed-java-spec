@@ -47,7 +47,7 @@ public class ChatService implements IChatService {
 
             User userCreator = userRepository.getUserById(data.getIdUser());
             if (userCreator == null) {
-                throw new UserNotFoundException("Such user does not exist");
+                throw new UserNotFoundException("Such user{} does not exist");
             }
             userCreator.getChatsId().add(chat.getId());
             userRepository.save(userCreator);
@@ -77,7 +77,7 @@ public class ChatService implements IChatService {
                     );
             return chat;
         } else {
-            throw new CreateChatException("Such a chat already exists");
+            throw new CreateChatException("Such a chat {} already exists");
         }
 
     }
@@ -119,7 +119,7 @@ public class ChatService implements IChatService {
 
             return chat;
         } else {
-            throw new CreateChatException("Such a chat already exists");
+            throw new CreateChatException("Such a chat {} already exists");
         }
     }
 
@@ -143,12 +143,12 @@ public class ChatService implements IChatService {
                         );
                 return chat;
             } else {
-                throw new UpdateChatException("Only the author can update chat",
+                throw new UpdateChatException("Only the author can update chat {}",
                         WsException.CHAT_ACCESS_ERROR.getNumberException()
                 );
             }
         } else {
-            throw new UpdateChatException("Chat doesn't exist",
+            throw new UpdateChatException("Chat {} doesn't exist",
                     WsException.CHAT_NOT_EXIT.getNumberException()
             );
         }
@@ -181,12 +181,12 @@ public class ChatService implements IChatService {
                                 ))
                         );
             } else {
-                throw new DeleteChatException("Only the author can delete chat",
+                throw new DeleteChatException("Only the author can delete chat {}",
                         WsException.CHAT_ACCESS_ERROR.getNumberException()
                 );
             }
         } else {
-            throw new DeleteChatException("Chat doesn't exist",
+            throw new DeleteChatException("Chat {} doesn't exist",
                     WsException.CHAT_NOT_EXIT.getNumberException()
             );
         }
@@ -217,7 +217,7 @@ public class ChatService implements IChatService {
 
             return chat;
         } else {
-            throw new LeaveChatException("Chat doesn't exist");
+            throw new LeaveChatException("Chat {} doesn't exist");
         }
     }
 
@@ -248,12 +248,12 @@ public class ChatService implements IChatService {
                                 ))
                         );
             } else {
-                throw new JoinChatException("Can't access chat",
+                throw new JoinChatException("Can't access chat {}",
                         WsException.CHAT_ACCESS_ERROR.getNumberException()
                 );
             }
         } else {
-            throw new JoinChatException("Chat doesn't exist",
+            throw new JoinChatException("Chat {} doesn't exist",
                     WsException.CHAT_NOT_EXIT.getNumberException()
             );
         }
@@ -268,7 +268,7 @@ public class ChatService implements IChatService {
         if (user != null) {
             return chatRepository.getChatsByIdIn(user.getChatsId());
         } else {
-            throw new UserNotFoundException("User does not exist");
+            throw new UserNotFoundException("User {} does not exist");
         }
     }
 

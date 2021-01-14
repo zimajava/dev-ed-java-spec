@@ -47,12 +47,12 @@ public class MessageService implements IMessageService {
             }
             return messages;
         } else {
-            throw new GetMessageException("Chat doesn't exist");
+            throw new GetMessageException("Chat{} doesn't exist");
         }
     }
 
     @Override
-    public Message sendMessage(MessageData data) throws MessageSendException {
+    public Message sendMessage(MessageData data) throws MessageSendException,ChatNotFoundException {
 
         Message message = new Message(data.getIdUser(), data.getIdChat(), new Date(), data.getTextMessage());
         final Message finalMessage = messageRepository.save(message);
@@ -74,12 +74,13 @@ public class MessageService implements IMessageService {
 
             return message;
         } else {
-            throw new MessageSendException("Chat doesn't exist");
+            throw new ChatNotFoundException("Chat {} doesn't exist",
+                    WsException.CHAT_NOT_FOUND_EXCEPTION.getNumberException());
         }
     }
 
     @Override
-    public Message updateMessage(MessageData data) throws MessageUpdateException {
+    public Message updateMessage(MessageData data) throws MessageUpdateException,ChatNotFoundException {
 
         Message message = messageRepository.getMessageByIdAndAuthorId(data.getMessageId(), data.getIdUser());
 
@@ -100,13 +101,13 @@ public class MessageService implements IMessageService {
                                 ))
                         );
             } else {
-                throw new MessageUpdateException("Chat doesn't exist",
-                        WsException.MESSAGE_NOT_EXIT.getNumberException()
+                throw new ChatNotFoundException("Chat {} doesn't exist",
+                        WsException.CHAT_NOT_FOUND_EXCEPTION.getNumberException()
                 );
             }
             return message;
         } else {
-            throw new MessageUpdateException("Only the author can update message",
+            throw new MessageUpdateException("Only the author can update message {}",
                     WsException.CHAT_ACCESS_ERROR.getNumberException()
             );
         }
@@ -134,13 +135,13 @@ public class MessageService implements IMessageService {
                                 ))
                         );
             } else {
-                throw new UpdateChatException("Chat doesn't exist",
-                        WsException.MESSAGE_NOT_EXIT.getNumberException()
+                throw new ChatNotFoundException("Chat {} doesn't exist",
+                        WsException.CHAT_NOT_FOUND_EXCEPTION.getNumberException()
                 );
             }
             messageRepository.delete(message);
         } else {
-            throw new MessageDeleteException("Only the author can delete message");
+            throw new MessageDeleteException("Only the author can delete message{}");
         }
     }
 

@@ -36,7 +36,6 @@ public class VideoService implements IVideoService {
         this.emitterService = emitterService;
     }
 
-
     public VideoData startVideoCall(VideoData videoData) {
         VideoCallState videoCallState = new VideoCallState(videoData.getIdUser(), new CopyOnWriteArrayList<>(), new CopyOnWriteArrayList<>());
         videoCallState.getIdUsersInCall().add(videoData.getIdUser());
@@ -44,7 +43,7 @@ public class VideoService implements IVideoService {
 
         Chat chat = chatRepository.findChatById(videoData.getIdChat());
         if (chat == null) {
-            throw new ChatNotFoundException("Chat doesn't exist",
+            throw new ChatNotFoundException("Chat {} doesn't exist",
                     WsException.CHAT_NOT_FOUND_EXCEPTION.getNumberException());
         }
         chat.getIdUsers().parallelStream()
@@ -64,7 +63,7 @@ public class VideoService implements IVideoService {
     public VideoData joinVideoCall(VideoData videoData) {
         VideoCallState videoCallState = videoCallStorage.get(videoData.getIdChat());
         if (videoCallState == null) {
-            throw new VideoCallException("VideoCall doesn't exist",
+            throw new VideoCallException("VideoCall {} doesn't exist",
                     WsException.VIDEO_CALL_EXCEPTION.getNumberException());
         }
         videoCallState.getIdUsersInCall()
@@ -72,7 +71,7 @@ public class VideoService implements IVideoService {
         videoCallState.getIdUsersWhoIsNotOnline().remove(videoData.getIdUser());
         Chat chat = chatRepository.findChatById(videoData.getIdChat());
         if (chat == null) {
-            throw new ChatNotFoundException("Chat doesn't exist",
+            throw new ChatNotFoundException("Chat {} doesn't exist",
                     WsException.CHAT_NOT_FOUND_EXCEPTION.getNumberException());
         }
 
@@ -89,7 +88,7 @@ public class VideoService implements IVideoService {
     public BaseData exitFromVideoCall(BaseData baseData) {
         VideoCallState videoCallState = videoCallStorage.get(baseData.getIdChat());
         if (videoCallState == null) {
-            throw new VideoCallException("VideoCall doesn't exist",
+            throw new VideoCallException("VideoCall {} doesn't exist",
                     WsException.VIDEO_CALL_EXCEPTION.getNumberException());
         }
         videoCallState.getIdUsersInCall()
@@ -106,7 +105,7 @@ public class VideoService implements IVideoService {
         }
         Chat chat = chatRepository.findChatById(baseData.getIdChat());
         if (chat == null) {
-            throw new ChatNotFoundException("Chat doesn't exist",
+            throw new ChatNotFoundException("Chat {} doesn't exist",
                     WsException.CHAT_NOT_FOUND_EXCEPTION.getNumberException());
         }
 
