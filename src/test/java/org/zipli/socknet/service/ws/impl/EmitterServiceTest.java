@@ -44,11 +44,68 @@ class EmitterServiceTest {
     String userId = "";
     User user = new User("sdasda", "sdasd", "sdasdas", "fdsghh");
 
+    Logger logger = (Logger) LoggerFactory.getLogger(EmitterService.class);
+    ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+
+
     @BeforeEach
     void setUp() {
         user.setId("");
         token = "";
         emitter = Sinks.many().multicast().directAllOrNothing();
+        listAppender.start();
+        logger.addAppender(listAppender);
+    }
+
+    @Test
+    void addMessageEmitterByToken_Pass() throws CreateSocketException {
+
+        Mockito.when(jwtUtils.getUserNameFromJwtToken(token)).thenReturn(user.getUserName());
+        Mockito.when(userRepository.findUserByUserName(user.getUserName())).thenReturn(user);
+        userId = emitterService.addMessageEmitterByToken(token, emitter);
+        assertEquals(emitterService.getMessageEmitter().size(), 1);
+    }
+
+    @Test
+    void sendMessageToUser_Pass() throws CreateSocketException {
+        Mockito.when(jwtUtils.getUserNameFromJwtToken(token)).thenReturn(user.getUserName());
+        Mockito.when(userRepository.findUserByUserName(user.getUserName())).thenReturn(user);
+
+        userId = emitterService.addMessageEmitterByToken(token, emitter);
+
+        Logger logger = (Logger) LoggerFactory.getLogger(EmitterService.class);
+        ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+        listAppender.start();
+        logger.addAppender(listAppender);
+
+        emitterService.sendMessageToUser(userId, new WsMessageResponse());
+
+        List<ILoggingEvent> logsList = listAppender.list;
+        assertEquals(logsList.get(0).getMessage(),
+                "User = {userId: {} isn online: {}, sent.}");
+        assertEquals(Level.INFO, logsList.get(0)
+                .getLevel());
+    }
+
+    @Test
+    void sendMessageToUser_Fail() {
+        Logger logger = (Logger) LoggerFactory.getLogger(EmitterService.class);
+        ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+        listAppender.start();
+        logger.addAppender(listAppender);
+
+        emitterService.sendMessageToUser("dsadas", new WsMessageResponse(Command.MESSAGE_SEND, new MessageData()));
+
+        List<ILoggingEvent> logsList = listAppender.list;
+        assertEquals(logsList.get(0).getMessage(),
+                "User = {userId: {} isn't online: {} not sent.}");
+        assertEquals(Level.INFO, logsList.get(0)
+                .getLevel());
+    }
+
+    @Test
+    void getMessageEmitter() {
+        assertNotNull(emitterService.getMessageEmitter());
     }
 
     @Test
@@ -69,47 +126,5 @@ class EmitterServiceTest {
         } catch (DeleteSessionException e) {
             assertEquals(e.getMessage(), "Can't delete message emitter");
         }
-    }
-
-    @Test
-    void addMessageEmitterByToken_Pass() throws CreateSocketException {
-
-        Mockito.when(jwtUtils.getUserNameFromJwtToken(token)).thenReturn(user.getUserName());
-        Mockito.when(userRepository.findUserByUserName(user.getUserName())).thenReturn(user);
-        userId = emitterService.addMessageEmitterByToken(token, emitter);
-        assertEquals(emitterService.getMessageEmitter().size(), 1);
-    }
-
-    @Test
-    void sendMessageToUser_Pass() throws CreateSocketException {
-        Mockito.when(jwtUtils.getUserNameFromJwtToken(token)).thenReturn(user.getUserName());
-        Mockito.when(userRepository.findUserByUserName(user.getUserName())).thenReturn(user);
-
-        userId = emitterService.addMessageEmitterByToken(token, emitter);
-
-        emitterService.sendMessageToUser(userId, new WsMessageResponse());
-    }
-
-    @Test
-    void sendMessageToUser_Fail() {
-        Logger logger = (Logger) LoggerFactory.getLogger(EmitterService.class);
-
-        ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
-        listAppender.start();
-
-        logger.addAppender(listAppender);
-
-        emitterService.sendMessageToUser(userId, new WsMessageResponse(Command.MESSAGE_SEND, new MessageData()));
-
-        List<ILoggingEvent> logsList = listAppender.list;
-        assertEquals(logsList.get(0).getMessage(),
-                "User = {userId: {} isn't online: {} not sent.}");
-        assertEquals(Level.INFO, logsList.get(0)
-                .getLevel());
-    }
-
-    @Test
-    void getMessageEmitter() {
-        assertNotNull(emitterService.getMessageEmitter());
     }
 }

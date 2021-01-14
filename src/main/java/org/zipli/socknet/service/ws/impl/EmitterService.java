@@ -39,20 +39,6 @@ public class EmitterService implements IEmitterService {
     }
 
     @Override
-    public void sendMessageToUser(String userId, WsMessageResponse wsMessage) {
-        List<Sinks.Many<String>> emittersByUser = messageEmitterByUserId.get(userId);
-        if (emittersByUser != null) {
-            emittersByUser.forEach(emitter -> emitter.tryEmitNext(JsonUtils.jsonWriteHandle(wsMessage)));
-        } else {
-            if (wsMessage.getCommand().equals(Command.CHAT_LEAVE) || wsMessage.getCommand().equals(Command.CHAT_JOIN)) {
-                log.info("User = {userId: {} isn't online: {}, not sent.}", userId, wsMessage.getCommand());
-            } else {
-                log.info("User = {userId: {} isn't online: {} not sent.}", userId, wsMessage.getCommand());
-            }
-        }
-    }
-
-    @Override
     public String addMessageEmitterByToken(String token, Sinks.Many<String> emitter) throws CreateSocketException {
         try {
             String username = jwtUtils.getUserNameFromJwtToken(token);
@@ -74,4 +60,20 @@ public class EmitterService implements IEmitterService {
         }
     }
 
+    @Override
+    public void sendMessageToUser(String userId, WsMessageResponse wsMessage) {
+        List<Sinks.Many<String>> emittersByUser = messageEmitterByUserId.get(userId);
+        if (emittersByUser != null) {
+            emittersByUser.forEach(emitter -> {
+                emitter.tryEmitNext(JsonUtils.jsonWriteHandle(wsMessage));
+                log.info("User = {userId: {} isn online: {}, sent.}", userId, wsMessage.getCommand());
+            });
+        } else {
+            if (wsMessage.getCommand().equals(Command.CHAT_LEAVE) || wsMessage.getCommand().equals(Command.CHAT_JOIN)) {
+                log.info("User = {userId: {} isn't online: {}, not sent.}", userId, wsMessage.getCommand());
+            } else {
+                log.info("User = {userId: {} isn't online: {} not sent.}", userId, wsMessage.getCommand());
+            }
+        }
+    }
 }
