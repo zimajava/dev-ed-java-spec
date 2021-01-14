@@ -62,7 +62,7 @@ public class FileService implements IFileService {
 
             GridFSFile gridFSFile = gridFsTemplate.findOne(new Query(Criteria.where("_id").is(id)));
             if (gridFSFile != null) {
-                file = new File(data.getIdUser(), data.getIdChat(), new Date(), inputStream);
+                file = new File(data.getIdUser(), data.getIdChat(), new Date(), data.getTitle(), data.getBytes());
 //                        operations.getResource(gridFSFile).getInputStream());
 
                 final File finalFile = fileRepository.save(file);
@@ -77,7 +77,7 @@ public class FileService implements IFileService {
                                                     chat.getId(),
                                                     finalFile.getId(),
                                                     finalFile.getTitle(),
-                                                    data.getBytes())
+                                                    finalFile.getBytes())
                                     ))
                             );
                 } else {

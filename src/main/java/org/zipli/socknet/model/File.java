@@ -22,7 +22,7 @@ public class File {
     private String authorId;
     private String chatId;
     private String title;
-    private InputStream stream;
+    private byte[] bytes;
     private Date date;
 
     public File(String authorId, String chatId, Date date, String title) {
@@ -32,10 +32,11 @@ public class File {
         this.title = title;
     }
 
-    public File(String authorId, String chatId, Date date, InputStream stream) {
+    public File(String authorId, String chatId, Date date, String title, byte[] bytes) {
         this.authorId = authorId;
         this.chatId = chatId;
         this.date = date;
-        this.stream = stream;
+        this.title = title;
+        this.bytes = bytes;
     }
 }

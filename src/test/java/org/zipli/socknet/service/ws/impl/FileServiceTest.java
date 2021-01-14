@@ -85,6 +85,7 @@ class FileServiceTest {
 
         final File file = fileService.sendFile(fileData);
 
+        assertEquals(fileData.getTitle(), file.getTitle());
         assertEquals(fileData.getIdUser(), file.getAuthorId());
         assertEquals(fileData.getIdChat(), file.getChatId());
     }
