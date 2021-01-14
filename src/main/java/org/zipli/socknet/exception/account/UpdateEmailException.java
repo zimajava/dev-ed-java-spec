@@ -1,8 +1,18 @@
 package org.zipli.socknet.exception.account;
 
+import org.zipli.socknet.exception.ErrorStatusCode;
+
 public class UpdateEmailException extends RuntimeException {
-    public UpdateEmailException(String message) {
-        super(message);
+
+    private ErrorStatusCode errorStatusCode;
+
+    public UpdateEmailException(ErrorStatusCode errorStatusCode) {
+    this.errorStatusCode = errorStatusCode;
     }
+
+    public ErrorStatusCode getErrorStatusCode() {
+        return errorStatusCode;
+    }
+
 }
 

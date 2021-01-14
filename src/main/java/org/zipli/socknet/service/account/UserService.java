@@ -36,11 +36,11 @@ public class UserService implements IUserService {
     @Transactional
     public User findUser(String userId) throws GetUserException {
         if (userId == null) {
-            throw new GetUserException("UserId is null");
+            throw new GetUserException(ErrorStatusCode.USER_ID_NULL);
         }
         User user = userRepository.getUserById(userId);
         if (user == null) {
-            throw new GetUserException("not correct id");
+            throw new GetUserException(ErrorStatusCode.USER_ID_DOES_NOT_CORRECT);
         }
         return user;
     }
@@ -49,11 +49,11 @@ public class UserService implements IUserService {
     @Transactional
     public User deleteAvatar(String userId) throws DeleteAvatarException {
         if (userId == null) {
-            throw new DeleteAvatarException("UserId is null");
+            throw new DeleteAvatarException(ErrorStatusCode.USER_ID_NULL);
         }
         User user = userRepository.getUserById(userId);
         if (user == null) {
-            throw new DeleteAvatarException("not correct id");
+            throw new DeleteAvatarException(ErrorStatusCode.USER_ID_DOES_NOT_CORRECT);
         }
         user.setAvatar(null);
         userRepository.save(user);
@@ -65,11 +65,11 @@ public class UserService implements IUserService {
     @Transactional
     public User updateAvatar(AvatarRequest data) throws UpdateAvatarException {
         if (data.getUserId() == null || data.getAvatar() == null) {
-            throw new UpdateAvatarException("data is null");
+            throw new UpdateAvatarException(ErrorStatusCode.DATA_IS_NULL);
         }
         User user = userRepository.getUserById(data.getUserId());
         if (user == null) {
-            throw new UpdateAvatarException("not correct id");
+            throw new UpdateAvatarException(ErrorStatusCode.USER_ID_DOES_NOT_CORRECT);
         }
         user.setAvatar(data.getAvatar());
         userRepository.save(user);
@@ -80,11 +80,11 @@ public class UserService implements IUserService {
     @Transactional
     public User updateNickName(NickNameRequest data) throws UpdateNickNameException {
         if (data.getUserId() == null || data.getNickName() == null) {
-            throw new UpdateNickNameException("data is null");
+            throw new UpdateNickNameException(ErrorStatusCode.DATA_IS_NULL);
         }
         User user = userRepository.getUserById(data.getUserId());
         if (user == null) {
-            throw new UpdateNickNameException("not correct id");
+            throw new UpdateNickNameException(ErrorStatusCode.USER_ID_DOES_NOT_CORRECT);
         }
         user.setNickName(data.getNickName());
         userRepository.save(user);
@@ -96,18 +96,18 @@ public class UserService implements IUserService {
     @Transactional
     public User updateEmail(EmailRequest data) throws UpdateEmailException {
         if (data.getUserId() == null || data.getEmail() == null) {
-            throw new UpdateEmailException("data is null");
+            throw new UpdateEmailException(ErrorStatusCode.DATA_IS_NULL);
         }
         User user = userRepository.getUserById(data.getUserId());
         if (user == null) {
-            throw new UpdateEmailException("not correct id");
+            throw new UpdateEmailException(ErrorStatusCode.USER_ID_DOES_NOT_CORRECT);
         }
         if (!(data.getEmail().contains("@"))) {
-            throw new UpdateEmailException("not correct email");
+            throw new UpdateEmailException(ErrorStatusCode.EMAIL_DOES_NOT_CORRECT);
         }
         User existingUser = userRepository.getUserByEmail(data.getEmail());
         if (existingUser != null) {
-            throw new UpdateEmailException("This email already exists!");
+            throw new UpdateEmailException(ErrorStatusCode.EMAIL_ALREADY_EXISTS);
         }
         user.setEmail(data.getEmail());
         user.setConfirm(false);
@@ -121,13 +121,13 @@ public class UserService implements IUserService {
 
     @Override
     @Transactional
-    public User updatePassword(PasswordRequest data) throws UpdatePasswordExсeption {
+    public User updatePassword(PasswordRequest data) throws UpdatePasswordException {
         if (data.getUserId() == null || data.getPassword() == null) {
-            throw new UpdatePasswordExсeption("data is null");
+            throw new UpdatePasswordException(ErrorStatusCode.DATA_IS_NULL);
         }
         User user = userRepository.getUserById(data.getUserId());
         if (user == null) {
-            throw new UpdatePasswordExсeption("not correct id");
+            throw new UpdatePasswordException(ErrorStatusCode.USER_ID_DOES_NOT_CORRECT);
         }
         user.setPassword(data.getPassword());
         userRepository.save(user);
@@ -138,11 +138,11 @@ public class UserService implements IUserService {
     @Transactional
     public String deleteAccount(String userId) throws DeleteAccountException {
         if (userId == null) {
-            throw new DeleteAccountException("UserId is null");
+            throw new DeleteAccountException(ErrorStatusCode.USER_ID_NULL);
         }
         User user = userRepository.getUserById(userId);
         if (user == null) {
-            throw new DeleteAccountException("not correct id");
+            throw new DeleteAccountException(ErrorStatusCode.USER_ID_DOES_NOT_CORRECT);
         }
         user.setEmail(null);
         user.setUserName(userId);

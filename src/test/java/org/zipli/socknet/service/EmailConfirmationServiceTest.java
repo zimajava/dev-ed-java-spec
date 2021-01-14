@@ -36,7 +36,7 @@ class EmailConfirmationServiceTest {
                 .getUserNameFromJwtToken(token);
         Mockito.doReturn(new User())
                 .when(userRepository)
-                .getByUserName(username);
+                .getUserByUserName(username);
 
         assertEquals("Account verified", emailConfirmationService.confirmAccount(token));
     }

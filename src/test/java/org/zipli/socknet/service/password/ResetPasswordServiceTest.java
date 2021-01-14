@@ -10,6 +10,7 @@ import org.zipli.socknet.exception.auth.UserNotFoundException;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
+import org.zipli.socknet.security.services.UserDetailsImpl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -39,12 +40,20 @@ class ResetPasswordServiceTest {
 
     @Test
     void generateResetPasswordToken_UserIsRegisteredInDatabase() {
-        String token = null;
-        Mockito.doReturn(new User())
-                .when(userRepository)
-                .getUserByEmail(email);
+        User user = new User("email@gmail.com", "pasS1", "UsiN", "NickNamik");
+        String token = "";
 
-        assertEquals(token, resetPasswordService.generateResetPasswordToken(email));
+        Mockito.doReturn(user)
+                .when(userRepository)
+                .getUserByEmail(user.getEmail());
+
+        Mockito.doReturn(user)
+                .when(userRepository)
+                .findUserByUserName(user.getUserName());
+
+        Mockito.when(jwtUtils.generateJwtToken(new UserDetailsImpl(user), user.getEmail())).thenReturn(token);
+
+        assertEquals(token, resetPasswordService.generateResetPasswordToken(user.getEmail()));
     }
 
     @Test
@@ -57,14 +66,17 @@ class ResetPasswordServiceTest {
 
     @Test
     void resetPassword_TokenIsValid() {
-        String token = "gfhrkxr";
-        String userName = "ygbuiui";
+        String token = "";
+        String userName = "";
+        String newPassword = "";
+
         Mockito.doReturn(userName)
                 .when(jwtUtils)
                 .getUserNameFromJwtToken(token);
-        Mockito.doReturn(new User("hgboi", "yrvr7", "ygbuiui", "uin"))
+
+        Mockito.doReturn(new User())
                 .when(userRepository)
-                .getByUserName(userName);
+                .getUserByUserName(userName);
 
         assertEquals("Password successfully changed", resetPasswordService.resetPassword(newPassword, token));
     }
