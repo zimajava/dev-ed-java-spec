@@ -10,6 +10,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.zipli.socknet.dto.ChatData;
 import org.zipli.socknet.dto.MessageData;
 import org.zipli.socknet.exception.*;
+import org.zipli.socknet.exception.chat.ChatNotFoundException;
 import org.zipli.socknet.exception.chat.CreateChatException;
 import org.zipli.socknet.exception.chat.DeleteChatException;
 import org.zipli.socknet.exception.chat.UpdateChatException;
@@ -130,7 +131,7 @@ class MessageServiceTest {
         try {
             messageService.updateMessage(data);
         } catch (MessageUpdateException e) {
-            assertEquals(e.getMessage(), "Only the author can update message");
+            assertEquals(e.getMessage(), "Only the author can update message {}");
         }
     }
 
@@ -172,8 +173,8 @@ class MessageServiceTest {
 
         try {
             messageService.deleteMessage(data);
-        } catch (UpdateChatException e) {
-            assertEquals(e.getMessage(), "Chat doesn't exist");
+        } catch (ChatNotFoundException e) {
+            assertEquals(e.getMessage(), "Chat {} doesn't exist");
         }
     }
 
