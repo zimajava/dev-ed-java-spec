@@ -39,7 +39,6 @@ public class ChatService implements IChatService {
         this.emitterService = emitterService;
     }
 
-
     @Override
     public Chat createGroupChat(ChatGroupData data) throws CreateChatException, UserNotFoundException {
         if (!chatRepository.existsByChatName(data.getChatName())) {
@@ -66,7 +65,6 @@ public class ChatService implements IChatService {
                 } else {
                     log.error("User {} does not exist!", userInGroup);
                 }
-
             }
 
             log.info("GroupChat {} successfully created", data.getChatName());
