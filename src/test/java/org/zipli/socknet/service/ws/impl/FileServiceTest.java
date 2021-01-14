@@ -76,18 +76,17 @@ class FileServiceTest {
     @Test
     void sendFile_Pass() throws IOException {
 
-        Mockito.doReturn(new GridFSFile(value, "name", 1, 1, new Date(), metadata))
+        GridFSFile gridFSFile = Mockito.doReturn(new GridFSFile(value, "name", 1, 1, new Date(), metadata))
                 .when(gridFsTemplate)
                 .findOne(new Query(Criteria.where("_id").is(null)));
 
 //        File fileTest1 = new File(fileData.getIdUser(), fileData.getIdChat(), new Date(), gridFsTemplate.getResource(new GridFSFile(value, "name", 1, 1, new Date(), metadata)).getInputStream());
 //        File fileTest2 = new File(fileData.getIdUser(), fileData.getIdChat(), new Date(), fileData.getInputStream());
 //        Mockito.when(fileTest1)
+
 //                .thenReturn(fileTest2);
-        Mockito.doReturn(inputStream)
-                .when(gridFsTemplate)
-                .getResource(new GridFSFile(value, "name", 1, 1, new Date(), metadata))
-                .getInputStream();
+//        Mockito.when(gridFsTemplate.getResource(gridFSFile)
+//                .getInputStream()).thenReturn(inputStream);
 
         User user = new User("email@gmail.com", "password", "userName", "nickName");
         user.setId("1");
@@ -135,7 +134,11 @@ class FileServiceTest {
         User user = new User("email@gmail.com", "password", "userName", "nickName");
         user.setId("1");
 
-        Chat chat = new Chat("chatName", false, Collections.singletonList(user.getId()), "userId");
+        List<String> idUsers = new ArrayList<>();
+        idUsers.add(user.getId());
+        idUsers.add("1");
+        idUsers.add("2");
+        Chat chat = new Chat("chatName", false, idUsers, "userId");
         chat.setId("2");
 
         Mockito.doReturn(true)

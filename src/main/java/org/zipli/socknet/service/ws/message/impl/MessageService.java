@@ -492,7 +492,7 @@ public class MessageService implements IMessageService {
         return baseData;
     }
 
-    void sendMessageToUser(String userId, WsMessage wsMessage) {
+   public void sendMessageToUser(String userId, WsMessageResponse wsMessage) {
         List<Sinks.Many<String>> emittersByUser = messageEmitterByUserId.get(userId);
         if (emittersByUser != null) {
             emittersByUser.forEach(emitter -> emitter.tryEmitNext(JsonUtils.jsonWriteHandle(wsMessage)));

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.zipli.socknet.dto.Command;
 import org.zipli.socknet.dto.FileData;
 import org.zipli.socknet.dto.WsMessage;
+import org.zipli.socknet.dto.WsMessageResponse;
 import org.zipli.socknet.exception.*;
 import org.zipli.socknet.exception.chat.UpdateChatException;
 import org.zipli.socknet.exception.message.MessageSendException;
@@ -20,6 +21,7 @@ import org.zipli.socknet.model.File;
 import org.zipli.socknet.repository.ChatRepository;
 import org.zipli.socknet.repository.FileRepository;
 import org.zipli.socknet.service.ws.IFileService;
+import org.zipli.socknet.service.ws.message.impl.MessageService;
 
 import java.io.IOException;
 import java.util.Date;
@@ -69,7 +71,7 @@ public class FileService implements IFileService {
 
                     chat.getIdUsers().parallelStream()
                             .forEach(userId -> messageService.sendMessageToUser(userId,
-                                    new WsMessage(Command.FILE_SEND,
+                                    new WsMessageResponse(Command.FILE_SEND,
                                             new FileData(userId,
                                                     chat.getId(),
                                                     finalFile.getId(),
@@ -104,7 +106,7 @@ public class FileService implements IFileService {
 
                 finalChat.getIdUsers().parallelStream()
                         .forEach(userId -> messageService.sendMessageToUser(userId,
-                                new WsMessage(Command.FILE_DELETE,
+                                new WsMessageResponse(Command.FILE_DELETE,
                                         new FileData(userId,
                                                 finalChat.getId(),
                                                 file.getId(),

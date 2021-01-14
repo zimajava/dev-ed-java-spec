@@ -19,9 +19,8 @@ import org.zipli.socknet.exception.message.MessageUpdateException;
 import org.zipli.socknet.model.Chat;
 import org.zipli.socknet.model.File;
 import org.zipli.socknet.model.Message;
-import org.zipli.socknet.service.ws.message.IMessageService;
 import org.zipli.socknet.service.ws.IFileService;
-import org.zipli.socknet.service.ws.IMessageService;
+import org.zipli.socknet.service.ws.message.IMessageService;
 import org.zipli.socknet.util.JsonUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -36,9 +35,11 @@ import static org.zipli.socknet.dto.Command.ERROR_CREATE_CONNECT;
 @Component
 public class WebFluxWebSocketHandler implements WebSocketHandler {
     private final IMessageService messageService;
+    private final IFileService fileService;
 
-    public WebFluxWebSocketHandler(IMessageService messageService) {
+    public WebFluxWebSocketHandler(IMessageService messageService, IFileService fileService) {
         this.messageService = messageService;
+        this.fileService = fileService;
     }
 
     @Override
