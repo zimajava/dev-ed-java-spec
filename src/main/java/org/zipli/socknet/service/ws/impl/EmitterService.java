@@ -6,6 +6,7 @@ import org.zipli.socknet.dto.Command;
 import org.zipli.socknet.dto.WsMessageResponse;
 import org.zipli.socknet.exception.CreateSocketException;
 import org.zipli.socknet.exception.DeleteSessionException;
+import org.zipli.socknet.exception.SendMessageException;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
@@ -44,11 +45,11 @@ public class EmitterService implements IEmitterService {
         if (emittersByUser != null) {
             emittersByUser.forEach(emitter -> emitter.tryEmitNext(JsonUtils.jsonWriteHandle(wsMessage)));
         } else {
-            if (wsMessage.getCommand().equals(Command.CHAT_LEAVE) || wsMessage.getCommand().equals(Command.CHAT_JOIN)) {
-                log.info("User = {userId: {} isn't online: {}, not sent.}", userId, wsMessage.getCommand());
-            } else {
-                log.info("User = {userId: {} isn't online: {} not sent.}", userId, wsMessage.getCommand());
-            }
+                if (wsMessage.getCommand().equals(Command.CHAT_LEAVE) || wsMessage.getCommand().equals(Command.CHAT_JOIN)) {
+                    log.info("User = {userId: {} isn't online: {}, not sent.}", userId, wsMessage.getCommand());
+                } else {
+                    log.info("User = {userId: {} isn't online: {} not sent.}", userId, wsMessage.getCommand());
+                }
         }
     }
 

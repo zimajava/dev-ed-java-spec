@@ -86,11 +86,10 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
         return Mono.zip(input, output).then();
     }
 
-    private String commandSuccess = "Command {} Success for user {}. ";
-    private String commandFail = "Command {} Fail for user {}: ";
-
     private void eventProcessor(Sinks.Many<String> emitter, WsMessage wsMessage) {
         Command eventCommand = wsMessage.getCommand();
+        String commandSuccess = "Command {} Success for user {}. ";
+        String commandFail = "Command {} Fail for user {}: ";
         switch (eventCommand) {
             case CHAT_GROUP_CREATE:
                 groupData = (ChatGroupData) wsMessage.getData();

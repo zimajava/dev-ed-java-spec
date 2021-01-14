@@ -7,8 +7,10 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.zipli.socknet.dto.WsMessageResponse;
 import org.zipli.socknet.exception.CreateSocketException;
 import org.zipli.socknet.exception.DeleteSessionException;
+import org.zipli.socknet.exception.SendMessageException;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
@@ -44,16 +46,10 @@ class EmitterServiceTest {
     @Test
     void deleteMessageEmitterByUserId_Pass() {
 
-
         try {
             userId = emitterService.addMessageEmitterByToken(token, emitter);
-        } catch (CreateSocketException e) {
-            e.printStackTrace();
-        }
-
-        try {
             emitterService.deleteMessageEmitterByUserId(userId, emitter);
-        } catch (DeleteSessionException e) {
+        } catch (DeleteSessionException | CreateSocketException e) {
             e.printStackTrace();
         }
 
@@ -88,12 +84,23 @@ class EmitterServiceTest {
 
     @Test
     void addMessageEmitterByToken_Fail() {
-
         try {
             userId = emitterService.addMessageEmitterByToken(token, emitter);
         } catch (CreateSocketException e) {
             assertEquals(e.getMessage(), "Can't create connect to user, Exception cause: null on class NullPointerException");
         }
-
     }
+
+    @Test
+    void sendMessageToUser_Pass() {
+        Mockito.when(jwtUtils.getUserNameFromJwtToken(token)).thenReturn(user.getUserName());
+        Mockito.when(userRepository.findUserByUserName(user.getUserName())).thenReturn(user);
+        try {
+            userId = emitterService.addMessageEmitterByToken(token, emitter);
+        } catch (CreateSocketException e) {
+            e.printStackTrace();
+        }
+        emitterService.sendMessageToUser(userId,new WsMessageResponse());
+    }
+
 }
