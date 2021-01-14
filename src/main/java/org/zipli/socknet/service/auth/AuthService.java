@@ -4,6 +4,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.zipli.socknet.dto.response.LoginResponse;
 import org.zipli.socknet.exception.auth.AuthException;
+import org.zipli.socknet.exception.ErrorStatusCode;
+import org.zipli.socknet.exception.auth.AuthException;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
@@ -33,9 +35,9 @@ public class AuthService implements IAuthService {
             result = userRepository.findUserByUserNameAndPassword(emailOrUsername, password);
         }
         if (result == null) {
-            throw new AuthException("User does not exist!");
+            throw new AuthException(ErrorStatusCode.USER_DOES_NOT_EXIST);
         } else if (!result.isConfirm()) {
-            throw new AuthException("User does not pass email confirmation!");
+            throw new AuthException(ErrorStatusCode.USER_DOES_NOT_PASS_EMAIL_CONFIRM);
         } else {
             String token = jwtUtils.generateJwtToken(new UserDetailsImpl(result), result.getEmail());
             return new LoginResponse(result.getId(), token, token);
@@ -46,7 +48,7 @@ public class AuthService implements IAuthService {
     public void registration(User user) {
         User existingUser = userRepository.getUserByEmail(user.getEmail());
         if (existingUser != null) {
-            throw new AuthException("This email already exists!");
+            throw new AuthException(ErrorStatusCode.EMAIL_ALREADY_EXISTS);
         } else {
             userRepository.save(user);
             UserDetails userDetails = new UserDetailsImpl(user);

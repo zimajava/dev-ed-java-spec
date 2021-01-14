@@ -11,7 +11,7 @@ import java.util.List;
 public interface UserRepository extends MongoRepository<User, String> {
     User getUserByEmail(String email);
 
-    User getByUserName(String userName);
+    User getUserByUserName(String userName);
 
     User getUserById(String id);
 
