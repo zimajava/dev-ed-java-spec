@@ -38,8 +38,8 @@ class EmitterServiceTest {
 
     @BeforeEach
     void setUp() {
-        user.setId("sadsdasd");
-        token = "ывфыв";
+        user.setId("");
+        token = "";
         emitter = Sinks.many().multicast().directAllOrNothing();
     }
 
@@ -58,8 +58,6 @@ class EmitterServiceTest {
 
     @Test
     void deleteMessageEmitterByUserId_Fail() {
-        String userId = "hgjfby";
-
         try {
             Sinks.Many<String> emitter = Sinks.many().multicast().directAllOrNothing();
             emitterService.deleteMessageEmitterByUserId(userId, emitter);
@@ -103,4 +101,8 @@ class EmitterServiceTest {
         emitterService.sendMessageToUser(userId,new WsMessageResponse());
     }
 
+    @Test
+    void sendMessageToUser_Fail() {
+        emitterService.sendMessageToUser(userId, new WsMessageResponse());
+    }
 }
