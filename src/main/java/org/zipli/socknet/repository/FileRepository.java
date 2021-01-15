@@ -7,4 +7,5 @@ import org.zipli.socknet.model.File;
 
 @Repository
 public interface FileRepository extends MongoRepository<File, String> {
+    File getFileById(String id);
 }

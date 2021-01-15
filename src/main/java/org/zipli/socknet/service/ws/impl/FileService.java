@@ -20,9 +20,9 @@ import org.zipli.socknet.model.File;
 import org.zipli.socknet.repository.ChatRepository;
 import org.zipli.socknet.repository.FileRepository;
 import org.zipli.socknet.service.ws.IFileService;
-import org.zipli.socknet.service.ws.message.impl.MessageService;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
 import java.util.Date;
 import java.util.Optional;
 
@@ -31,14 +31,14 @@ public class FileService implements IFileService {
 
     private final ChatRepository chatRepository;
     private final FileRepository fileRepository;
-    private final MessageService messageService;
+    private final EmitterService emitterService;
     private final GridFsTemplate gridFsTemplate;
 
     public FileService(ChatRepository chatRepository, FileRepository fileRepository,
-                       MessageService messageService, GridFsTemplate gridFsTemplate) {
+                       EmitterService emitterService, GridFsTemplate gridFsTemplate) {
         this.chatRepository = chatRepository;
         this.fileRepository = fileRepository;
-        this.messageService = messageService;
+        this.emitterService = emitterService;
         this.gridFsTemplate = gridFsTemplate;
     }
 
@@ -67,7 +67,7 @@ public class FileService implements IFileService {
                 chat.getIdFiles().add(file.getId());
 
                 chat.getIdUsers().parallelStream()
-                        .forEach(userId -> messageService.sendMessageToUser(userId,
+                        .forEach(userId -> emitterService.sendMessageToUser(userId,
                                 new WsMessageResponse(Command.FILE_SEND,
                                         new FileData(userId,
                                                 chat.getId(),
@@ -87,34 +87,38 @@ public class FileService implements IFileService {
     }
 
     @Override
-    public void deleteFile(FileData data) throws FileDeleteException, UpdateChatException {
-        Optional<File> file = fileRepository.findById(data.getFileId());
+    public void deleteFile(FileData data) throws FileDeleteException, UpdateChatException, FileNotFoundException {
+        File file = fileRepository.getFileById(data.getFileId());
 
-        if (file.get().getAuthorId().equals(data.getIdUser())) {
-            Chat chat = chatRepository.findChatById(data.getIdChat());
-            if (chat != null) {
-                chat.getIdFiles().remove(file.get().getId());
-                final Chat finalChat = chatRepository.save(chat);
+        if (file != null)
+            if (file.getAuthorId().equals(data.getIdUser())) {
+                Chat chat = chatRepository.findChatById(data.getIdChat());
+                if (chat != null) {
+                    chat.getIdFiles().remove(file.getId());
+                    final Chat finalChat = chatRepository.save(chat);
 
-                finalChat.getIdUsers().parallelStream()
-                        .forEach(userId -> messageService.sendMessageToUser(userId,
-                                new WsMessageResponse(Command.FILE_DELETE,
-                                        new FileData(userId,
-                                                finalChat.getId(),
-                                                file.get().getId(),
-                                                file.get().getTitle(),
-                                                data.getBytes()
-                                        )
-                                ))
-                        );
+                    finalChat.getIdUsers().parallelStream()
+                            .forEach(userId -> emitterService.sendMessageToUser(userId,
+                                    new WsMessageResponse(Command.FILE_DELETE,
+                                            new FileData(userId,
+                                                    finalChat.getId(),
+                                                    file.getId(),
+                                                    file.getTitle(),
+                                                    data.getBytes()
+                                            )
+                                    ))
+                            );
+                } else {
+                    throw new UpdateChatException("There is no such chat",
+                            WsException.CHAT_NOT_EXIT.getNumberException());
+                }
+                gridFsTemplate.delete(new Query(Criteria.where("_id").is(data.getFileId())));
+                fileRepository.delete(file);
             } else {
-                throw new UpdateChatException("There is no such chat",
-                        WsException.CHAT_NOT_EXIT.getNumberException());
+                throw new FileDeleteException("Only the author can delete the file");
             }
-            gridFsTemplate.delete(new Query(Criteria.where("_id").is(data.getFileId())));
-            fileRepository.delete(file.get());
-        } else {
-            throw new FileDeleteException("Only the author can delete the file");
+        else {
+            throw new FileNotFoundException("File is absent");
         }
     }
 }

@@ -23,7 +23,6 @@ import org.zipli.socknet.service.ws.IEmitterService;
 import org.zipli.socknet.service.ws.IMessageService;
 import org.zipli.socknet.service.ws.IVideoService;
 import org.zipli.socknet.service.ws.IFileService;
-import org.zipli.socknet.service.ws.message.IMessageService;
 import org.zipli.socknet.util.JsonUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -43,13 +42,13 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
     private final IChatService chatService;
     private final IVideoService videoService;
 
-    public WebFluxWebSocketHandler(IMessageService messageService, IFileService fileService) {
     private ChatGroupData groupData;
     private ChatData chatData;
     private MessageData messageData;
     private VideoData videoData;
 
-    public WebFluxWebSocketHandler(IMessageService messageService, IEmitterService emitterService, IChatService chatService, IVideoService videoService) {
+    public WebFluxWebSocketHandler(IMessageService messageService, IFileService fileService,
+                                   IEmitterService emitterService, IChatService chatService, IVideoService videoService) {
         this.messageService = messageService;
         this.fileService = fileService;
         this.emitterService = emitterService;

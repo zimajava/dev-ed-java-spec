@@ -66,7 +66,7 @@ class FileServiceTest {
     }
 
     @Test
-    void sendFile_Pass() throws IOException {
+    void sendFile_Pass() {
 
         Mockito.doReturn(new GridFSFile(value, "name", 1, 1, new Date(), metadata))
                 .when(gridFsTemplate)
@@ -134,7 +134,7 @@ class FileServiceTest {
 
         Mockito.doReturn(fileDelete)
                 .when(fileRepository)
-                .findById(fileDelete.getId());
+                .getFileById(fileDelete.getId());
 
         Mockito.doReturn(chat)
                 .when(chatRepository)
@@ -167,7 +167,7 @@ class FileServiceTest {
     void deleteFile_FailFileDeleteException() {
         Mockito.doReturn(new File("wrongId", "chatId", new Date(), "hello.txt"))
                 .when(fileRepository)
-                .findById(fileData.getFileId());
+                .getFileById(fileData.getFileId());
 
         assertThrows(FileDeleteException.class, () -> {
             fileService.deleteFile(fileData);
@@ -178,12 +178,23 @@ class FileServiceTest {
     void deleteFile_FailUpdateChatException() {
         Mockito.doReturn(new File("userId", "chatId", new Date(), "hello.txt"))
                 .when(fileRepository)
-                .findById(fileData.getFileId());
+                .getFileById(fileData.getFileId());
         Mockito.doReturn(new Chat())
                 .when(chatRepository)
                 .findChatById(fileData.getFileId());
 
         assertThrows(UpdateChatException.class, () -> {
+            fileService.deleteFile(fileData);
+        });
+    }
+
+    @Test
+    void deleteFile_FailFileNotFoundException() {
+        Mockito.doReturn(null)
+                .when(fileRepository)
+                .getFileById(fileData.getFileId());
+
+        assertThrows(FileNotFoundException.class, () -> {
             fileService.deleteFile(fileData);
         });
     }
