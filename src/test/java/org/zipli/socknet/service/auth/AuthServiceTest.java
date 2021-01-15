@@ -1,5 +1,6 @@
 package org.zipli.socknet.service.auth;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,14 @@ public class AuthServiceTest {
     private final String email = "asd@gmail.com";
     private final String userName = "Vasya";
     private final String nickName = "Nick";
-    private final String password = "12345";
+    private final String password = "$2a$10$ZKsGzTIrXTbap75SkIp4Oeadp4WdPoXyQ/sziesEl.wFEVmzNCQtm";
+    User user = new User(email, password, userName, nickName);
+
+    @BeforeEach
+    void setUp() {
+        user.setId("5ffc8765a11fd");
+    }
+
     @Autowired
     private AuthService authService;
     @MockBean
@@ -35,8 +43,7 @@ public class AuthServiceTest {
 
 
     @Test
-    public void loginByEmailAndPasswordWithConfirmedEmail_Pass() {
-        User user = new User(email, password, userName, nickName);
+    public void loginByEmailWithConfirmedEmailAndPassword_Pass() {
 
         Mockito.when(passwordEncoder.matches(password, user.getPassword())).thenReturn(true);
 
@@ -54,7 +61,7 @@ public class AuthServiceTest {
     }
 
     @Test
-    public void loginByEmailAndPasswordWithConfirmedEmail_Fail() {
+    public void loginByEmailWithConfirmedEmailAndPassword_Fail() {
         User user = new User("differentEmail@gmail.com", password, userName, nickName);
         user.setConfirm(true);
 
@@ -64,9 +71,7 @@ public class AuthServiceTest {
     }
 
     @Test
-    public void loginByUsernameAndPasswordWithConfirmedEmail_Pass() {
-        User user = new User(email, password, userName, nickName);
-
+    public void loginByUsernameWithConfirmedEmailAndPassword_Pass() {
         Mockito.when(passwordEncoder.matches(password, user.getPassword())).thenReturn(true);
 
         String expected = jwtUtils.generateJwtToken(new UserDetailsImpl(user), email);
@@ -82,37 +87,58 @@ public class AuthServiceTest {
     }
 
     @Test
-    public void loginByUsernameAndPasswordWithConfirmedEmail_Fail() {
+    public void loginByUsernameWithConfirmedEmailAndPassword_Fail() {
         User user = new User(email, "differentPassword", userName, nickName);
         user.setConfirm(true);
 
-        Mockito.when(userRepository.findUserByUserName(userName)).thenReturn(user);
+        Mockito.when(userRepository.findUserByUserName(userName)).thenReturn(null);
 
-        assertThrows(AuthException.class, () -> authService.login(email, password), "User does not exist!");
+        assertThrows(AuthException.class, () -> authService.login(userName, password), "User does not exist!");
     }
 
     @Test
-    public void loginByEmailAndPasswordWithUnconfirmedEmail_Fail() {
-        User user = new User(email, password, userName, nickName);
-
+    public void loginByEmailWithUnconfirmedEmail_Fail() {
         Mockito.when(userRepository.findUserByEmail(email)).thenReturn(user);
 
         assertThrows(AuthException.class, () -> authService.login(email, password), "User does not pass email confirmation!");
     }
 
     @Test
-    public void loginByUsernameAndPasswordWithUnconfirmedEmail_Fail() {
-        User user = new User(email, password, userName, nickName);
+    public void loginByUsernameWithUnconfirmedEmail_Fail() {
+        Mockito.when(userRepository.findUserByEmail(email)).thenReturn(user);
 
-        Mockito.when(userRepository.findUserByEmail(userName)).thenReturn(user);
-
-        assertThrows(AuthException.class, () -> authService.login(userName, password), "User does not pass email confirmation!");
+        assertThrows(AuthException.class, () -> authService.login(email, password), "User does not pass email confirmation!");
     }
 
     @Test
-    public void registration_Pass() {
-        User user = new User(email, password, userName, nickName);
+    public void loginByUsernameWithCorrectPassword_Pass(){
+        Mockito.when(userRepository.findUserByUserName(userName)).thenReturn(user);
+        Mockito.when(passwordEncoder.matches(password, user.getPassword())).thenReturn(true);
+        user.setConfirm(true);
 
+        String token = jwtUtils.generateJwtToken(new UserDetailsImpl(user), email);
+        LoginResponse expectedLoginResponse = new LoginResponse(user.getId(), token, token);
+
+        LoginResponse actualLoginResponse = authService.login(userName, password);
+
+        assertEquals(expectedLoginResponse.getUserId(), actualLoginResponse.getUserId());
+        assertEquals(expectedLoginResponse.getAccessToken(), actualLoginResponse.getAccessToken());
+        assertEquals(expectedLoginResponse.getRefreshToken(), actualLoginResponse.getRefreshToken());
+    }
+
+    @Test
+    public void loginByUsernameWithConfirmedPassword_Fail(){
+        Mockito.when(userRepository.findUserByUserName(userName)).thenReturn(user);
+        Mockito.when(passwordEncoder.matches(password, user.getPassword())).thenReturn(false);
+
+        assertThrows(AuthException.class, () -> authService.login(email, password), "User entered an incorrect password");
+
+    }
+
+
+
+    @Test
+    public void registration_Pass() {
         Mockito.when(userRepository.getUserByEmail(user.getEmail())).thenReturn(null);
         authService.registration(user);
 
@@ -121,8 +147,6 @@ public class AuthServiceTest {
 
     @Test
     public void registration_Fail() {
-        User user = new User(email, password, userName, nickName);
-
         Mockito.when(userRepository.getUserByEmail(user.getEmail())).thenReturn(user);
 
         assertThrows(AuthException.class, () -> authService.registration(user), "This email already exists!");

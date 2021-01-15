@@ -1,7 +1,6 @@
 package org.zipli.socknet.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.zipli.socknet.exception.*;
@@ -18,21 +17,18 @@ import javax.validation.Valid;
 @Slf4j
 @RequestMapping("/zipli/myAccount")
 public class AccountController {
-
     private final UserService userService;
 
-    @Autowired
     public AccountController(UserService userService) {
         this.userService = userService;
     }
-
 
     @GetMapping("/getUser")
     public ResponseEntity<?> getUser(@RequestParam String userId) {
         try {
             return ResponseEntity.ok(userService.findUser(userId));
         } catch (GetUserException e) {
-            log.error(e.getErrorStatusCode().getMessage() + "Failed get user by userId {}", userId);
+            log.error("Failed get user by userId {}, reason {}", userId, e.getErrorStatusCode().getMessage());
             return ResponseEntity
                     .badRequest()
                     .body(e.getErrorStatusCode().getValue());
@@ -44,7 +40,7 @@ public class AccountController {
         try {
             return ResponseEntity.ok(userService.deleteAvatar(userId));
         } catch (DeleteAvatarException e) {
-            log.error(e.getErrorStatusCode().getMessage() + "Failed to delete avatar by userId {}", userId);
+            log.error("Failed to delete avatar by userId {}, reason {}", userId, e.getErrorStatusCode().getMessage());
             return ResponseEntity
                     .badRequest()
                     .body(e.getErrorStatusCode().getValue());
@@ -56,8 +52,8 @@ public class AccountController {
         try {
             return ResponseEntity.ok(userService.updateAvatar(data));
         } catch (UpdateAvatarException e) {
-            log.error(e.getErrorStatusCode().getMessage() +
-                    "Failed update avatar by userId {}, avatar {}", data.getUserId(), data.getAvatar());
+            log.error("Failed update avatar by userId {}, avatar {}, reason {}",
+                    data.getUserId(), data.getAvatar(), e.getErrorStatusCode().getMessage());
             return ResponseEntity
                     .badRequest()
                     .body(e.getErrorStatusCode().getValue());
@@ -69,8 +65,8 @@ public class AccountController {
         try {
             return ResponseEntity.ok(userService.updateNickName(data));
         } catch (UpdateNickNameException e) {
-            log.error(e.getErrorStatusCode().getMessage() +
-                    "Failed update nickName by userId {}, nickName {}", data.getUserId(), data.getNickName());
+            log.error("Failed update nickName by userId {}, nickName {}, reason {}",
+                    data.getUserId(), data.getNickName(), e.getErrorStatusCode().getMessage());
             return ResponseEntity
                     .badRequest()
                     .body(e.getErrorStatusCode().getValue());
@@ -82,8 +78,8 @@ public class AccountController {
         try {
             return ResponseEntity.ok(userService.updateEmail(data));
         } catch (UpdateEmailException e) {
-            log.error(e.getErrorStatusCode().getMessage() +
-                    "Failed update email by userId {}, email {}", data.getUserId(), data.getEmail());
+            log.error("Failed update email by userId {}, email {}, reason {}",
+                    data.getUserId(), data.getEmail(), e.getErrorStatusCode().getMessage());
             return ResponseEntity
                     .badRequest()
                     .body(e.getErrorStatusCode().getValue());
@@ -95,8 +91,8 @@ public class AccountController {
         try {
             return ResponseEntity.ok(userService.updatePassword(data));
         } catch (UpdatePasswordException e) {
-            log.error(e.getErrorStatusCode().getMessage() +
-                    "Failed update password by userId {}, password {}", data.getUserId(), data.getPassword());
+            log.error("Failed update password by userId {}, password {}, reason {}",
+                    data.getUserId(), data.getPassword(), e.getErrorStatusCode().getMessage());
             return ResponseEntity
                     .badRequest()
                     .body(e.getErrorStatusCode().getValue());
@@ -108,8 +104,7 @@ public class AccountController {
         try {
             return ResponseEntity.ok(userService.deleteAccount(userId));
         } catch (DeleteAccountException e) {
-            log.error(e.getErrorStatusCode().getMessage() +
-                    "Failed delete account by userId {}", userId);
+            log.error("Failed delete account by userId {}, reason {}", userId, e.getErrorStatusCode().getMessage());
             return ResponseEntity
                     .badRequest()
                     .body(e.getErrorStatusCode().getValue());
