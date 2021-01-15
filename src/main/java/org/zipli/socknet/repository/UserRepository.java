@@ -31,7 +31,7 @@ public interface UserRepository extends MongoRepository<User, String> {
 
     List<User> findUsersByIdIn(Collection<String> id);
 
-    List<User> findAll();
+    List<User> findAllByConfirm(boolean confirm);
 
     User findUserByUserNameAndPassword(String userName, String password);
 
