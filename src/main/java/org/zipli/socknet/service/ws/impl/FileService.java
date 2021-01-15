@@ -14,6 +14,8 @@ import org.zipli.socknet.dto.FileData;
 import org.zipli.socknet.dto.WsMessageResponse;
 import org.zipli.socknet.exception.*;
 import org.zipli.socknet.exception.chat.UpdateChatException;
+import org.zipli.socknet.exception.file.FileDeleteException;
+import org.zipli.socknet.exception.file.SendFileException;
 import org.zipli.socknet.exception.message.MessageSendException;
 import org.zipli.socknet.model.Chat;
 import org.zipli.socknet.model.File;
@@ -75,10 +77,12 @@ public class FileService implements IFileService {
                                 ))
                         );
             } else {
-                throw new MessageSendException("Chat doesn't exist");
+                throw new MessageSendException("Chat doesn't exist",
+                        WsException.CHAT_NOT_EXIT.getNumberException());
             }
         } else {
-            throw new SendFileException("GridFSFile is null!");
+            throw new SendFileException("GridFSFile is null!",
+            WsException.FILE_IS_NOT_IN_A_DB.getNumberException());
         }
         chatRepository.save(chat);
         return file;
@@ -113,7 +117,8 @@ public class FileService implements IFileService {
                 gridFsTemplate.delete(new Query(Criteria.where("_id").is(data.getFileId())));
                 fileRepository.delete(file);
             } else {
-                throw new FileDeleteException("Only the author can delete the file");
+                throw new FileDeleteException("Only the author can delete the file",
+                        WsException.FILE_ACCESS_ERROR.getNumberException());
             }
         else {
             throw new FileNotFoundException("File is absent");

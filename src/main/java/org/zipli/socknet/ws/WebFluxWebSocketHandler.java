@@ -11,6 +11,8 @@ import org.zipli.socknet.exception.DeleteSessionException;
 import org.zipli.socknet.exception.WsException;
 import org.zipli.socknet.exception.auth.UserNotFoundException;
 import org.zipli.socknet.exception.chat.*;
+import org.zipli.socknet.exception.file.FileDeleteException;
+import org.zipli.socknet.exception.file.SendFileException;
 import org.zipli.socknet.exception.message.MessageDeleteException;
 import org.zipli.socknet.exception.message.MessageSendException;
 import org.zipli.socknet.exception.message.MessageUpdateException;
@@ -28,6 +30,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
 
+import java.io.FileNotFoundException;
 import java.util.Collections;
 import java.util.List;
 
@@ -46,6 +49,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
     private ChatData chatData;
     private MessageData messageData;
     private VideoData videoData;
+    private FileData fileData;
 
     public WebFluxWebSocketHandler(IMessageService messageService, IFileService fileService,
                                    IEmitterService emitterService, IChatService chatService, IVideoService videoService) {
@@ -497,25 +501,80 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                 break;
 
             case FILE_SEND:
+                fileData = (FileData) wsMessage.getData();
                 try {
-                    File newFile = fileService.sendFile((FileData) wsMessage.getData());
-                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(new WsMessage(eventCommand,
+                    File newFile = fileService.sendFile(fileData);
+                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(new WsMessageResponse(eventCommand,
                             new FileData(Collections.singletonList(newFile)))));
-                } catch (Exception e) {
+                    log.info(commandSuccess,
+                            eventCommand,
+                            fileData.getIdUser()
+                                    + "To chat: "
+                                    + fileData.getIdChat()
+                    );
+                } catch (MessageSendException e) {
+                    log.error(commandFail, eventCommand, fileData.getIdUser());
+                    log.error(e.getMessage(), fileData.getIdChat());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
-                            new WsMessageResponse(eventCommand, e.getMessage()))
+                            new WsMessageResponse(eventCommand,
+                                    WsException.CHAT_NOT_EXIT.getNumberException()))
+                    );
+                } catch (SendFileException e) {
+                    log.error(commandFail, eventCommand, fileData.getIdUser());
+                    log.error(e.getMessage(), fileData.getIdChat());
+                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
+                            new WsMessageResponse(eventCommand,
+                                    WsException.FILE_IS_NOT_IN_A_DB.getNumberException()))
+                    );
+                } catch (Exception e) {
+                    log.error(commandFail, eventCommand, fileData.getIdUser() + e.getMessage());
+                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
+                            new WsMessageResponse(eventCommand,
+                                    WsException.UNEXPECTED_EXCEPTION.getNumberException()))
                     );
                 }
                 break;
 
             case FILE_DELETE:
+                fileData = (FileData) wsMessage.getData();
                 try {
-                    fileService.deleteFile((FileData) wsMessage.getData());
+                    fileService.deleteFile(fileData);
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
-                            new WsMessageResponse(eventCommand, "Message is successfully deleted")));
+                            new WsMessageResponse(eventCommand, "File is successfully deleted")));
+                    log.info(commandSuccess,
+                            eventCommand,
+                            fileData.getIdUser()
+                                    + "In chat: "
+                                    + fileData.getIdChat()
+                                    + "File:"
+                                    + fileData.getFileId()
+                    );
+                } catch (FileDeleteException e) {
+                    log.error(commandFail, eventCommand, fileData.getIdUser());
+                    log.error(e.getMessage(), fileData.getFileId());
+                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
+                            new WsMessageResponse(eventCommand,
+                                    WsException.FILE_ACCESS_ERROR.getNumberException()))
+                    );
+                } catch (UpdateChatException e) {
+                    log.error(commandFail, eventCommand, fileData.getIdUser());
+                    log.error(e.getMessage(), fileData.getIdChat());
+                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
+                            new WsMessageResponse(eventCommand,
+                                    WsException.CHAT_NOT_EXIT.getNumberException()))
+                    );
+                } catch (FileNotFoundException e) {
+                    log.error(commandFail, eventCommand, fileData.getIdUser());
+                    log.error(e.getMessage(), fileData.getIdChat());
+                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
+                            new WsMessageResponse(eventCommand,
+                                    WsException.FILE_NOT_FOUND.getNumberException()))
+                    );
                 } catch (Exception e) {
+                    log.error(commandFail, eventCommand, fileData.getIdUser() + e.getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
-                            new WsMessageResponse(eventCommand, e.getMessage()))
+                            new WsMessageResponse(eventCommand,
+                                    WsException.UNEXPECTED_EXCEPTION.getNumberException()))
                     );
                 }
                 break;

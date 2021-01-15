@@ -1,10 +1,10 @@
-package org.zipli.socknet.exception.message;
+package org.zipli.socknet.exception.file;
 
-public class MessageSendException extends RuntimeException {
+public class FileDeleteException extends RuntimeException {
 
     private final int numberException;
 
-    public MessageSendException(String message, int numberException) {
+    public FileDeleteException(String message, int numberException) {
         super(message);
         this.numberException = numberException;
     }
