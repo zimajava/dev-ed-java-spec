@@ -16,8 +16,6 @@ public class FileData extends BaseData {
     private String fileId;
 
     private String title;
-    //    private InputStream inputStream;
-//    private ByteArray byteArray;
     private byte[] bytes;
     private List<File> files;
 

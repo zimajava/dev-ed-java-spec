@@ -51,13 +51,13 @@ class FileServiceTest {
 
     @BeforeEach
     void setup() {
-        byte[] bytes = "string".getBytes();
+        
         fileData = new FileData(
                 "userId",
                 "chatId",
                 "fileId",
                 "hello.txt",
-                bytes);
+                "bytes".getBytes());
     }
 
     @Test

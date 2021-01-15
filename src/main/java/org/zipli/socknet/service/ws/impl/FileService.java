@@ -33,7 +33,6 @@ public class FileService implements IFileService {
     private final FileRepository fileRepository;
     private final MessageService messageService;
     private final GridFsTemplate gridFsTemplate;
-//    private final GridFsOperations operations;
 
     public FileService(ChatRepository chatRepository, FileRepository fileRepository,
                        MessageService messageService, GridFsTemplate gridFsTemplate) {
@@ -41,7 +40,6 @@ public class FileService implements IFileService {
         this.fileRepository = fileRepository;
         this.messageService = messageService;
         this.gridFsTemplate = gridFsTemplate;
-//        this.operations = operations;
     }
 
 
@@ -53,7 +51,7 @@ public class FileService implements IFileService {
             DBObject metaData = new BasicDBObject();
             metaData.put("type", "file");
             metaData.put("title", data.getTitle());
-            ByteArray byteArray = new ByteArray(data.getBytes().length);
+            ByteArray byteArray = new ByteArray(data.getBytes(), 0, data.getBytes().length);
             ByteArrayInputStream inputStream = byteArray.toByteArrayInputStream();
             ObjectId id = gridFsTemplate.store(
                     inputStream,
@@ -63,7 +61,6 @@ public class FileService implements IFileService {
             GridFSFile gridFSFile = gridFsTemplate.findOne(new Query(Criteria.where("_id").is(id)));
             if (gridFSFile != null) {
                 file = new File(data.getIdUser(), data.getIdChat(), new Date(), data.getTitle(), data.getBytes());
-//                        operations.getResource(gridFSFile).getInputStream());
 
                 final File finalFile = fileRepository.save(file);
                 chat = chatRepository.findChatById(data.getIdChat());
