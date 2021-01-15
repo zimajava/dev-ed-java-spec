@@ -26,15 +26,6 @@ public class Chat {
     private List<String> idFiles;
     private String creatorUserId;
 
-//    public Chat(String chatName, boolean isPrivate, List<String> idMessages, List<String> idUsers, List<String> idFiles, String creatorUserId) {
-//        this.chatName = chatName;
-//        this.isPrivate = isPrivate;
-//        this.idMessages = idMessages;
-//        this.idUsers = idUsers;
-//        this.idFiles = idFiles;
-//        this.creatorUserId = creatorUserId;
-//    }
-
     public Chat(String chatName, boolean isPrivate, List<String> idUsers, String creatorUserId) {
         this.chatName = chatName;
         this.isPrivate = isPrivate;

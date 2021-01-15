@@ -23,8 +23,8 @@ import org.zipli.socknet.service.ws.IFileService;
 import org.zipli.socknet.service.ws.message.impl.MessageService;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.Date;
+import java.util.Optional;
 
 @Service
 public class FileService implements IFileService {
@@ -44,62 +44,56 @@ public class FileService implements IFileService {
 
 
     @Override
-    public File sendFile(FileData data) throws SendFileException, IOException {
+    public File sendFile(FileData data) throws SendFileException {
         File file;
         Chat chat;
-        if (data != null) {
-            DBObject metaData = new BasicDBObject();
-            metaData.put("type", "file");
-            metaData.put("title", data.getTitle());
-            ByteArray byteArray = new ByteArray(data.getBytes(), 0, data.getBytes().length);
-            ByteArrayInputStream inputStream = byteArray.toByteArrayInputStream();
-            ObjectId id = gridFsTemplate.store(
-                    inputStream,
-                    data.getTitle(),
-                    metaData);
+        DBObject metaData = new BasicDBObject();
+        metaData.put("type", "file");
+        metaData.put("title", data.getTitle());
+        ByteArray byteArray = new ByteArray(data.getBytes(), 0, data.getBytes().length);
+        ByteArrayInputStream inputStream = byteArray.toByteArrayInputStream();
+        ObjectId id = gridFsTemplate.store(
+                inputStream,
+                data.getTitle(),
+                metaData);
 
-            GridFSFile gridFSFile = gridFsTemplate.findOne(new Query(Criteria.where("_id").is(id)));
-            if (gridFSFile != null) {
-                file = new File(data.getIdUser(), data.getIdChat(), new Date(), data.getTitle(), data.getBytes());
+        GridFSFile gridFSFile = gridFsTemplate.findOne(new Query(Criteria.where("_id").is(id)));
+        if (gridFSFile != null) {
+            file = new File(data.getIdUser(), data.getIdChat(), new Date(), data.getTitle(), data.getBytes());
+            final File finalFile = fileRepository.save(file);
+            chat = chatRepository.findChatById(data.getIdChat());
 
-                final File finalFile = fileRepository.save(file);
-                chat = chatRepository.findChatById(data.getIdChat());
-                if (chat != null) {
-                    chat.getIdFiles().add(file.getId());
+            if (chat != null) {
+                chat.getIdFiles().add(file.getId());
 
-                    chat.getIdUsers().parallelStream()
-                            .forEach(userId -> messageService.sendMessageToUser(userId,
-                                    new WsMessageResponse(Command.FILE_SEND,
-                                            new FileData(userId,
-                                                    chat.getId(),
-                                                    finalFile.getId(),
-                                                    finalFile.getTitle(),
-                                                    finalFile.getBytes())
-                                    ))
-                            );
-                } else {
-                    throw new MessageSendException("Chat doesn't exist");
-                }
+                chat.getIdUsers().parallelStream()
+                        .forEach(userId -> messageService.sendMessageToUser(userId,
+                                new WsMessageResponse(Command.FILE_SEND,
+                                        new FileData(userId,
+                                                chat.getId(),
+                                                finalFile.getId(),
+                                                finalFile.getTitle(),
+                                                finalFile.getBytes())
+                                ))
+                        );
             } else {
-                throw new SendFileException("GridFSFile is null!");
+                throw new MessageSendException("Chat doesn't exist");
             }
-
-            chatRepository.save(chat);
-            return file;
-
         } else {
-            throw new IOException("Data is null!");
+            throw new SendFileException("GridFSFile is null!");
         }
+        chatRepository.save(chat);
+        return file;
     }
 
     @Override
     public void deleteFile(FileData data) throws FileDeleteException, UpdateChatException {
-        File file = fileRepository.getFileById(data.getFileId());
+        Optional<File> file = fileRepository.findById(data.getFileId());
 
-        if (file.getAuthorId().equals(data.getIdUser())) {
+        if (file.get().getAuthorId().equals(data.getIdUser())) {
             Chat chat = chatRepository.findChatById(data.getIdChat());
             if (chat != null) {
-                chat.getIdFiles().remove(file.getId());
+                chat.getIdFiles().remove(file.get().getId());
                 final Chat finalChat = chatRepository.save(chat);
 
                 finalChat.getIdUsers().parallelStream()
@@ -107,8 +101,8 @@ public class FileService implements IFileService {
                                 new WsMessageResponse(Command.FILE_DELETE,
                                         new FileData(userId,
                                                 finalChat.getId(),
-                                                file.getId(),
-                                                file.getTitle(),
+                                                file.get().getId(),
+                                                file.get().getTitle(),
                                                 data.getBytes()
                                         )
                                 ))
@@ -118,7 +112,7 @@ public class FileService implements IFileService {
                         WsException.CHAT_NOT_EXIT.getNumberException());
             }
             gridFsTemplate.delete(new Query(Criteria.where("_id").is(data.getFileId())));
-            fileRepository.delete(file);
+            fileRepository.delete(file.get());
         } else {
             throw new FileDeleteException("Only the author can delete the file");
         }

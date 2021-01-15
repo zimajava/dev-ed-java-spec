@@ -21,6 +21,7 @@ import org.zipli.socknet.model.User;
 import org.zipli.socknet.repository.ChatRepository;
 import org.zipli.socknet.repository.FileRepository;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
 
@@ -30,6 +31,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class FileServiceTest {
 
     private FileData fileData;
+    private User user;
 
     @Autowired
     FileService fileService;
@@ -51,13 +53,16 @@ class FileServiceTest {
 
     @BeforeEach
     void setup() {
-        
+
         fileData = new FileData(
                 "userId",
                 "chatId",
                 "fileId",
                 "hello.txt",
                 "bytes".getBytes());
+
+        user = new User("email@gmail.com", "password", "userName", "nickName");
+        user.setId("1");
     }
 
     @Test
@@ -66,9 +71,6 @@ class FileServiceTest {
         Mockito.doReturn(new GridFSFile(value, "name", 1, 1, new Date(), metadata))
                 .when(gridFsTemplate)
                 .findOne(new Query(Criteria.where("_id").is(null)));
-
-        User user = new User("email@gmail.com", "password", "userName", "nickName");
-        user.setId("1");
 
         Mockito.doReturn(chat)
                 .when(chatRepository)
@@ -110,17 +112,7 @@ class FileServiceTest {
     }
 
     @Test
-    void sendFile_FailIOException() {
-
-        assertThrows(IOException.class, () -> {
-            fileService.sendFile(null);
-        });
-    }
-
-    @Test
-    void deleteFile_Pass() {
-        User user = new User("email@gmail.com", "password", "userName", "nickName");
-        user.setId("1");
+    void deleteFile_Pass() throws FileNotFoundException {
 
         List<String> idUsers = new ArrayList<>();
         idUsers.add(user.getId());
@@ -142,7 +134,7 @@ class FileServiceTest {
 
         Mockito.doReturn(fileDelete)
                 .when(fileRepository)
-                .getFileById(fileDelete.getId());
+                .findById(fileDelete.getId());
 
         Mockito.doReturn(chat)
                 .when(chatRepository)
@@ -154,7 +146,8 @@ class FileServiceTest {
                 .when(idFiles)
                 .remove(fileDelete.getId());
 
-        Chat finalChat = new Chat("chatName", false, Collections.singletonList(user.getId()), "userId");
+        Chat finalChat = new Chat("chatName", false,
+                Collections.singletonList(user.getId()), "userId");
 
         Mockito.doReturn(finalChat)
                 .when(chatRepository)
@@ -174,7 +167,7 @@ class FileServiceTest {
     void deleteFile_FailFileDeleteException() {
         Mockito.doReturn(new File("wrongId", "chatId", new Date(), "hello.txt"))
                 .when(fileRepository)
-                .getFileById(fileData.getFileId());
+                .findById(fileData.getFileId());
 
         assertThrows(FileDeleteException.class, () -> {
             fileService.deleteFile(fileData);
@@ -185,7 +178,7 @@ class FileServiceTest {
     void deleteFile_FailUpdateChatException() {
         Mockito.doReturn(new File("userId", "chatId", new Date(), "hello.txt"))
                 .when(fileRepository)
-                .getFileById(fileData.getFileId());
+                .findById(fileData.getFileId());
         Mockito.doReturn(new Chat())
                 .when(chatRepository)
                 .findChatById(fileData.getFileId());

@@ -9,7 +9,6 @@ import org.zipli.socknet.dto.video.VideoData;
 import org.zipli.socknet.exception.CreateSocketException;
 import org.zipli.socknet.exception.DeleteSessionException;
 import org.zipli.socknet.exception.video.VideoCallException;
-import org.zipli.socknet.exception.FileDeleteException;
 import org.zipli.socknet.exception.WsException;
 import org.zipli.socknet.exception.auth.UserNotFoundException;
 import org.zipli.socknet.exception.chat.*;
@@ -349,7 +348,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                     fileService.deleteFile((FileData) wsMessage.getData());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand, "Message is successfully deleted")));
-                } catch (FileDeleteException e) {
+                } catch (Exception e) {
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand, e.getMessage()))
                     );

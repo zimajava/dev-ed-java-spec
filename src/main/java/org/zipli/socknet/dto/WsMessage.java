@@ -72,6 +72,14 @@ public class WsMessage {
                             data.findValue("chatName").asText(),
                             data.findValue("signal").asText()
                     ));
+                case FILE_SEND:
+                case FILE_DELETE:
+                    return new WsMessage(command, new FileData(
+                            data.findValue("idUser").asText(),
+                            data.findValue("idChat").asText(),
+                            data.findValue("fileId").asText(),
+                            data.findValue("bytes").asText()
+                    ));
                 default:
                     return new WsMessage(command, new BaseData(
                             data.findValue("idUser").asText(),
