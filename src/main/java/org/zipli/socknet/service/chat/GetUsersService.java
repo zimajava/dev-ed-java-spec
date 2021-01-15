@@ -27,7 +27,7 @@ public class GetUsersService {
     @Transactional
     public List<UserResponse> getAllUsers() throws GetAllUsersException {
 
-        List<User> users = userRepository.findAllByConfirm(true);
+        List<User> users = userRepository.findAllByIsConfirm(true);
         if (users == null) {
             throw new GetAllUsersException(ErrorStatusCode.USERS_DOES_NOT_EXIST);
         }
