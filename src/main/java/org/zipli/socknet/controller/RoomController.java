@@ -32,7 +32,7 @@ public class RoomController {
         }
     }
 
-    @PostMapping("/join/{keyRoom}")
+    @PostMapping("/join/{keyRoom}")  //пускать всех!!!
     public ResponseEntity<?> postRoom(@PathVariable String keyRoom,
                                       @RequestParam("token") String token) {
         try {

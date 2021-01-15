@@ -13,6 +13,7 @@ public class Hashing {
     private String jwtSecret;
 
     public String generateHashing(String idChat) {
+
         return Jwts.builder()
                 .setSubject(idChat)
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)
