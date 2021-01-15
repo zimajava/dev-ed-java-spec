@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.zipli.socknet.exception.ErrorStatusCode;
@@ -17,6 +18,7 @@ import org.zipli.socknet.security.services.UserDetailsServiceImpl;
 public class ResetPasswordService {
 
     private final JavaMailSender javaMailSender;
+    private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
     private final UserRepository userRepository;
     private final UserDetailsServiceImpl userDetailsService;
@@ -24,8 +26,9 @@ public class ResetPasswordService {
     @Value("${deploy.app}")
     private String deploy;
 
-    public ResetPasswordService(JavaMailSender javaMailSender, JwtUtils jwtUtils, UserRepository userRepository, UserDetailsServiceImpl userDetailsService) {
+    public ResetPasswordService(JavaMailSender javaMailSender, PasswordEncoder passwordEncoder, JwtUtils jwtUtils, UserRepository userRepository, UserDetailsServiceImpl userDetailsService) {
         this.javaMailSender = javaMailSender;
+        this.passwordEncoder = passwordEncoder;
         this.jwtUtils = jwtUtils;
         this.userRepository = userRepository;
         this.userDetailsService = userDetailsService;
@@ -74,11 +77,10 @@ public class ResetPasswordService {
             User user = userRepository.getUserByUserName(userName);
 
             if (user != null) {
-                user.setPassword(newPassword);
+                user.setPassword(passwordEncoder.encode(newPassword));
             } else {
                 throw new UserNotFoundException(ErrorStatusCode.USER_DOES_NOT_EXIST);
             }
-
             userRepository.save(user);
             return "Password successfully changed";
         } else {

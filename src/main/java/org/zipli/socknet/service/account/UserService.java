@@ -2,6 +2,7 @@ package org.zipli.socknet.service.account;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.zipli.socknet.exception.*;
@@ -19,15 +20,14 @@ public class UserService implements IUserService {
     private final UserRepository userRepository;
     private final EmailConfirmationService emailConfirmationService;
     private final JwtUtils jwtUtils;
+    private final PasswordEncoder passwordEncoder;
 
-
-    @Autowired
-    public UserService(UserRepository userRepository, EmailConfirmationService emailConfirmationService, JwtUtils jwtUtils) {
+    public UserService(UserRepository userRepository, EmailConfirmationService emailConfirmationService, JwtUtils jwtUtils, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.emailConfirmationService = emailConfirmationService;
         this.jwtUtils = jwtUtils;
+        this.passwordEncoder = passwordEncoder;
     }
-
 
     @Override
     @Transactional
@@ -126,7 +126,7 @@ public class UserService implements IUserService {
         if (user == null) {
             throw new UpdatePasswordException(ErrorStatusCode.USER_ID_DOES_NOT_CORRECT);
         }
-        user.setPassword(data.getPassword());
+        user.setPassword(passwordEncoder.encode(data.getPassword()));
         userRepository.save(user);
         return user;
     }
