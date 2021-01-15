@@ -73,16 +73,13 @@ class EmitterServiceTest {
 
         userId = emitterService.addMessageEmitterByToken(token, emitter);
 
-        Logger logger = (Logger) LoggerFactory.getLogger(EmitterService.class);
-        ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
-        listAppender.start();
         logger.addAppender(listAppender);
 
         emitterService.sendMessageToUser(userId, new WsMessageResponse());
 
         List<ILoggingEvent> logsList = listAppender.list;
         assertEquals(logsList.get(0).getMessage(),
-                "User = {userId: {} isn online: {}, sent.}");
+                "User = {userId: {} is online: {}, sent.}");
         assertEquals(Level.INFO, logsList.get(0)
                 .getLevel());
     }
