@@ -56,7 +56,7 @@ public class ResetPasswordService {
                 String userName = user.getUserName();
                 UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
                 String token = jwtUtils.generateJwtToken(userDetails, email);
-           return token;
+                return token;
             } else {
                 throw new UserNotFoundException(ErrorStatusCode.USER_DOES_NOT_EXIST);
             }

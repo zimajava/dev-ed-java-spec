@@ -1,6 +1,6 @@
 package org.zipli.socknet.exception.message;
 
-public class MessageUpdateException extends RuntimeException{
+public class MessageUpdateException extends RuntimeException {
 
     private final int numberException;
 

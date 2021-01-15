@@ -1,6 +1,6 @@
 package org.zipli.socknet.exception.chat;
 
-public class DeleteChatException extends RuntimeException{
+public class DeleteChatException extends RuntimeException {
 
     private final int numberException;
 

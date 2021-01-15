@@ -1,6 +1,6 @@
 package org.zipli.socknet.exception.chat;
 
-public class UpdateChatException extends RuntimeException{
+public class UpdateChatException extends RuntimeException {
 
     private final int numberException;
 
