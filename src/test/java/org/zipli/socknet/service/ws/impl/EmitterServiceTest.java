@@ -47,7 +47,6 @@ class EmitterServiceTest {
     Logger logger = (Logger) LoggerFactory.getLogger(EmitterService.class);
     ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
 
-
     @BeforeEach
     void setUp() {
         user.setId("");
@@ -59,7 +58,6 @@ class EmitterServiceTest {
 
     @Test
     void addMessageEmitterByToken_Pass() throws CreateSocketException {
-
         Mockito.when(jwtUtils.getUserNameFromJwtToken(token)).thenReturn(user.getUserName());
         Mockito.when(userRepository.findUserByUserName(user.getUserName())).thenReturn(user);
         userId = emitterService.addMessageEmitterByToken(token, emitter);

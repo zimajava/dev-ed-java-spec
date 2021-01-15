@@ -39,7 +39,8 @@ public class WsMessage {
                             data.findValue("idUser").asText(),
                             data.findValue("idChat").asText(),
                             data.findValue("chatName").asText(),
-                            users));
+                            users,
+                            data.findValue("isRoom").isBoolean()));
                 case CHAT_DELETE:
                 case CHAT_JOIN:
                 case CHAT_LEAVE:

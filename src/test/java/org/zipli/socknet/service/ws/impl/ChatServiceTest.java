@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.zipli.socknet.dto.ChatData;
 import org.zipli.socknet.dto.ChatGroupData;
+import org.zipli.socknet.dto.ChatGroupResponse;
 import org.zipli.socknet.exception.chat.CreateChatException;
 import org.zipli.socknet.exception.chat.DeleteChatException;
 import org.zipli.socknet.model.Chat;
@@ -14,6 +15,7 @@ import org.zipli.socknet.model.User;
 import org.zipli.socknet.repository.ChatRepository;
 import org.zipli.socknet.repository.MessageRepository;
 import org.zipli.socknet.repository.UserRepository;
+import org.zipli.socknet.security.encryption.Hashing;
 import org.zipli.socknet.security.jwt.JwtUtils;
 
 import java.util.ArrayList;
@@ -43,7 +45,7 @@ class ChatServiceTest {
 
     @BeforeEach
     void setUp() {
-        chatService = new ChatService(userRepository, chatRepository, messageRepository, emitterService);
+        chatService = new ChatService(userRepository, chatRepository, messageRepository, emitterService,new Hashing());
         user = new User("Email@com", "password", "Username", "MoiNik");
         user = userRepository.save(user);
 
@@ -60,7 +62,7 @@ class ChatServiceTest {
     @Test
     void createGroupChat_Pass() {
 
-        Chat chat = chatService.createGroupChat(chatGroupData);
+        ChatGroupResponse chat = chatService.createGroupChat(chatGroupData);
 
         assertTrue(chatRepository.existsByChatName(chat.getChatName()));
         chatRepository.deleteAll();
@@ -70,8 +72,8 @@ class ChatServiceTest {
     void createGroupChat_Fail() {
 
         try {
-            Chat chatOne = chatService.createGroupChat(chatGroupData);
-            Chat chatTwo = chatService.createGroupChat(chatGroupData);
+            ChatGroupResponse chatOne = chatService.createGroupChat(chatGroupData);
+            ChatGroupResponse chatTwo = chatService.createGroupChat(chatGroupData);
         } catch (CreateChatException e) {
             assertEquals(e.getMessage(), "Such a chat {} already exists");
         }

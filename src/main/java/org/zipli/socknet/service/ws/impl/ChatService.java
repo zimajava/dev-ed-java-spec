@@ -2,10 +2,7 @@ package org.zipli.socknet.service.ws.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.zipli.socknet.dto.ChatData;
-import org.zipli.socknet.dto.ChatGroupData;
-import org.zipli.socknet.dto.Command;
-import org.zipli.socknet.dto.WsMessageResponse;
+import org.zipli.socknet.dto.*;
 import org.zipli.socknet.exception.ErrorStatusCode;
 import org.zipli.socknet.exception.WsException;
 import org.zipli.socknet.exception.auth.UserNotFoundException;
@@ -15,38 +12,47 @@ import org.zipli.socknet.model.User;
 import org.zipli.socknet.repository.ChatRepository;
 import org.zipli.socknet.repository.MessageRepository;
 import org.zipli.socknet.repository.UserRepository;
+import org.zipli.socknet.security.encryption.Hashing;
 import org.zipli.socknet.service.ws.IChatService;
 import org.zipli.socknet.service.ws.IEmitterService;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 public class ChatService implements IChatService {
 
+    final Hashing hashing;
+
     private final UserRepository userRepository;
     private final ChatRepository chatRepository;
     private final MessageRepository messageRepository;
     private final IEmitterService emitterService;
 
-    public ChatService(UserRepository userRepository, ChatRepository chatRepository, MessageRepository messageRepository, EmitterService emitterService) {
+    private final Map<String, String> keyMapAndIdChatHashMap = new HashMap<>();
+
+    public ChatService(UserRepository userRepository, ChatRepository chatRepository, MessageRepository messageRepository, EmitterService emitterService, Hashing hashing) {
         this.userRepository = userRepository;
         this.chatRepository = chatRepository;
         this.messageRepository = messageRepository;
         this.emitterService = emitterService;
+        this.hashing = hashing;
+    }
+
+    public Map<String, String> getKeyMapAndIdChatHashMap() {
+        return keyMapAndIdChatHashMap;
     }
 
     @Override
-    public Chat createGroupChat(ChatGroupData data) throws CreateChatException, UserNotFoundException {
+    public ChatGroupResponse createGroupChat(ChatGroupData data) throws CreateChatException, UserNotFoundException {
         if (!chatRepository.existsByChatName(data.getChatName())) {
 
             Chat chat = new Chat(data.getChatName(),
                     false,
                     data.getGroupUsersIds(),
-                    data.getIdUser());
+                    data.getIdUser(),
+                    data.isRoom());
             chat.getIdUsers().add(data.getIdUser());
             chatRepository.save(chat);
 
@@ -66,8 +72,16 @@ public class ChatService implements IChatService {
                     log.error("User {} does not exist!", userInGroup);
                 }
             }
-
+            ChatGroupResponse chatGroupResponse =
+                    new ChatGroupResponse(chat.getId(), chat.getCreatorUserId(), chat.getChatName());
             log.info("GroupChat {} successfully created", data.getChatName());
+
+            if (data.isRoom()) {
+                String keyRoom = hashing.generateHashing(data.getIdChat());
+                keyMapAndIdChatHashMap.put(keyRoom,
+                        data.getIdChat());
+                chatGroupResponse.setKeyRoom(keyRoom);
+            }
 
             chat.getIdUsers().parallelStream()
                     .forEach(userId -> emitterService.sendMessageToUser(userId,
@@ -79,7 +93,8 @@ public class ChatService implements IChatService {
                                     )
                             ))
                     );
-            return chat;
+
+            return chatGroupResponse;
         } else {
             throw new CreateChatException("Such a chat {} already exists");
         }
@@ -184,6 +199,7 @@ public class ChatService implements IChatService {
                                         )
                                 ))
                         );
+                keyMapAndIdChatHashMap.remove(data.getIdChat());
             } else {
                 throw new DeleteChatException("Only the author can delete chat {}",
                         WsException.CHAT_ACCESS_ERROR.getNumberException()
