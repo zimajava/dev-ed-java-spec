@@ -24,7 +24,6 @@ import org.zipli.socknet.service.ws.IFileService;
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.util.Date;
-import java.util.Optional;
 
 @Service
 public class FileService implements IFileService {
@@ -41,7 +40,6 @@ public class FileService implements IFileService {
         this.emitterService = emitterService;
         this.gridFsTemplate = gridFsTemplate;
     }
-
 
     @Override
     public File sendFile(FileData data) throws SendFileException {

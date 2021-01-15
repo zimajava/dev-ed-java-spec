@@ -78,7 +78,8 @@ public class WsMessage {
                             data.findValue("idUser").asText(),
                             data.findValue("idChat").asText(),
                             data.findValue("fileId").asText(),
-                            data.findValue("bytes").asText()
+                            data.findValue("title").asText(),
+                            data.findValue("bytes").binaryValue()
                     ));
                 default:
                     return new WsMessage(command, new BaseData(
