@@ -9,7 +9,7 @@ public class UpdateChatException extends RuntimeException {
         this.numberException = numberException;
     }
 
-    public long getNumberException() {
+    public int getNumberException() {
         return numberException;
     }
 }
