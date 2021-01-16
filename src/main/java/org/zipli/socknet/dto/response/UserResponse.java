@@ -21,7 +21,7 @@ public class UserResponse {
         return "UserResponse{" +
                 "userId='" + userId + '\'' +
                 ", userName='" + userName + '\'' +
-                ", avatar=" + Arrays.toString(avatar) +
+                ", avatar=" + avatar.length +
                 '}';
     }
 }
