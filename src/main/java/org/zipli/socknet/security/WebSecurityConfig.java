@@ -8,10 +8,15 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.reactive.function.client.ServerOAuth2AuthorizedClientExchangeFilterFunction;
+import org.springframework.security.oauth2.client.web.server.ServerOAuth2AuthorizedClientRepository;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsConfigurationSource;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.zipli.socknet.security.jwt.AuthTokenManager;
 import reactor.core.publisher.Mono;
 
@@ -20,7 +25,6 @@ import java.util.List;
 
 @Configuration
 @EnableWebFluxSecurity
-@PropertySource("classpath:application.properties")
 public class WebSecurityConfig {
     @Value("${cors.urls}")
     private List<String> corsUrls;
@@ -39,13 +43,13 @@ public class WebSecurityConfig {
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         return http
-                .exceptionHandling()
-                .authenticationEntryPoint(
-                        (swe, e) -> Mono.fromRunnable(
-                                () -> swe.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED)
-                        )
-                )
-                .and()
+                //.exceptionHandling() - не работает с фгер
+//                .authenticationEntryPoint(
+//                        (swe, e) -> Mono.fromRunnable(
+//                                () -> swe.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED)
+//                        )
+//                )
+//                .and()
                 .csrf().disable()
                 .authenticationManager(authTokenManager)
                 .securityContextRepository(securityContextRepository)
@@ -55,7 +59,7 @@ public class WebSecurityConfig {
                         "/swagger-resources/**",
                         "/configuration/security",
                         "/swagger-ui/**",
-                        "/webjars/**").permitAll()
+                        "/webjars/**", "/").permitAll()
                 .anyExchange().authenticated()
                 .and().oauth2Login()
                 .and().build();
@@ -73,4 +77,18 @@ public class WebSecurityConfig {
         source.registerCorsConfiguration(corsPath, corsConfig);
         return source;
     }
+
+//    @Bean
+//    WebClient webClient(
+//            ReactiveClientRegistrationRepository clientRegistrations,
+//            ServerOAuth2AuthorizedClientRepository authorizedClients) {
+//        ServerOAuth2AuthorizedClientExchangeFilterFunction oauth =
+//                new ServerOAuth2AuthorizedClientExchangeFilterFunction(
+//                        clientRegistrations,
+//                        authorizedClients);
+//        oauth.setDefaultOAuth2AuthorizedClient(true);
+//        return WebClient.builder()
+//                .filter(oauth)
+//                .build();
+//    }
 }

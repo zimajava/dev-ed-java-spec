@@ -30,6 +30,7 @@ public class User {
     private String userName;
     private String nickName;
     private boolean isConfirm;
+    private boolean isGoogle;
     private List<String> chatsId;
     private byte[] avatar;
 
@@ -39,6 +40,14 @@ public class User {
         this.userName = userName;
         this.nickName = nickName;
         this.isConfirm = false;
+        this.isGoogle = false;
         chatsId = new ArrayList<>();
+    }
+
+    public User(String email, String nickName, boolean isConfirm, boolean isGoogle) {
+        this.email = email;
+        this.nickName = nickName;
+        this.isConfirm = isConfirm;
+        this.isGoogle = isGoogle;
     }
 }
