@@ -9,7 +9,8 @@ public enum ErrorStatusCode {
     USER_DOES_NOT_PASS_EMAIL_CONFIRM("User doesn't pass email confirmation", 2),
     EMAIL_ALREADY_EXISTS("Email is already taken", 3),
     TOKEN_INVALID_OR_BROKEN("Token is invalid or broken", 1),
-    PASSWORD_IS_NULL("Password can't be null", 2);
+    PASSWORD_IS_NULL("Password can't be null", 2),
+    USERS_DOES_NOT_EXIST("User's is null", 1);
 
     private final int value;
     private final String message;
