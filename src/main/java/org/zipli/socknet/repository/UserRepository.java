@@ -17,6 +17,7 @@ public interface UserRepository extends MongoRepository<User, String> {
 
     List<User> findUsersByIdIn(Collection<String> id);
 
+    List<User> findAllByIsConfirm(boolean confirm);
     User findUserByEmail(String email);
 
     User findUserByUserName(String username);
