@@ -6,6 +6,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.zipli.socknet.dto.response.UserResponse;
 import org.zipli.socknet.exception.ErrorStatusCode;
 import org.zipli.socknet.exception.chat.GetAllUsersException;
 import org.zipli.socknet.model.User;
@@ -21,10 +22,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 public class GetUsersServiceTest {
-    private final String email = "email@gmail.com";
+    private final String id = "ddjfdlkfje";
+    private final String email = "ddjfdlkfje@gmail.com";
+    private final String password = "Password5";
     private final String userName = "Valve";
-    private final String nickName = "Nicki";
-    private final String password = "qwerty";
+    private final String nickName = "Valve";
+    private final byte[] avatar = new byte[1];
 
     @Autowired
     GetUsersService getUsersService;
@@ -35,24 +38,28 @@ public class GetUsersServiceTest {
     @MockBean
     EmailConfirmationService emailConfirmationService;
 
+    UserResponse userResponse = new UserResponse(id, userName, avatar);
     User user = new User(email, password, userName, nickName);
+    List<UserResponse> usersResponse = new ArrayList<>();
     List<User> users = new ArrayList<>();
 
     @BeforeEach
     void setUp() {
-        user.setId("ddjfdlkfje");
+        user.setId(id);
+        user.setAvatar(avatar);
         users.add(user);
+        usersResponse.add(userResponse);
     }
 
     @Test
     void getAllUsersTest_Pass() {
-        Mockito.when(userRepository.findAll()).thenReturn(users);
-        assertEquals(getUsersService.getAllUsers(), users);
+        Mockito.when(userRepository.findAllByIsConfirm(true)).thenReturn(users);
+        assertEquals(getUsersService.getAllUsers().toString(), usersResponse.toString());
     }
 
     @Test
     void getAllUsersTest_Null() {
-        Mockito.when(userRepository.findAll()).thenReturn(null);
+        Mockito.when(userRepository.findAllByIsConfirm(true)).thenReturn(null);
         assertThrows(GetAllUsersException.class, () -> {
             getUsersService.getAllUsers();
         });
