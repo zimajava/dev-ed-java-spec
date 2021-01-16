@@ -1,15 +1,17 @@
 package org.zipli.socknet.exception.message;
 
-public class MessageUpdateException extends RuntimeException{
+import org.zipli.socknet.exception.WsException;
 
-    private final int numberException;
+public class MessageUpdateException extends RuntimeException {
 
-    public MessageUpdateException(String message, int numberException) {
+    private final WsException exceptionCode;
+
+    public MessageUpdateException(String message, WsException exceptionCode) {
         super(message);
-        this.numberException = numberException;
+        this.exceptionCode = exceptionCode;
     }
 
-    public long getNumberException() {
-        return numberException;
+    public int getNumberException() {
+        return exceptionCode.getNumberException();
     }
 }

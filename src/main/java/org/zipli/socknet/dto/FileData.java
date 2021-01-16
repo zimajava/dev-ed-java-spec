@@ -4,9 +4,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.zipli.socknet.model.File;
-
-import java.util.List;
 
 @Getter
 @Setter
@@ -17,16 +14,11 @@ public class FileData extends BaseData {
 
     private String title;
     private byte[] bytes;
-    private List<File> files;
 
     public FileData(String idUser, String chatId, String fileId, String title) {
         super(idUser, chatId);
         this.fileId = fileId;
         this.title = title;
-    }
-
-    public FileData(List<File> files) {
-        this.files = files;
     }
 
     public FileData(String idUser, String chatId, String fileId, String title, byte[] bytes) {

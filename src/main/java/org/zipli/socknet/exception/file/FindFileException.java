@@ -2,11 +2,11 @@ package org.zipli.socknet.exception.file;
 
 import org.zipli.socknet.exception.WsException;
 
-public class FileDeleteException extends RuntimeException {
+public class FindFileException extends RuntimeException {
 
     private final WsException exceptionCode;
 
-    public FileDeleteException(String message, WsException exceptionCode) {
+    public FindFileException(String message, WsException exceptionCode) {
         super(message);
         this.exceptionCode = exceptionCode;
     }

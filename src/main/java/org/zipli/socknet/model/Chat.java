@@ -42,4 +42,13 @@ public class Chat {
         this.idFiles = new ArrayList<>();
         this.creatorUserId = creatorUserId;
     }
+
+    public Chat(String chatName, boolean isPrivate, List<String> idUsers, String userId, List<String> fileIds) {
+        this.chatName = chatName;
+        this.isPrivate = isPrivate;
+        this.idUsers = idUsers;
+        this.creatorUserId = userId;
+        this.idFiles = fileIds;
+        this.idMessages = new ArrayList<>();
+    }
 }
