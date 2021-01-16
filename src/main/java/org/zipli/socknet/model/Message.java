@@ -26,14 +26,14 @@ public class Message {
     private ByteArray message;
     private Date date;
 
-    public Message(String authorId, String chatId,Date date, String textMessage) {
+    public Message(String authorId, String chatId, Date date, String textMessage) {
         this.authorId = authorId;
         this.chatId = chatId;
         this.date = date;
         this.textMessage = textMessage;
     }
 
-    public Message(String authorId, String chatId,Date date, ByteArray message) {
+    public Message(String authorId, String chatId, Date date, ByteArray message) {
         this.authorId = authorId;
         this.chatId = chatId;
         this.date = date;
