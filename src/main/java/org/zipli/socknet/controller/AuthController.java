@@ -16,6 +16,7 @@ import org.zipli.socknet.service.email.EmailConfirmationService;
 import org.zipli.socknet.service.password.ResetPasswordService;
 
 import javax.validation.Valid;
+import java.util.Objects;
 
 @Slf4j
 @RestController
@@ -55,7 +56,7 @@ public class AuthController {
         try {
             emailConfirmationService.confirmAccount(token);
         } catch (NotConfirmAccountException e) {
-            log.error("Failed confirm email by token {}, reason {}", token, e.getErrorStatusCode().getMessage());
+            log.error("Failed confirm email tokenIsNull {}, reason {}", Objects.isNull(token), e.getErrorStatusCode().getMessage());
             return ResponseEntity
                     .badRequest()
                     .body(e.getErrorStatusCode().getValue());
@@ -82,7 +83,8 @@ public class AuthController {
         try {
             resetPasswordService.resetPassword(token, newPassword);
         } catch (UserNotFoundException e) {
-            log.error("Failed update password by token {}, newPassword {}, reason {}", token, newPassword, e.getErrorStatusCode().getMessage());
+            log.error("Failed update password tokenIsNull {}, reason {}",
+                    Objects.isNull(token), e.getErrorStatusCode().getMessage());
             return ResponseEntity
                     .badRequest()
                     .body(e.getErrorStatusCode().getValue());
@@ -96,8 +98,8 @@ public class AuthController {
         try {
             loginResponse = authService.login(loginRequest.getLogin(), loginRequest.getPassword());
         } catch (AuthException e) {
-            log.error("Failed authenticate user by login {}, password {}, reason {}",
-                    loginRequest.getLogin(), loginRequest.getPassword(), e.getErrorStatusCode().getMessage());
+            log.error("Failed authenticate user by login {}, passwordIsNull {}, reason {}",
+                    loginRequest.getLogin(), Objects.isNull(loginRequest.getPassword()), e.getErrorStatusCode().getMessage());
             return ResponseEntity
                     .badRequest()
                     .body(e.getErrorStatusCode().getValue());

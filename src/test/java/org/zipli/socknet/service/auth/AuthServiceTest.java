@@ -127,7 +127,7 @@ public class AuthServiceTest {
     }
 
     @Test
-    public void loginByUsernameWithConfirmedPassword_Fail(){
+    public void loginByUsernameWithCorrectPassword_Fail(){
         Mockito.when(userRepository.findUserByUserName(userName)).thenReturn(user);
         Mockito.when(passwordEncoder.matches(password, user.getPassword())).thenReturn(false);
 

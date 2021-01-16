@@ -12,6 +12,7 @@ import org.zipli.socknet.payload.request.PasswordRequest;
 import org.zipli.socknet.service.account.UserService;
 
 import javax.validation.Valid;
+import java.util.Objects;
 
 @RestController
 @Slf4j
@@ -52,8 +53,8 @@ public class AccountController {
         try {
             return ResponseEntity.ok(userService.updateAvatar(data));
         } catch (UpdateAvatarException e) {
-            log.error("Failed update avatar by userId {}, avatar {}, reason {}",
-                    data.getUserId(), data.getAvatar(), e.getErrorStatusCode().getMessage());
+            log.error("Failed update avatar by userId {}, avatarIsNull {}, reason {}",
+                    data.getUserId(), Objects.isNull(data.getAvatar()), e.getErrorStatusCode().getMessage());
             return ResponseEntity
                     .badRequest()
                     .body(e.getErrorStatusCode().getValue());
@@ -91,8 +92,8 @@ public class AccountController {
         try {
             return ResponseEntity.ok(userService.updatePassword(data));
         } catch (UpdatePasswordException e) {
-            log.error("Failed update password by userId {}, password {}, reason {}",
-                    data.getUserId(), data.getPassword(), e.getErrorStatusCode().getMessage());
+            log.error("Failed update password by userId {}, passwordIsNull {}, reason {}",
+                    data.getUserId(), Objects.isNull(data.getPassword()), e.getErrorStatusCode().getMessage());
             return ResponseEntity
                     .badRequest()
                     .body(e.getErrorStatusCode().getValue());
