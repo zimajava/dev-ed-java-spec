@@ -17,6 +17,8 @@ import org.zipli.socknet.payload.request.NickNameRequest;
 import org.zipli.socknet.payload.request.PasswordRequest;
 import org.zipli.socknet.service.account.UserService;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
@@ -270,5 +272,4 @@ public class AccountControllerTest {
         assertEquals(ResponseEntity.badRequest().body(ErrorStatusCode.USER_ID_DOES_NOT_CORRECT.getValue()),
                 accountController.deleteAccount(user.getId()));
     }
-
 }
