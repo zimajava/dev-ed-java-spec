@@ -45,7 +45,7 @@ public class GetUsersControllerTest {
         Mockito.doReturn(users)
                 .when(getUsersService)
                 .getAllUsers();
-        assertEquals(ResponseEntity.ok(getUsersService.getAllUsers()),
+        assertEquals(ResponseEntity.ok(users),
                 getUsersController.getAllUsers());
     }
 
