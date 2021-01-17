@@ -93,12 +93,11 @@ public class FileService implements IFileService {
     }
 
     @Override
-    public void deleteFile(FileData data) throws FileDeleteException, UpdateChatException, FindFileException {
+    public void deleteFile(FileData data) throws FileDeleteException, FindFileException {
         File file = fileRepository.getFileById(data.getFileId());
+        Chat chat = chatRepository.findChatById(data.getIdChat());
 
-        if (file != null && file.getAuthorId().equals(data.getIdUser())) {
-            Chat chat = chatRepository.findChatById(data.getIdChat());
-            if (chat != null) {
+        if (file != null && file.getAuthorId().equals(data.getIdUser()) && chat !=null) {
                 if (chat.getIdFiles().remove(file.getId())) {
                     final Chat finalChat = chatRepository.save(chat);
 
@@ -116,13 +115,10 @@ public class FileService implements IFileService {
                 } else {
                 throw new FindFileException("This file does not exists", WsException.FILE_IS_NOT_IN_A_DB);
                 }
-            } else {
-                throw new UpdateChatException("There is no such chat", WsException.CHAT_NOT_EXISTS);
-            }
             gridFsTemplate.delete(new Query(Criteria.where("_id").is(data.getFileId())));
             fileRepository.deleteById(file.getId());
         } else {
-            throw new FileDeleteException("Only the author can delete the file", WsException.FILE_ACCESS_ERROR);
+            throw new FileDeleteException("The data was invalid", WsException.FILE_ACCESS_ERROR);
         }
     }
 }

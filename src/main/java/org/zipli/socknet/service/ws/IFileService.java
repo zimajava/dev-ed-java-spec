@@ -12,5 +12,5 @@ public interface IFileService {
 
     File sendFile(FileData Data) throws SendFileException, UpdateChatException, SaveFileException;
 
-    void deleteFile(FileData data) throws FileDeleteException, UpdateChatException, FindFileException;
+    void deleteFile(FileData data) throws FileDeleteException, FindFileException;
 }

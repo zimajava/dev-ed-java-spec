@@ -12,10 +12,8 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.zipli.socknet.dto.FileData;
-import org.zipli.socknet.exception.chat.UpdateChatException;
 import org.zipli.socknet.exception.file.FileDeleteException;
 import org.zipli.socknet.exception.file.FindFileException;
-import org.zipli.socknet.exception.file.SaveFileException;
 import org.zipli.socknet.exception.file.SendFileException;
 import org.zipli.socknet.model.Chat;
 import org.zipli.socknet.model.File;
@@ -96,27 +94,27 @@ class FileServiceTest {
         });
     }
 
-    @Test
-    void sendFile_FailUpdateChatException() {
-        Mockito.doReturn(new GridFSFile(value, "name", 1, 1, new Date(), metadata))
-                .when(gridFsTemplate)
-                .findOne(new Query(Criteria.where("_id").is(null)));
-
-        assertThrows(UpdateChatException.class, () -> {
-            fileService.sendFile(fileData);
-        });
-    }
-
-    @Test
-    void sendFile_FailSaveFileException() {
-        Mockito.doReturn(null)
-                .when(gridFsTemplate)
-                .findOne(new Query(Criteria.where("_id").is(null)));
-
-        assertThrows(SaveFileException.class, () -> {
-            fileService.sendFile(fileData);
-        });
-    }
+//    @Test
+//    void sendFile_FailUpdateChatException() {
+//        Mockito.doReturn(new GridFSFile(value, "name", 1, 1, new Date(), metadata))
+//                .when(gridFsTemplate)
+//                .findOne(new Query(Criteria.where("_id").is(null)));
+//
+//        assertThrows(UpdateChatException.class, () -> {
+//            fileService.sendFile(fileData);
+//        });
+//    }
+//
+//    @Test
+//    void sendFile_FailSaveFileException() {
+//        Mockito.doReturn(null)
+//                .when(gridFsTemplate)
+//                .findOne(new Query(Criteria.where("_id").is(null)));
+//
+//        assertThrows(SaveFileException.class, () -> {
+//            fileService.sendFile(fileData);
+//        });
+//    }
 
     @Test
     void deleteFile_Pass() {
@@ -162,9 +160,6 @@ class FileServiceTest {
 
     @Test
     void deleteFile_FailFileDeleteException() {
-        Mockito.doReturn(new File("wrongId", "chatId", new Date(), "hello.txt"))
-                .when(fileRepository)
-                .getFileById(fileData.getFileId());
 
         assertThrows(FileDeleteException.class, () -> {
             fileService.deleteFile(fileData);
@@ -172,44 +167,21 @@ class FileServiceTest {
     }
 
     @Test
-    void deleteFile_FailUpdateChatException() {
-        Mockito.doReturn(new File("userId", "chatId", new Date(), "hello.txt"))
-                .when(fileRepository)
-                .getFileById(fileData.getFileId());
-        Mockito.doReturn(new Chat())
-                .when(chatRepository)
-                .findChatById(fileData.getFileId());
-
-        assertThrows(UpdateChatException.class, () -> {
-            fileService.deleteFile(fileData);
-        });
-    }
-
-    @Test
     void deleteFile_FailFindFileException() {
-        List<String> idUsers = new ArrayList<>();
-        idUsers.add(user.getId());
-        idUsers.add("1");
-        idUsers.add("2");
-        ArrayList<String> fileIds = new ArrayList<>();
 
-        Chat chat = new Chat("chatName", false, idUsers, "userId", fileIds);
-        chat.setId("2");
+        Chat chat1 = new Chat("chatName", false, new ArrayList<>(), "userId", new ArrayList<>());
+        chat1.setId("2");
 
-        Mockito.doReturn(true)
-                .when(chatRepository)
-                .save(chat);
-
-        File fileDelete = new File(user.getId(), chat.getId(), new Date(), "title");
+        File fileDelete = new File("userId", "chatId", new Date(), "title");
         fileDelete.setId("3");
 
         Mockito.doReturn(fileDelete)
                 .when(fileRepository)
-                .getFileById(fileDelete.getId());
+                .getFileById(fileData.getFileId());
 
-        Mockito.doReturn(chat)
+        Mockito.doReturn(chat1)
                 .when(chatRepository)
-                .findChatById(chat.getId());
+                .findChatById(fileData.getIdChat());
 
         assertThrows(FindFileException.class, () -> {
             fileService.deleteFile(fileData);

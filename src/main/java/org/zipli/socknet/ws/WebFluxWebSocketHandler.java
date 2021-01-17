@@ -542,12 +542,6 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                             new WsMessageResponse(eventCommand,
                                     WsException.FILE_ACCESS_ERROR.getNumberException()))
                     );
-                } catch (UpdateChatException e) {
-                    log.error("Failed to get an appropriate chat {} reason {}", fileData.getIdChat(), e.getMessage());
-                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
-                            new WsMessageResponse(eventCommand,
-                                    WsException.CHAT_NOT_EXISTS.getNumberException()))
-                    );
                 } catch (FindFileException e) {
                     log.error("Failed to find a file {} reason {}", fileData.getFileId(), e.getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
