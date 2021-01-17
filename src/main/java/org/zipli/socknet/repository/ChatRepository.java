@@ -11,17 +11,9 @@ import java.util.List;
 public interface ChatRepository extends MongoRepository<Chat, String> {
     Chat findChatById(String id);
 
-    List<Chat> getChatsByPrivate(boolean isPrivate);
-
     boolean existsByChatName(String chatName);
-
-    boolean existsByChatNameAndCreatorUserId(String chatName, String creatorUserId);
-
-    Chat getByChatNameAndCreatorUserId(String chatName, String creatorUserId);
 
     void deleteById(String id);
 
     List<Chat> getChatsByIdIn(Collection<String> id);
-
-    Chat getByIdAndCreatorUserId(String id, String creatorUserId);
 }

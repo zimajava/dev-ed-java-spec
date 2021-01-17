@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.zipli.socknet.dto.response.UserResponse;
+import org.zipli.socknet.exception.ErrorStatusCode;
 import org.zipli.socknet.exception.chat.GetAllUsersException;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.repository.UserRepository;
