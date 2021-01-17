@@ -45,7 +45,9 @@ public class FileService implements IFileService {
     }
 
     @Override
-    public File sendFile(FileData data) throws SendFileException, UpdateChatException, SaveFileException {
+    public File sendFile(FileData data) throws SendFileException
+//            UpdateChatException, SaveFileException
+    {
         File file;
         Chat chat;
         final File finalFile;
