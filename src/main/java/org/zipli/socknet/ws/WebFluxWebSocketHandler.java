@@ -508,18 +508,6 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand, "File is successfully sended")));
                     log.info(commandSuccess, eventCommand, fileData.getIdUser(), "To chat: ", fileData.getIdChat());
-//                } catch (UpdateChatException e) {
-//                    log.error("Failed to get an appropriate chat {} reason {}", fileData.getIdChat(), e.getMessage());
-//                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
-//                            new WsMessageResponse(eventCommand,
-//                                    WsException.CHAT_NOT_EXISTS.getNumberException()))
-//                    );
-//                } catch (SaveFileException e) {
-//                    log.error("Failed to write file in a DB {} reason {}", fileData.getFileId(), e.getMessage());
-//                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
-//                            new WsMessageResponse(eventCommand,
-//                                    WsException.GRIDFSFILE_IS_NOT_FOUND.getNumberException()))
-//                    );
                 } catch (SendFileException e) {
                     log.error("Failed to load file in a GridFs {} reason {}", fileData.getFileId(), e.getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
@@ -541,12 +529,6 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
                                     WsException.FILE_ACCESS_ERROR.getNumberException()))
-                    );
-                } catch (FindFileException e) {
-                    log.error("Failed to find a file {} reason {}", fileData.getFileId(), e.getMessage());
-                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
-                            new WsMessageResponse(eventCommand,
-                                    WsException.FILE_IS_NOT_IN_A_DB.getNumberException()))
                     );
                     break;
                 }

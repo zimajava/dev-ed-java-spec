@@ -45,9 +45,7 @@ public class FileService implements IFileService {
     }
 
     @Override
-    public File sendFile(FileData data) throws SendFileException
-//            UpdateChatException, SaveFileException
-    {
+    public File sendFile(FileData data) throws SendFileException {
         File file;
         Chat chat;
         final File finalFile;
@@ -95,11 +93,11 @@ public class FileService implements IFileService {
     }
 
     @Override
-    public void deleteFile(FileData data) throws FileDeleteException, FindFileException {
+    public void deleteFile(FileData data) throws FileDeleteException {
         File file = fileRepository.getFileById(data.getFileId());
         Chat chat = chatRepository.findChatById(data.getIdChat());
-
-        if (file != null && file.getAuthorId().equals(data.getIdUser()) && chat !=null) {
+        try {
+            if (file != null || file.getAuthorId().equals(data.getIdUser()) || chat != null) {
                 if (chat.getIdFiles().remove(file.getId())) {
                     final Chat finalChat = chatRepository.save(chat);
 
@@ -115,11 +113,13 @@ public class FileService implements IFileService {
                                     ))
                             );
                 } else {
-                throw new FindFileException("This file does not exists", WsException.FILE_IS_NOT_IN_A_DB);
+                    throw new FindFileException("This file does not exists", WsException.FILE_IS_NOT_IN_A_DB);
                 }
-            gridFsTemplate.delete(new Query(Criteria.where("_id").is(data.getFileId())));
-            fileRepository.deleteById(file.getId());
-        } else {
+                gridFsTemplate.delete(new Query(Criteria.where("_id").is(data.getFileId())));
+                fileRepository.deleteById(file.getId());
+            }
+        } catch (Exception e) {
+            log.error("Error. The given data is invalid");
             throw new FileDeleteException("The data was invalid", WsException.FILE_ACCESS_ERROR);
         }
     }
