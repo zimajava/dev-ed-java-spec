@@ -14,25 +14,26 @@ public class RoomRouter {
     @Bean
     public RouterFunction<ServerResponse> route(RoomHandler roomHandler) {
 
+        final String PATH = "/zipli/room";
         return RouterFunctions
                 .route(RequestPredicates
-                                .GET("/getRoom/{idRoom}")
+                                .PATCH(PATH + "/getRoom/{idRoom}")
                                 .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
                         roomHandler::getRoom)
                 .andRoute(RequestPredicates
-                                .POST("/joinRoom/{idRoom}")
+                                .POST(PATH + "/joinRoom/{idRoom}")
                                 .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
                         roomHandler::joinRoom)
                 .andRoute(RequestPredicates
-                                .POST("/stream-sse{idRoom}")
+                                .POST(PATH + "/stream-sse{idRoom}")
                                 .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
                         roomHandler::getMessage)
                 .andRoute(RequestPredicates
-                                .POST("/createRoom")
+                                .POST(PATH + "/createRoom")
                                 .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
                         roomHandler::createRoom)
                 .andRoute(RequestPredicates
-                                .POST("/new-massege")
+                                .POST(PATH + "/new-massege")
                                 .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
                         roomHandler::saveMessage);
     }
