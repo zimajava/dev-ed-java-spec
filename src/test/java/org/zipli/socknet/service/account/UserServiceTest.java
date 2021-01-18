@@ -1,5 +1,6 @@
 package org.zipli.socknet.service.account;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,22 +23,31 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SpringBootTest
 public class UserServiceTest {
 
+    private final String email = "email@gmail.com";
+    private final String userName = "Valve";
+    private final String nickName = "Nicki";
+    private final String password = "qwerty";
+
     @Autowired
     UserService userService;
 
     @MockBean
     UserRepository userRepository;
-    
-    @MockBean
-    User user;
 
     @MockBean
     EmailConfirmationService emailConfirmationService;
 
+    User user = new User(email, password, userName, nickName);
+
+    @BeforeEach
+    void setUp() {
+        user.setId("ddjfdlkfje");
+    }
+
     @Test
     void getUserTest_Pass() {
-        Mockito.when(userRepository.getUserById("ddjfdlkfje")).thenReturn(user);
-        assertEquals(userService.findUser("ddjfdlkfje"), user);
+        Mockito.when(userRepository.getUserById(user.getId())).thenReturn(user);
+        assertEquals(userService.findUser(user.getId()), user);
     }
 
     @Test
@@ -50,14 +60,14 @@ public class UserServiceTest {
     @Test
     void getUserTest_BadUserId() {
         assertThrows(GetUserException.class, () -> {
-            userService.findUser("ddjfdlkfje");
+            userService.findUser(user.getId());
         });
     }
 
     @Test
     void deleteAvatarTest_Pass() {
-        Mockito.when(userRepository.getUserById("ddjfdlkfje")).thenReturn(user);
-        assertEquals(userService.deleteAvatar("ddjfdlkfje"), user);
+        Mockito.when(userRepository.getUserById(user.getId())).thenReturn(user);
+        assertEquals(userService.deleteAvatar(user.getId()), user);
     }
 
     @Test
@@ -70,20 +80,20 @@ public class UserServiceTest {
     @Test
     void deleteAvatarTest_BadUserId() {
         assertThrows(DeleteAvatarException.class, () -> {
-            userService.deleteAvatar("ddjfdlkfje");
+            userService.deleteAvatar(user.getId());
         });
     }
 
     @Test
     void updateAvatarTest_Pass() {
-        Mockito.when(userRepository.getUserById("ddjfdlkfje")).thenReturn(user);
-        assertEquals(userService.updateAvatar(new AvatarRequest("ddjfdlkfje", new byte[1])), user);
+        Mockito.when(userRepository.getUserById(user.getId())).thenReturn(user);
+        assertEquals(userService.updateAvatar(new AvatarRequest(user.getId(), new byte[1])), user);
     }
 
     @Test
     void updateAvatarTest_BadUserId() {
         assertThrows(UpdateAvatarException.class, () -> {
-            userService.updateAvatar(new AvatarRequest("ddjfdlkfje", new byte[1]));
+            userService.updateAvatar(new AvatarRequest(user.getId(), new byte[1]));
         });
     }
 
@@ -96,23 +106,23 @@ public class UserServiceTest {
 
     @Test
     void updateAvatarTest_NullAvatar() {
-        Mockito.when(userRepository.getUserById("ddjfdlkfje")).thenReturn(user);
+        Mockito.when(userRepository.getUserById(user.getId())).thenReturn(user);
         assertThrows(UpdateAvatarException.class, () -> {
-            userService.updateAvatar(new AvatarRequest("ddjfdlkfje", null));
+            userService.updateAvatar(new AvatarRequest(user.getId(), null));
         });
     }
 
     @Test
     void updateNickNameTest_Pass() {
-        Mockito.when(userRepository.getUserById("ddjfdlkfje")).thenReturn(user);
-        assertEquals(userService.updateNickName(new NickNameRequest("ddjfdlkfje", "vladil-12")),
+        Mockito.when(userRepository.getUserById(user.getId())).thenReturn(user);
+        assertEquals(userService.updateNickName(new NickNameRequest(user.getId(), "vladil-12")),
                 user);
     }
 
     @Test
     void updateNickNameTest_BadUserId() {
         assertThrows(UpdateNickNameException.class, () -> {
-            userService.updateNickName(new NickNameRequest("ddjfdlkfje", "vladil-12"));
+            userService.updateNickName(new NickNameRequest(user.getId(), "vladil-12"));
         });
     }
 
@@ -125,23 +135,23 @@ public class UserServiceTest {
 
     @Test
     void updateNickNameTest_NullNickName() {
-        Mockito.when(userRepository.getUserById("ddjfdlkfje")).thenReturn(user);
+        Mockito.when(userRepository.getUserById(user.getId())).thenReturn(user);
         assertThrows(UpdateNickNameException.class, () -> {
-            userService.updateNickName(new NickNameRequest("ddjfdlkfje", null));
+            userService.updateNickName(new NickNameRequest(user.getId(), null));
         });
     }
 
     @Test
     void updateEmailTest_Pass()  {
-        Mockito.when(userRepository.getUserById("ddjfdlkfje")).thenReturn(user);
-        assertEquals(userService.updateEmail(new EmailRequest("ddjfdlkfje", "vlad3415@ukr.net")),
+        Mockito.when(userRepository.getUserById(user.getId())).thenReturn(user);
+        assertEquals(userService.updateEmail(new EmailRequest(user.getId(), "vlad3415@ukr.net")),
                 user);
     }
 
     @Test
     void updateEmailTest_BadUserId() {
         assertThrows(UpdateEmailException.class, () -> {
-            userService.updateEmail(new EmailRequest("ddjfdlkfje", "vlad345@ukr.net"));
+            userService.updateEmail(new EmailRequest(user.getId(), "vlad345@ukr.net"));
         });
     }
 
@@ -154,32 +164,32 @@ public class UserServiceTest {
 
     @Test
     void updateEmailTest_NullEmail() {
-        Mockito.when(userRepository.getUserById("ddjfdlkfje")).thenReturn(user);
+        Mockito.when(userRepository.getUserById(user.getId())).thenReturn(user);
         assertThrows(UpdateEmailException.class, () -> {
-            userService.updateEmail(new EmailRequest("ddjfdlkfje", null));
+            userService.updateEmail(new EmailRequest(user.getId(), null));
         });
     }
 
     @Test
     void updateEmailTest_DoubleEmail() {
-        Mockito.when(userRepository.getUserById("ddjfdlkfje")).thenReturn(user);
+        Mockito.when(userRepository.getUserById(user.getId())).thenReturn(user);
         Mockito.when(userRepository.getUserByEmail("Vlad@ukr.net")).thenReturn(user);
         assertThrows(UpdateEmailException.class, () -> {
-            userService.updateEmail(new EmailRequest("ddjfdlkfje" , "Vlad@ukr.net"));
+            userService.updateEmail(new EmailRequest(user.getId() , "Vlad@ukr.net"));
         });
     }
 
     @Test
     void updatePasswordTest_Pass() {
-        Mockito.when(userRepository.getUserById("ddjfdlkfje")).thenReturn(user);
-        assertEquals(userService.updatePassword(new PasswordRequest("ddjfdlkfje", "Password4")),
+        Mockito.when(userRepository.getUserById(user.getId())).thenReturn(user);
+        assertEquals(userService.updatePassword(new PasswordRequest(user.getId(), "Password4")),
                 user);
     }
 
     @Test
     void updatePasswordTest_BadUserId() {
         assertThrows(UpdatePasswordException.class, () -> {
-            userService.updatePassword(new PasswordRequest("ddjfdlkfje", "Password4"));
+            userService.updatePassword(new PasswordRequest(user.getId(), "Password4"));
         });
     }
 
@@ -192,16 +202,16 @@ public class UserServiceTest {
 
     @Test
     void updatePasswordTest_NullPassword() {
-        Mockito.when(userRepository.getUserById("ddjfdlkfje")).thenReturn(user);
+        Mockito.when(userRepository.getUserById(user.getId())).thenReturn(user);
         assertThrows(UpdatePasswordException.class, () -> {
-            userService.updatePassword(new PasswordRequest("ddjfdlkfje", null));
+            userService.updatePassword(new PasswordRequest(user.getId(), null));
         });
     }
 
     @Test
     void deleteAccountTest_Pass() {
-        Mockito.when(userRepository.getUserById("ddjfdlkfje")).thenReturn(user);
-        assertEquals(userService.deleteAccount("ddjfdlkfje"), "ddjfdlkfje");
+        Mockito.when(userRepository.getUserById(user.getId())).thenReturn(user);
+        assertEquals(userService.deleteAccount(user.getId()), user.getId());
     }
 
     @Test
@@ -214,7 +224,7 @@ public class UserServiceTest {
     @Test
     void deleteAccountTest_BadUserId() {
         assertThrows(DeleteAccountException.class, () -> {
-            userService.deleteAccount("ddjfdlkfje");
+            userService.deleteAccount(user.getId());
         });
     }
 }

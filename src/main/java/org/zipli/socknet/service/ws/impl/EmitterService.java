@@ -66,7 +66,7 @@ public class EmitterService implements IEmitterService {
         if (emittersByUser != null) {
             emittersByUser.forEach(emitter -> {
                 emitter.tryEmitNext(JsonUtils.jsonWriteHandle(wsMessage));
-                log.info("User = {userId: {} isn online: {}, sent.}", userId, wsMessage.getCommand());
+                log.info("User = {userId: {} is online: {}, sent.}", userId, wsMessage.getCommand());
             });
         } else {
             if (wsMessage.getCommand().equals(Command.CHAT_LEAVE) || wsMessage.getCommand().equals(Command.CHAT_JOIN)) {

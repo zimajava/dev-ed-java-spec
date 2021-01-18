@@ -1,13 +1,11 @@
 package org.zipli.socknet.model;
 
-import com.sun.mail.iap.ByteArray;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
 import java.util.Date;
 
 @Getter
@@ -15,28 +13,29 @@ import java.util.Date;
 @ToString
 @Document
 @NoArgsConstructor
-public class Message {
+public class File {
 
     @Id
     private String id;
 
     private String authorId;
     private String chatId;
-    private String textMessage;
-    private ByteArray message;
+    private String title;
+    private byte[] bytes;
     private Date date;
 
-    public Message(String authorId, String chatId, Date date, String textMessage) {
+    public File(String authorId, String chatId, Date date, String title) {
         this.authorId = authorId;
         this.chatId = chatId;
         this.date = date;
-        this.textMessage = textMessage;
+        this.title = title;
     }
 
-    public Message(String authorId, String chatId, Date date, ByteArray message) {
+    public File(String authorId, String chatId, Date date, String title, byte[] bytes) {
         this.authorId = authorId;
         this.chatId = chatId;
         this.date = date;
-        this.message = message;
+        this.title = title;
+        this.bytes = bytes;
     }
 }

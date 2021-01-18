@@ -11,11 +11,16 @@ import org.zipli.socknet.exception.session.DeleteSessionException;
 import org.zipli.socknet.exception.ErrorStatusCodeWs;
 import org.zipli.socknet.exception.auth.UserNotFoundException;
 import org.zipli.socknet.exception.chat.*;
+import org.zipli.socknet.exception.file.FileDeleteException;
+import org.zipli.socknet.exception.file.FindFileException;
+import org.zipli.socknet.exception.file.SaveFileException;
+import org.zipli.socknet.exception.file.SendFileException;
 import org.zipli.socknet.exception.message.MessageDeleteException;
 import org.zipli.socknet.exception.message.MessageSendException;
 import org.zipli.socknet.exception.message.MessageUpdateException;
 import org.zipli.socknet.exception.video.VideoCallException;
 import org.zipli.socknet.model.Chat;
+import org.zipli.socknet.model.File;
 import org.zipli.socknet.model.Message;
 import org.zipli.socknet.service.ws.IChatService;
 import org.zipli.socknet.service.ws.IEmitterService;
@@ -481,7 +486,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                 } catch (ChatNotFoundException e) {
                     log.error(commandFail, eventCommand, messageData.getIdUser() + e.getMessage(), videoData.getIdChat());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
-                            new WsMessageResponse(eventCommand, ErrorStatusCodeWs.CHAT_NOT_FOUND_EXCEPTION.getNumberException()))
+                            new WsMessageResponse(eventCommand, WsException.CHAT_NOT_FOUND_EXCEPTION.getNumberException()))
                     );
                 } catch (Exception e) {
                     log.error(commandFail, eventCommand, messageData.getIdUser() + e.getMessage());
@@ -490,6 +495,38 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                     );
                 }
                 break;
+
+            case FILE_SEND:
+                fileData = (FileData) wsMessage.getData();
+                try {
+                    fileService.sendFile(fileData);
+                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
+                            new WsMessageResponse(eventCommand, "File is successfully sended")));
+                    log.info(commandSuccess, eventCommand, fileData.getIdUser(), "To chat: ", fileData.getIdChat());
+                } catch (SendFileException e) {
+                    log.error("Failed to load file in a GridFs {} reason {}", fileData.getFileId(), e.getMessage());
+                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
+                            new WsMessageResponse(eventCommand,
+                                    WsException.FILE_WAS_NOT_LOADING_CORRECT.getNumberException()))
+                    );
+                }
+                break;
+
+            case FILE_DELETE:
+                fileData = (FileData) wsMessage.getData();
+                try {
+                    fileService.deleteFile(fileData);
+                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
+                            new WsMessageResponse(eventCommand, "File is successfully deleted")));
+                    log.info(commandSuccess, eventCommand, fileData.getIdUser(), "in chat: ", fileData.getIdChat(), "file: ", fileData.getFileId());
+                } catch (FileDeleteException e) {
+                    log.error("Failed to find the file to delete or the creator of the file is wrong {} reason {}", fileData.getIdUser(), e.getMessage());
+                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
+                            new WsMessageResponse(eventCommand,
+                                    WsException.FILE_ACCESS_ERROR.getNumberException()))
+                    );
+                    break;
+                }
         }
     }
 }

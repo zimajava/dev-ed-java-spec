@@ -2,9 +2,12 @@ package org.zipli.socknet.service.ws.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.zipli.socknet.dto.*;
+import org.zipli.socknet.dto.ChatData;
+import org.zipli.socknet.dto.ChatGroupData;
+import org.zipli.socknet.dto.Command;
+import org.zipli.socknet.dto.WsMessageResponse;
 import org.zipli.socknet.exception.ErrorStatusCode;
-import org.zipli.socknet.exception.ErrorStatusCodeWs;
+import org.zipli.socknet.exception.WsException;
 import org.zipli.socknet.exception.auth.UserNotFoundException;
 import org.zipli.socknet.exception.chat.*;
 import org.zipli.socknet.model.Chat;
@@ -12,47 +15,38 @@ import org.zipli.socknet.model.User;
 import org.zipli.socknet.repository.ChatRepository;
 import org.zipli.socknet.repository.MessageRepository;
 import org.zipli.socknet.repository.UserRepository;
-import org.zipli.socknet.security.encryption.Hashing;
 import org.zipli.socknet.service.ws.IChatService;
 import org.zipli.socknet.service.ws.IEmitterService;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 public class ChatService implements IChatService {
 
-    final Hashing hashing;
-
     private final UserRepository userRepository;
     private final ChatRepository chatRepository;
     private final MessageRepository messageRepository;
     private final IEmitterService emitterService;
 
-    private final Map<String, String> keyMapAndIdChatHashMap = new HashMap<>();
-
-    public ChatService(UserRepository userRepository, ChatRepository chatRepository, MessageRepository messageRepository, EmitterService emitterService, Hashing hashing) {
+    public ChatService(UserRepository userRepository, ChatRepository chatRepository, MessageRepository messageRepository, EmitterService emitterService) {
         this.userRepository = userRepository;
         this.chatRepository = chatRepository;
         this.messageRepository = messageRepository;
         this.emitterService = emitterService;
-        this.hashing = hashing;
-    }
-
-    public Map<String, String> getKeyMapAndIdChatHashMap() {
-        return keyMapAndIdChatHashMap;
     }
 
     @Override
-    public ChatGroupResponse createGroupChat(ChatGroupData data) throws CreateChatException, UserNotFoundException {
+    public Chat createGroupChat(ChatGroupData data) throws CreateChatException, UserNotFoundException {
         if (!chatRepository.existsByChatName(data.getChatName())) {
 
             Chat chat = new Chat(data.getChatName(),
                     false,
                     data.getGroupUsersIds(),
-                    data.getIdUser(),
-                    data.isRoom());
+                    data.getIdUser());
             chat.getIdUsers().add(data.getIdUser());
             chatRepository.save(chat);
 
@@ -72,16 +66,8 @@ public class ChatService implements IChatService {
                     log.error("User {} does not exist!", userInGroup);
                 }
             }
-            ChatGroupResponse chatGroupResponse =
-                    new ChatGroupResponse(chat.getId(), chat.getCreatorUserId(), chat.getChatName());
-            log.info("GroupChat {} successfully created", data.getChatName());
 
-            if (data.isRoom()) {
-                String keyRoom = hashing.generateHashing(data.getIdChat());
-                keyMapAndIdChatHashMap.put(keyRoom,
-                        data.getIdChat());
-                chatGroupResponse.setKeyRoom(keyRoom);
-            }
+            log.info("GroupChat {} successfully created", data.getChatName());
 
             chat.getIdUsers().parallelStream()
                     .forEach(userId -> emitterService.sendMessageToUser(userId,
@@ -93,8 +79,7 @@ public class ChatService implements IChatService {
                                     )
                             ))
                     );
-
-            return chatGroupResponse;
+            return chat;
         } else {
             throw new CreateChatException("Such a chat {} already exists");
         }
@@ -163,12 +148,12 @@ public class ChatService implements IChatService {
                 return chat;
             } else {
                 throw new UpdateChatException("Only the author can update chat {}",
-                        ErrorStatusCodeWs.CHAT_ACCESS_ERROR.getNumberException()
+                        WsException.CHAT_ACCESS_ERROR
                 );
             }
         } else {
             throw new UpdateChatException("Chat {} doesn't exist",
-                    ErrorStatusCodeWs.CHAT_NOT_EXIT.getNumberException()
+                    WsException.CHAT_NOT_EXISTS
             );
         }
     }
@@ -199,15 +184,14 @@ public class ChatService implements IChatService {
                                         )
                                 ))
                         );
-                keyMapAndIdChatHashMap.remove(data.getIdChat());
             } else {
                 throw new DeleteChatException("Only the author can delete chat {}",
-                        ErrorStatusCodeWs.CHAT_ACCESS_ERROR.getNumberException()
+                        WsException.CHAT_ACCESS_ERROR.getNumberException()
                 );
             }
         } else {
             throw new DeleteChatException("Chat {} doesn't exist",
-                    ErrorStatusCodeWs.CHAT_NOT_EXIT.getNumberException()
+                    WsException.CHAT_NOT_EXISTS.getNumberException()
             );
         }
     }
@@ -269,12 +253,12 @@ public class ChatService implements IChatService {
                         );
             } else {
                 throw new JoinChatException("Can't access chat {}",
-                        ErrorStatusCodeWs.CHAT_ACCESS_ERROR.getNumberException()
+                        WsException.CHAT_ACCESS_ERROR.getNumberException()
                 );
             }
         } else {
             throw new JoinChatException("Chat {} doesn't exist",
-                    ErrorStatusCodeWs.CHAT_NOT_EXIT.getNumberException()
+                    WsException.CHAT_NOT_EXISTS.getNumberException()
             );
         }
 
