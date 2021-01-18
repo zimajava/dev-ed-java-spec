@@ -88,20 +88,20 @@ public class UserServiceTest {
     @Test
     void updateAvatarTest_Pass() {
         Mockito.when(userRepository.getUserById(user.getId())).thenReturn(user);
-        assertEquals(userService.updateAvatar(new AvatarRequest(user.getId(), new byte[1])), user);
+        assertEquals(userService.updateAvatar(new AvatarRequest(user.getId(), "ddddd")), user);
     }
 
     @Test
     void updateAvatarTest_BadUserId() {
         assertThrows(UpdateAvatarException.class, () -> {
-            userService.updateAvatar(new AvatarRequest(user.getId(), new byte[1]));
+            userService.updateAvatar(new AvatarRequest(user.getId(), "ddddd"));
         });
     }
 
     @Test
     void updateAvatarTest_NullUserId() {
         assertThrows(UpdateAvatarException.class, () -> {
-            userService.updateAvatar(new AvatarRequest(null, new byte[1]));
+            userService.updateAvatar(new AvatarRequest(null, "ddddd"));
         });
     }
 

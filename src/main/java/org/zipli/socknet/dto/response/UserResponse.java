@@ -14,14 +14,14 @@ import java.util.Arrays;
 public class UserResponse {
     private String userId;
     private String userName;
-    private byte[] avatar;
+    private String avatar;
 
     @Override
     public String toString() {
         return "UserResponse{" +
                 "userId='" + userId + '\'' +
                 ", userName='" + userName + '\'' +
-                ", avatar=" + avatar.length +
+                ", avatar='" + avatar + '\'' +
                 '}';
     }
 }

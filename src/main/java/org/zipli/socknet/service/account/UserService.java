@@ -52,7 +52,7 @@ public class UserService implements IUserService {
         if (user == null) {
             throw new DeleteAvatarException(ErrorStatusCode.USER_ID_DOES_NOT_CORRECT);
         }
-        user.setAvatar(null);
+        user.setAvatar("");
         userRepository.save(user);
         return user;
     }
@@ -146,7 +146,7 @@ public class UserService implements IUserService {
         user.setNickName("deleted account");
         user.setConfirm(false);
         user.setPassword(null);
-        user.setAvatar(null);
+        user.setAvatar("");
         userRepository.save(user);
         return userId;
     }

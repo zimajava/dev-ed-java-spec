@@ -24,8 +24,8 @@ public class AccountController {
         this.userService = userService;
     }
 
-    @GetMapping("/getUser")
-    public ResponseEntity<?> getUser(@RequestParam String userId) {
+    @GetMapping("/getUser/{userId}")
+    public ResponseEntity<?> getUser(@PathVariable String userId) {
         try {
             return ResponseEntity.ok(userService.findUser(userId));
         } catch (GetUserException e) {
@@ -36,8 +36,8 @@ public class AccountController {
         }
     }
 
-    @PutMapping("/delete-avatar")
-    public ResponseEntity<?> deleteAvatar(@RequestParam String userId) {
+    @PutMapping("/delete-avatar/{userId}")
+    public ResponseEntity<?> deleteAvatar(@PathVariable String userId) {
         try {
             return ResponseEntity.ok(userService.deleteAvatar(userId));
         } catch (DeleteAvatarException e) {
@@ -100,8 +100,8 @@ public class AccountController {
         }
     }
 
-    @PostMapping("/delete-account")
-    public ResponseEntity<?> deleteAccount(@RequestParam String userId) {
+    @DeleteMapping("/delete-account/{userId}")
+    public ResponseEntity<?> deleteAccount(@PathVariable String userId) {
         try {
             return ResponseEntity.ok(userService.deleteAccount(userId));
         } catch (DeleteAccountException e) {
