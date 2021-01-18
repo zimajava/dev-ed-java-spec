@@ -98,9 +98,9 @@ class MessageServiceTest {
 
         assertEquals(messages.size(), 3);
 
-        assertEquals(messages.get(0).getMessage(), messageOne.getMessage());
-        assertEquals(messages.get(1).getMessage(), messageTwo.getMessage());
-        assertEquals(messages.get(2).getMessage(), messageTree.getMessage());
+        assertEquals(messages.get(0).getTextMessage(), messageOne.getTextMessage());
+        assertEquals(messages.get(1).getTextMessage(), messageTwo.getTextMessage());
+        assertEquals(messages.get(2).getTextMessage(), messageTree.getTextMessage());
 
     }
 

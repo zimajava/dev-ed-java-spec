@@ -1,18 +1,20 @@
 package org.zipli.socknet.reactive;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import org.zipli.socknet.dto.MessageDto;
 import org.zipli.socknet.dto.UserInfoByRoom;
 import org.zipli.socknet.exception.ErrorStatusCodeRoom;
 import org.zipli.socknet.exception.message.SendMessageException;
 import org.zipli.socknet.exception.room.CreateRoomException;
 import org.zipli.socknet.exception.room.GetRoomException;
 import org.zipli.socknet.exception.room.JoinRoomException;
-import org.zipli.socknet.model.Message;
 import org.zipli.socknet.service.room.IRoomService;
 import reactor.core.publisher.Mono;
 
@@ -35,36 +37,35 @@ public class RoomHandler {
                     .body(BodyInserters.fromValue(roomService.getRoom(idRoom)));
         } catch (GetRoomException e) {
             log.error(e.getMessage(), idRoom);
-            return ServerResponse.badRequest()
+            return ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON)
                     .body(BodyInserters.fromValue(ErrorStatusCodeRoom.ROOM_NOT_EXIT.getNumberException()));
         }
     }
 
     public Mono<ServerResponse> joinRoom(ServerRequest request) {
         String idRoom = request.pathVariable("idRoom");
-        Optional<String> signal = request.queryParam("signal");
-        Mono<UserInfoByRoom> userInfoByRoomMono = request.bodyToMono(UserInfoByRoom.class);
-        Optional<UserInfoByRoom> userInfoByRoom = userInfoByRoomMono.blockOptional();
+        Optional<UserInfoByRoom> userInfoByRoom = request.bodyToMono(UserInfoByRoom.class).blockOptional();
 
-        if (signal.isPresent() && userInfoByRoom.isPresent()) {
+        if (userInfoByRoom.isPresent()) {
             try {
-                return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-                        .body(BodyInserters.fromValue(roomService.joinRoom(idRoom, userInfoByRoom.get(), signal.get())));
+                return ServerResponse.ok().contentType(MediaType.TEXT_EVENT_STREAM)
+                        .body(BodyInserters.fromValue(roomService.joinRoom(idRoom, userInfoByRoom.get())));
             } catch (JoinRoomException e) {
                 log.error(e.getMessage(), idRoom);
-                return ServerResponse.badRequest()
+                return ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON)
                         .body(BodyInserters.fromValue(ErrorStatusCodeRoom.ROOM_NOT_EXIT.getNumberException()));
             }
         } else {
-            return ServerResponse.badRequest()
+            return ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON)
                     .body(BodyInserters.fromValue(ErrorStatusCodeRoom.INCORRECT_REQUEST.getNumberException()));
         }
     }
 
     public Mono<ServerResponse> getMessage(ServerRequest request) {
         String idRoom = request.pathVariable("idRoom");
-        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(roomService.getMessage(idRoom)));
+        return ServerResponse.ok().body(BodyInserters.fromPublisher(roomService.getMessage(idRoom),
+                new ParameterizedTypeReference<ServerSentEvent<MessageDto>>() {
+                }));
     }
 
     public Mono<ServerResponse> createRoom(ServerRequest request) {
@@ -76,30 +77,29 @@ public class RoomHandler {
                         .body(BodyInserters.fromValue(roomService.createRoom(idUser.get(), chatName.get())));
             } catch (CreateRoomException e) {
                 log.error(e.getMessage(), chatName);
-                return ServerResponse.badRequest()
+                return ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON)
                         .body(BodyInserters.fromValue(ErrorStatusCodeRoom.ROOM_NOT_EXIT.getNumberException()));
             }
         } else {
-            return ServerResponse.badRequest()
+            return ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON)
                     .body(BodyInserters.fromValue(ErrorStatusCodeRoom.INCORRECT_REQUEST.getNumberException()));
         }
     }
 
     public Mono<ServerResponse> saveMessage(ServerRequest request) {
-        Mono<Message> messageMono = request.bodyToMono(Message.class);
         String idRoom = request.pathVariable("idRoom");
-        Optional<Message> message = messageMono.blockOptional();
+        Optional<MessageDto> message = request.bodyToMono(MessageDto.class).blockOptional();
         if (message.isPresent()) {
             try {
                 return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-                        .body(BodyInserters.fromValue(roomService.saveMessage(message.get(), idRoom)));
+                        .body(BodyInserters.fromValue(roomService.saveMessage(idRoom, message.get())));
             } catch (SendMessageException e) {
                 log.error(e.getMessage(), idRoom);
-                return ServerResponse.badRequest()
+                return ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON)
                         .body(BodyInserters.fromValue(ErrorStatusCodeRoom.ROOM_NOT_EXIT.getNumberException()));
             }
         } else {
-            return ServerResponse.badRequest()
+            return ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON)
                     .body(BodyInserters.fromValue(ErrorStatusCodeRoom.INCORRECT_REQUEST.getNumberException()));
         }
     }

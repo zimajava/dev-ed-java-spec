@@ -1,8 +1,9 @@
 package org.zipli.socknet.service.room;
 
 import org.springframework.http.codec.ServerSentEvent;
+import org.zipli.socknet.dto.MessageDto;
+import org.zipli.socknet.dto.MessageRoom;
 import org.zipli.socknet.dto.UserInfoByRoom;
-import org.zipli.socknet.dto.WsMessageResponse;
 import org.zipli.socknet.exception.message.SendMessageException;
 import org.zipli.socknet.exception.room.CreateRoomException;
 import org.zipli.socknet.exception.room.GetRoomException;
@@ -10,18 +11,24 @@ import org.zipli.socknet.exception.room.JoinRoomException;
 import org.zipli.socknet.model.Message;
 import org.zipli.socknet.model.Room;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 public interface IRoomService {
-    Mono<Room> getRoom(String idRoom) throws GetRoomException;
+    Room getRoom(String idRoom) throws GetRoomException;
 
-    Mono<Room> joinRoom(String idRoom, UserInfoByRoom userInfoByRoom, String signal) throws JoinRoomException;
+    List<Room> getRooms();
+
+    Room joinRoom(String idRoom, UserInfoByRoom userInfoByRoom) throws JoinRoomException;
 
     Room liveRoom(String idRoom, String userName);
 
-    Mono<Room> createRoom(String idUser, String chatName) throws CreateRoomException;
+    Room deleteRoom(String idRoom);
 
-    Mono<Message> saveMessage(Message message, String idRoom) throws SendMessageException;
+    Room createRoom(String idUser, String chatName) throws CreateRoomException;
 
-    Flux<ServerSentEvent<WsMessageResponse>> getMessage(String idRoom);
+    public MessageRoom saveMessage(String idRoom, MessageDto message) throws SendMessageException ;
+
+    Flux<ServerSentEvent<MessageDto>> getMessage(String idRoom);
+
 }

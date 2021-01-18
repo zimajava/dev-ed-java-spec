@@ -16,6 +16,8 @@ public class UserInfoByRoom{
 
     private String idUser;
 
+    private String signals;
+
     private boolean authUser;
 
 }

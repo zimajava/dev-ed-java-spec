@@ -23,7 +23,6 @@ public class Message {
     private String authorId;
     private String chatId;
     private String textMessage;
-    private ByteArray message;
     private Date date;
 
     public Message(String authorId, String chatId, Date date, String textMessage) {
@@ -33,10 +32,4 @@ public class Message {
         this.textMessage = textMessage;
     }
 
-    public Message(String authorId, String chatId, Date date, ByteArray message) {
-        this.authorId = authorId;
-        this.chatId = chatId;
-        this.date = date;
-        this.message = message;
-    }
 }
