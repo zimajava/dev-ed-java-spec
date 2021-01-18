@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.zipli.socknet.dto.Command;
 import org.zipli.socknet.dto.MessageData;
 import org.zipli.socknet.dto.WsMessageResponse;
-import org.zipli.socknet.exception.WsException;
+import org.zipli.socknet.exception.ErrorStatusCodeWs;
 import org.zipli.socknet.exception.chat.ChatNotFoundException;
 import org.zipli.socknet.exception.chat.GetMessageException;
 import org.zipli.socknet.exception.chat.UpdateChatException;
@@ -77,7 +77,7 @@ public class MessageService implements IMessageService {
             return message;
         } else {
             throw new ChatNotFoundException("Chat {} doesn't exist",
-                    WsException.CHAT_NOT_FOUND_EXCEPTION.getNumberException());
+                    ErrorStatusCodeWs.CHAT_NOT_FOUND_EXCEPTION.getNumberException());
         }
     }
 
@@ -104,13 +104,13 @@ public class MessageService implements IMessageService {
                         );
             } else {
                 throw new ChatNotFoundException("Chat {} doesn't exist",
-                        WsException.CHAT_NOT_FOUND_EXCEPTION.getNumberException()
+                        ErrorStatusCodeWs.CHAT_NOT_FOUND_EXCEPTION.getNumberException()
                 );
             }
             return message;
         } else {
             throw new MessageUpdateException("Only the author can update message {}",
-                    WsException.CHAT_ACCESS_ERROR.getNumberException()
+                    ErrorStatusCodeWs.CHAT_ACCESS_ERROR.getNumberException()
             );
         }
     }
@@ -138,7 +138,7 @@ public class MessageService implements IMessageService {
                         );
             } else {
                 throw new ChatNotFoundException("Chat {} doesn't exist",
-                        WsException.CHAT_NOT_FOUND_EXCEPTION.getNumberException()
+                        ErrorStatusCodeWs.CHAT_NOT_FOUND_EXCEPTION.getNumberException()
                 );
             }
             messageRepository.delete(message);

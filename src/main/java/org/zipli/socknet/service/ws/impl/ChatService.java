@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.zipli.socknet.dto.*;
 import org.zipli.socknet.exception.ErrorStatusCode;
-import org.zipli.socknet.exception.WsException;
+import org.zipli.socknet.exception.ErrorStatusCodeWs;
 import org.zipli.socknet.exception.auth.UserNotFoundException;
 import org.zipli.socknet.exception.chat.*;
 import org.zipli.socknet.model.Chat;
@@ -163,12 +163,12 @@ public class ChatService implements IChatService {
                 return chat;
             } else {
                 throw new UpdateChatException("Only the author can update chat {}",
-                        WsException.CHAT_ACCESS_ERROR.getNumberException()
+                        ErrorStatusCodeWs.CHAT_ACCESS_ERROR.getNumberException()
                 );
             }
         } else {
             throw new UpdateChatException("Chat {} doesn't exist",
-                    WsException.CHAT_NOT_EXIT.getNumberException()
+                    ErrorStatusCodeWs.CHAT_NOT_EXIT.getNumberException()
             );
         }
     }
@@ -202,12 +202,12 @@ public class ChatService implements IChatService {
                 keyMapAndIdChatHashMap.remove(data.getIdChat());
             } else {
                 throw new DeleteChatException("Only the author can delete chat {}",
-                        WsException.CHAT_ACCESS_ERROR.getNumberException()
+                        ErrorStatusCodeWs.CHAT_ACCESS_ERROR.getNumberException()
                 );
             }
         } else {
             throw new DeleteChatException("Chat {} doesn't exist",
-                    WsException.CHAT_NOT_EXIT.getNumberException()
+                    ErrorStatusCodeWs.CHAT_NOT_EXIT.getNumberException()
             );
         }
     }
@@ -269,12 +269,12 @@ public class ChatService implements IChatService {
                         );
             } else {
                 throw new JoinChatException("Can't access chat {}",
-                        WsException.CHAT_ACCESS_ERROR.getNumberException()
+                        ErrorStatusCodeWs.CHAT_ACCESS_ERROR.getNumberException()
                 );
             }
         } else {
             throw new JoinChatException("Chat {} doesn't exist",
-                    WsException.CHAT_NOT_EXIT.getNumberException()
+                    ErrorStatusCodeWs.CHAT_NOT_EXIT.getNumberException()
             );
         }
 

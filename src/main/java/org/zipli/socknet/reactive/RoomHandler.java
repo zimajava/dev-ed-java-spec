@@ -7,6 +7,7 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.zipli.socknet.dto.UserInfoByRoom;
+import org.zipli.socknet.exception.ErrorStatusCodeRoom;
 import org.zipli.socknet.exception.SendMessageException;
 import org.zipli.socknet.exception.room.CreateRoomException;
 import org.zipli.socknet.exception.room.GetRoomException;
@@ -27,11 +28,6 @@ public class RoomHandler {
         this.roomService = roomService;
     }
 
-    public Mono<ServerResponse> hello(ServerRequest request) {
-        return ServerResponse.ok().contentType(MediaType.TEXT_PLAIN)
-                .body(BodyInserters.fromValue("Hello, Spring!"));
-    }
-
     public Mono<ServerResponse> getRoom(ServerRequest request) {
         String idRoom = request.pathVariable("idRoom");
         try {
@@ -39,7 +35,8 @@ public class RoomHandler {
                     .body(BodyInserters.fromValue(roomService.getRoom(idRoom)));
         } catch (GetRoomException e) {
             log.error(e.getMessage(), idRoom);
-            return ServerResponse.badRequest().body(BodyInserters.fromValue("dsadas"));
+            return ServerResponse.badRequest()
+                    .body(BodyInserters.fromValue(ErrorStatusCodeRoom.ROOM_NOT_EXIT.getNumberException()));
         }
     }
 
@@ -55,10 +52,12 @@ public class RoomHandler {
                         .body(BodyInserters.fromValue(roomService.joinRoom(idRoom, userInfoByRoom.get(), signal.get())));
             } catch (JoinRoomException e) {
                 log.error(e.getMessage(), idRoom);
-                return ServerResponse.badRequest().body(BodyInserters.fromValue(""));
+                return ServerResponse.badRequest()
+                        .body(BodyInserters.fromValue(ErrorStatusCodeRoom.ROOM_NOT_EXIT.getNumberException()));
             }
         } else {
-            return ServerResponse.badRequest().body(BodyInserters.fromValue("Incorrect request"));
+            return ServerResponse.badRequest()
+                    .body(BodyInserters.fromValue(ErrorStatusCodeRoom.INCORRECT_REQUEST.getNumberException()));
         }
     }
 
@@ -77,10 +76,12 @@ public class RoomHandler {
                         .body(BodyInserters.fromValue(roomService.createRoom(idUser.get(), chatName.get())));
             } catch (CreateRoomException e) {
                 log.error(e.getMessage(), chatName);
-                return ServerResponse.badRequest().body(BodyInserters.fromValue(""));
+                return ServerResponse.badRequest()
+                        .body(BodyInserters.fromValue(ErrorStatusCodeRoom.ROOM_NOT_EXIT.getNumberException()));
             }
         } else {
-            return ServerResponse.badRequest().body(BodyInserters.fromValue("Incorrect request"));
+            return ServerResponse.badRequest()
+                    .body(BodyInserters.fromValue(ErrorStatusCodeRoom.INCORRECT_REQUEST.getNumberException()));
         }
     }
 
@@ -94,10 +95,12 @@ public class RoomHandler {
                         .body(BodyInserters.fromValue(roomService.saveMessage(message.get(), idRoom)));
             } catch (SendMessageException e) {
                 log.error(e.getMessage(), idRoom);
-                return ServerResponse.badRequest().body(BodyInserters.fromValue(""));
+                return ServerResponse.badRequest()
+                        .body(BodyInserters.fromValue(ErrorStatusCodeRoom.ROOM_NOT_EXIT.getNumberException()));
             }
         } else {
-            return ServerResponse.badRequest().body(BodyInserters.fromValue("Incorrect request"));
+            return ServerResponse.badRequest()
+                    .body(BodyInserters.fromValue(ErrorStatusCodeRoom.INCORRECT_REQUEST.getNumberException()));
         }
     }
 }

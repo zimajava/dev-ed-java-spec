@@ -7,7 +7,7 @@ import org.zipli.socknet.dto.Command;
 import org.zipli.socknet.dto.WsMessageResponse;
 import org.zipli.socknet.dto.video.VideoCallState;
 import org.zipli.socknet.dto.video.VideoData;
-import org.zipli.socknet.exception.WsException;
+import org.zipli.socknet.exception.ErrorStatusCodeWs;
 import org.zipli.socknet.exception.chat.ChatNotFoundException;
 import org.zipli.socknet.exception.video.VideoCallException;
 import org.zipli.socknet.model.Chat;
@@ -43,7 +43,7 @@ public class VideoService implements IVideoService {
         Chat chat = chatRepository.findChatById(videoData.getIdChat());
         if (chat == null) {
             throw new ChatNotFoundException("Chat {} doesn't exist",
-                    WsException.CHAT_NOT_FOUND_EXCEPTION.getNumberException());
+                    ErrorStatusCodeWs.CHAT_NOT_FOUND_EXCEPTION.getNumberException());
         }
         chat.getIdUsers().parallelStream()
                 .forEach(userId -> emitterService.sendMessageToUser(userId,
@@ -63,7 +63,7 @@ public class VideoService implements IVideoService {
         VideoCallState videoCallState = videoCallStorage.get(videoData.getIdChat());
         if (videoCallState == null) {
             throw new VideoCallException("VideoCall {} doesn't exist",
-                    WsException.VIDEO_CALL_EXCEPTION.getNumberException());
+                    ErrorStatusCodeWs.VIDEO_CALL_EXCEPTION.getNumberException());
         }
         videoCallState.getIdUsersInCall()
                 .add(videoData.getIdUser());
@@ -71,7 +71,7 @@ public class VideoService implements IVideoService {
         Chat chat = chatRepository.findChatById(videoData.getIdChat());
         if (chat == null) {
             throw new ChatNotFoundException("Chat {} doesn't exist",
-                    WsException.CHAT_NOT_FOUND_EXCEPTION.getNumberException());
+                    ErrorStatusCodeWs.CHAT_NOT_FOUND_EXCEPTION.getNumberException());
         }
 
         chat.getIdUsers().parallelStream()
@@ -88,7 +88,7 @@ public class VideoService implements IVideoService {
         VideoCallState videoCallState = videoCallStorage.get(baseData.getIdChat());
         if (videoCallState == null) {
             throw new VideoCallException("VideoCall {} doesn't exist",
-                    WsException.VIDEO_CALL_EXCEPTION.getNumberException());
+                    ErrorStatusCodeWs.VIDEO_CALL_EXCEPTION.getNumberException());
         }
         videoCallState.getIdUsersInCall()
                 .remove(baseData.getIdUser());
@@ -105,7 +105,7 @@ public class VideoService implements IVideoService {
         Chat chat = chatRepository.findChatById(baseData.getIdChat());
         if (chat == null) {
             throw new ChatNotFoundException("Chat {} doesn't exist",
-                    WsException.CHAT_NOT_FOUND_EXCEPTION.getNumberException());
+                    ErrorStatusCodeWs.CHAT_NOT_FOUND_EXCEPTION.getNumberException());
         }
 
         chat.getIdUsers().parallelStream()

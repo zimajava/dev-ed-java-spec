@@ -50,7 +50,10 @@ public class WebSecurityConfig {
                 .authenticationManager(authTokenManager)
                 .securityContextRepository(securityContextRepository)
                 .authorizeExchange()
-                .pathMatchers("/zipli/auth/**", "/zipli/auth/**", "/v2/api-docs",
+                .pathMatchers("/zipli/auth/**",
+                        "/zipli/auth/**",
+                        "/zipli/room/**",
+                        "/v2/api-docs",
                         "/configuration/ui",
                         "/swagger-resources/**",
                         "/configuration/security",
