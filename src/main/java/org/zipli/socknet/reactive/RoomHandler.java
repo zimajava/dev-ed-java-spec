@@ -8,7 +8,7 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.zipli.socknet.dto.UserInfoByRoom;
 import org.zipli.socknet.exception.ErrorStatusCodeRoom;
-import org.zipli.socknet.exception.SendMessageException;
+import org.zipli.socknet.exception.message.SendMessageException;
 import org.zipli.socknet.exception.room.CreateRoomException;
 import org.zipli.socknet.exception.room.GetRoomException;
 import org.zipli.socknet.exception.room.JoinRoomException;

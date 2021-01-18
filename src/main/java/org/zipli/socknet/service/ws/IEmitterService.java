@@ -1,8 +1,8 @@
 package org.zipli.socknet.service.ws;
 
 import org.zipli.socknet.dto.WsMessageResponse;
-import org.zipli.socknet.exception.CreateSocketException;
-import org.zipli.socknet.exception.DeleteSessionException;
+import org.zipli.socknet.exception.session.CreateSocketException;
+import org.zipli.socknet.exception.session.DeleteSessionException;
 import reactor.core.publisher.Sinks;
 
 import java.util.List;

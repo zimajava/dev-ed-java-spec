@@ -4,7 +4,7 @@ import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Service;
 import org.zipli.socknet.dto.UserInfoByRoom;
 import org.zipli.socknet.dto.WsMessageResponse;
-import org.zipli.socknet.exception.SendMessageException;
+import org.zipli.socknet.exception.message.SendMessageException;
 import org.zipli.socknet.exception.room.CreateRoomException;
 import org.zipli.socknet.exception.room.GetRoomException;
 import org.zipli.socknet.exception.room.JoinRoomException;
