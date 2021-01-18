@@ -1,48 +1,104 @@
 package org.zipli.socknet.service.room;
 
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Service;
-import org.zipli.socknet.dto.ChatData;
-import org.zipli.socknet.exception.KeyChatNotFoundException;
-import org.zipli.socknet.exception.auth.InvalidTokenException;
-import org.zipli.socknet.model.Chat;
-import org.zipli.socknet.model.User;
-import org.zipli.socknet.repository.UserRepository;
-import org.zipli.socknet.security.jwt.JwtUtils;
-import org.zipli.socknet.service.ws.impl.ChatService;
+import org.zipli.socknet.dto.UserInfoByRoom;
+import org.zipli.socknet.dto.WsMessageResponse;
+import org.zipli.socknet.exception.SendMessageException;
+import org.zipli.socknet.exception.room.CreateRoomException;
+import org.zipli.socknet.exception.room.GetRoomException;
+import org.zipli.socknet.exception.room.JoinRoomException;
+import org.zipli.socknet.model.Message;
+import org.zipli.socknet.model.Room;
+import org.zipli.socknet.repository.MessageRepository;
+import org.zipli.socknet.repository.RoomRepository;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.core.publisher.Sinks;
+
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
-public class RoomService {
+public class RoomService implements IRoomService {
 
-    final JwtUtils jwtUtils;
+    final RoomService roomService;
+    final RoomRepository roomRepository;
+    final MessageRepository messageRepository;
 
-    final ChatService chatService;
+    private final Map<String, Sinks.Many<ServerSentEvent<WsMessageResponse>>> emitterMap = new ConcurrentHashMap<>();
 
-    final UserRepository userRepository;
-
-    public RoomService(ChatService chatService, JwtUtils jwtUtils, UserRepository userRepository) {
-        this.chatService = chatService;
-        this.jwtUtils = jwtUtils;
-        this.userRepository = userRepository;
+    public RoomService(RoomService roomService, RoomRepository roomRepository, MessageRepository messageRepository) {
+        this.roomService = roomService;
+        this.roomRepository = roomRepository;
+        this.messageRepository = messageRepository;
     }
 
-    public String getIdChatByKey(String key) throws KeyChatNotFoundException {
-        String idChat = chatService.getKeyMapAndIdChatHashMap().get(key);
-        if (idChat != null) {
-            return idChat;
+    @Override
+    public Mono<Room> getRoom(String idRoom) throws GetRoomException {
+        Optional<Room> room = roomRepository.findById(idRoom);
+
+        if (room.isPresent()) {
+            return Mono.just(room.get());
         } else {
-            throw new KeyChatNotFoundException("Key not found");
+            throw new GetRoomException("Room {} not exit");
         }
     }
 
-    public Chat joinRoom(String keyRoom, String token) throws KeyChatNotFoundException, InvalidTokenException {
-        if (jwtUtils.validateJwtToken(token)) {
-            String userName = jwtUtils.getUserNameFromJwtToken(token);
-            String idChat = getIdChatByKey(keyRoom);
-            User user = userRepository.findUserByUserName(userName);
+    @Override
+    public Mono<Room> joinRoom(String idRoom, UserInfoByRoom userInfoByRoom, String signal) throws JoinRoomException {
+        Optional<Room> roomOptional = roomRepository.findById(idRoom);
 
-            return chatService.joinChat(new ChatData(user.getId(), idChat, null));
+        if (roomOptional.isPresent()) {
+
+            Room room = roomOptional.get();
+
+            room.getUsers().add(userInfoByRoom);
+            room.getSignals().add(signal);
+            roomRepository.save(room);
+            return Mono.just(room);
         } else {
-            throw new InvalidTokenException("Token {} no valid");
+            throw new JoinRoomException("Room {} not exit");
         }
+    }
+
+    @Override
+    public Room liveRoom(String idRoom, String userName) {
+        return null;
+    }
+
+    @Override
+    public Mono<Room> createRoom(String idUser, String chatName) throws CreateRoomException {
+        if (!roomRepository.existsByChatName(chatName)) {
+            Room room = new Room(chatName, idUser);
+            room = roomRepository.save(room);
+            Sinks.Many<ServerSentEvent<WsMessageResponse>> emitter = Sinks.many().multicast().directAllOrNothing();
+            emitterMap.put(room.getId(), emitter);
+            return Mono.just(room);
+        } else {
+            throw new CreateRoomException("Such a room {} already exists");
+        }
+    }
+
+    @Override
+    public Mono<Message> saveMessage(Message message, String idRoom) throws SendMessageException {
+
+        if (roomRepository.existsById(idRoom)) {
+            message = messageRepository.save(message);
+            emitterMap.get(message.getChatId()).tryEmitNext(ServerSentEvent.<WsMessageResponse>builder()
+                    .id(String.valueOf(message.getId()))
+                    .event("periodic-event")
+                    .data(new WsMessageResponse())
+                    .build());
+            return Mono.just(message);
+        } else {
+            throw new SendMessageException("Room {} not exit");
+        }
+    }
+
+    @Override
+    public Flux<ServerSentEvent<WsMessageResponse>> getMessage(String idRoom) {
+        return emitterMap.get(idRoom).asFlux();
     }
 }

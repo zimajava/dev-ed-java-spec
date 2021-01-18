@@ -24,16 +24,6 @@ public class Chat {
     private List<String> idMessages;
     private List<String> idUsers;
     private String creatorUserId;
-    private boolean isRoom;
-
-    public Chat(String chatName, boolean isPrivate, List<String> idMessages, List<String> idUsers, String creatorUserId,boolean isRoom) {
-        this.chatName = chatName;
-        this.isPrivate = isPrivate;
-        this.idMessages = idMessages;
-        this.idUsers = idUsers;
-        this.creatorUserId = creatorUserId;
-        this.isRoom=isRoom;
-    }
 
     public Chat(String chatName, boolean isPrivate, List<String> idMessages, List<String> idUsers, String creatorUserId) {
         this.chatName = chatName;
@@ -41,7 +31,6 @@ public class Chat {
         this.idMessages = idMessages;
         this.idUsers = idUsers;
         this.creatorUserId = creatorUserId;
-        this.isRoom=false;
     }
 
     public Chat(String chatName, boolean isPrivate, List<String> idUsers, String creatorUserId,boolean isRoom) {
@@ -50,7 +39,6 @@ public class Chat {
         this.idMessages = new ArrayList<>();
         this.idUsers = idUsers;
         this.creatorUserId = creatorUserId;
-        this.isRoom=isRoom;
     }
 
     public Chat(String chatName, boolean isPrivate, List<String> idUsers, String creatorUserId) {
