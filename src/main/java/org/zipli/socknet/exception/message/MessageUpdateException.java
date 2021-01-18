@@ -1,12 +1,12 @@
 package org.zipli.socknet.exception.message;
 
-import org.zipli.socknet.exception.WsException;
+import org.zipli.socknet.exception.ErrorStatusCodeWs;
 
 public class MessageUpdateException extends RuntimeException {
 
-    private final WsException exceptionCode;
+    private final ErrorStatusCodeWs exceptionCode;
 
-    public MessageUpdateException(String message, WsException exceptionCode) {
+    public MessageUpdateException(String message, ErrorStatusCodeWs exceptionCode) {
         super(message);
         this.exceptionCode = exceptionCode;
     }

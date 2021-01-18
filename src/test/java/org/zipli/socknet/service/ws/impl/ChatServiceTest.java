@@ -39,13 +39,15 @@ class ChatServiceTest {
     @Autowired
     ChatRepository chatRepository;
     @Autowired
+    FileService fileService;
+    @Autowired
     MessageRepository messageRepository;
 
     EmitterService emitterService = new EmitterService(userRepository, new JwtUtils());
 
     @BeforeEach
     void setUp() {
-        chatService = new ChatService(userRepository, chatRepository, messageRepository, emitterService,new Hashing());
+        chatService = new ChatService(userRepository, chatRepository, messageRepository, emitterService);
         user = new User("Email@com", "password", "Username", "MoiNik");
         user = userRepository.save(user);
 
@@ -62,7 +64,7 @@ class ChatServiceTest {
     @Test
     void createGroupChat_Pass() {
 
-        ChatGroupResponse chat = chatService.createGroupChat(chatGroupData);
+        Chat chat = chatService.createGroupChat(chatGroupData);
 
         assertTrue(chatRepository.existsByChatName(chat.getChatName()));
         chatRepository.deleteAll();
@@ -72,8 +74,8 @@ class ChatServiceTest {
     void createGroupChat_Fail() {
 
         try {
-            ChatGroupResponse chatOne = chatService.createGroupChat(chatGroupData);
-            ChatGroupResponse chatTwo = chatService.createGroupChat(chatGroupData);
+            Chat chatOne = chatService.createGroupChat(chatGroupData);
+            Chat chatTwo = chatService.createGroupChat(chatGroupData);
         } catch (CreateChatException e) {
             assertEquals(e.getMessage(), "Such a chat {} already exists");
         }

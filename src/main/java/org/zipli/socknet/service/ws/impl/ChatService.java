@@ -7,7 +7,7 @@ import org.zipli.socknet.dto.ChatGroupData;
 import org.zipli.socknet.dto.Command;
 import org.zipli.socknet.dto.WsMessageResponse;
 import org.zipli.socknet.exception.ErrorStatusCode;
-import org.zipli.socknet.exception.WsException;
+import org.zipli.socknet.exception.ErrorStatusCodeWs;
 import org.zipli.socknet.exception.auth.UserNotFoundException;
 import org.zipli.socknet.exception.chat.*;
 import org.zipli.socknet.model.Chat;
@@ -148,12 +148,12 @@ public class ChatService implements IChatService {
                 return chat;
             } else {
                 throw new UpdateChatException("Only the author can update chat {}",
-                        WsException.CHAT_ACCESS_ERROR
+                        ErrorStatusCodeWs.CHAT_ACCESS_ERROR
                 );
             }
         } else {
             throw new UpdateChatException("Chat {} doesn't exist",
-                    WsException.CHAT_NOT_EXISTS
+                    ErrorStatusCodeWs.CHAT_NOT_EXISTS
             );
         }
     }
@@ -186,12 +186,12 @@ public class ChatService implements IChatService {
                         );
             } else {
                 throw new DeleteChatException("Only the author can delete chat {}",
-                        WsException.CHAT_ACCESS_ERROR.getNumberException()
+                        ErrorStatusCodeWs.CHAT_ACCESS_ERROR.getNumberException()
                 );
             }
         } else {
             throw new DeleteChatException("Chat {} doesn't exist",
-                    WsException.CHAT_NOT_EXISTS.getNumberException()
+                    ErrorStatusCodeWs.CHAT_NOT_EXISTS.getNumberException()
             );
         }
     }
@@ -253,12 +253,12 @@ public class ChatService implements IChatService {
                         );
             } else {
                 throw new JoinChatException("Can't access chat {}",
-                        WsException.CHAT_ACCESS_ERROR.getNumberException()
+                        ErrorStatusCodeWs.CHAT_ACCESS_ERROR.getNumberException()
                 );
             }
         } else {
             throw new JoinChatException("Chat {} doesn't exist",
-                    WsException.CHAT_NOT_EXISTS.getNumberException()
+                    ErrorStatusCodeWs.CHAT_NOT_EXISTS.getNumberException()
             );
         }
 

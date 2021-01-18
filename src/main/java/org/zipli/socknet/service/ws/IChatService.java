@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface IChatService {
 
-    ChatGroupResponse createGroupChat(ChatGroupData data) throws CreateChatException, UserNotFoundException;
+    Chat createGroupChat(ChatGroupData data) throws CreateChatException, UserNotFoundException;
 
     Chat createPrivateChat(ChatData data) throws CreateChatException;
 

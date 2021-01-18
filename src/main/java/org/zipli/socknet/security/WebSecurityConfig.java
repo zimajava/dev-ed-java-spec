@@ -55,7 +55,6 @@ public class WebSecurityConfig {
                 .securityContextRepository(securityContextRepository)
                 .authorizeExchange()
                 .pathMatchers("/zipli/auth/**",
-                        "/zipli/auth/**",
                         "/zipli/room/**",
                         "/v2/api-docs",
                         "/configuration/ui",

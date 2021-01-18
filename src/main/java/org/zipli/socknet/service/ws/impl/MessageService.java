@@ -110,7 +110,7 @@ public class MessageService implements IMessageService {
             return message;
         } else {
             throw new MessageUpdateException("Only the author can update message {}",
-                    ErrorStatusCodeWs.CHAT_ACCESS_ERROR.getNumberException()
+                    ErrorStatusCodeWs.CHAT_ACCESS_ERROR
             );
         }
     }
