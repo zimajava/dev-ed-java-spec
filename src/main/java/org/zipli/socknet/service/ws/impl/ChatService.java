@@ -148,12 +148,12 @@ public class ChatService implements IChatService {
                 return chat;
             } else {
                 throw new UpdateChatException("Only the author can update chat {}",
-                        WsException.CHAT_ACCESS_ERROR.getNumberException()
+                        WsException.CHAT_ACCESS_ERROR
                 );
             }
         } else {
             throw new UpdateChatException("Chat {} doesn't exist",
-                    WsException.CHAT_NOT_EXIT.getNumberException()
+                    WsException.CHAT_NOT_EXISTS
             );
         }
     }
@@ -191,7 +191,7 @@ public class ChatService implements IChatService {
             }
         } else {
             throw new DeleteChatException("Chat {} doesn't exist",
-                    WsException.CHAT_NOT_EXIT.getNumberException()
+                    WsException.CHAT_NOT_EXISTS.getNumberException()
             );
         }
     }
@@ -258,7 +258,7 @@ public class ChatService implements IChatService {
             }
         } else {
             throw new JoinChatException("Chat {} doesn't exist",
-                    WsException.CHAT_NOT_EXIT.getNumberException()
+                    WsException.CHAT_NOT_EXISTS.getNumberException()
             );
         }
 

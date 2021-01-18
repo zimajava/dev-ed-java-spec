@@ -5,13 +5,13 @@ public enum ErrorStatusCode {
     USER_ID_DOES_NOT_CORRECT("User's id isn't correct", 2),
     DATA_IS_NULL("Data is null", 3),
     EMAIL_DOES_NOT_CORRECT("Email isn't correct", 4),
-    USER_DOES_NOT_EXIST("User doesn't exist", 1),
-    USER_DOES_NOT_PASS_EMAIL_CONFIRM("User doesn't pass email confirmation", 2),
-    EMAIL_ALREADY_EXISTS("Email is already taken", 3),
-    PASSWORD_INCORRECT("The password is incorrect", 4),
-    TOKEN_INVALID_OR_BROKEN("Token is invalid or broken", 1),
-    PASSWORD_IS_NULL("Password can't be null", 2),
-    USERS_DOES_NOT_EXIST("User's is null", 1);
+    USER_DOES_NOT_EXIST("User doesn't exist", 5),
+    USER_DOES_NOT_PASS_EMAIL_CONFIRM("User doesn't pass email confirmation", 6),
+    EMAIL_ALREADY_EXISTS("Email is already taken", 7),
+    PASSWORD_INCORRECT("The password is incorrect", 8),
+    TOKEN_INVALID_OR_BROKEN("Token is invalid or broken", 9),
+    PASSWORD_IS_NULL("Password can't be null", 10),
+    USERS_DOES_NOT_EXIST("User's is null", 11);
 
     private final int value;
     private final String message;
