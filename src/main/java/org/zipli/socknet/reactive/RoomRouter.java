@@ -30,7 +30,7 @@ public class RoomRouter {
                                 .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
                         roomHandler::createRoom)
                 .andRoute(RequestPredicates
-                                .POST(PATH + "/getRooms")
+                                .GET(PATH + "/getRooms")
                                 .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
                         roomHandler::getRooms)
                 .andRoute(RequestPredicates
@@ -46,7 +46,7 @@ public class RoomRouter {
                                 .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
                         roomHandler::subscribeMessage)
                 .andRoute(RequestPredicates
-                                .POST(PATH + "/getMessages")
+                                .GET(PATH + "/getMessages")
                                 .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
                         roomHandler::getMessagesByRoom)
                 ;
