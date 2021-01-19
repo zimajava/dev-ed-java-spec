@@ -9,6 +9,6 @@ public interface IVideoService {
 
     VideoData joinVideoCall(VideoData videoData);
 
-    BaseData exitFromVideoCall(BaseData baseData);
+    BaseData exitFromVideoCall(BaseData BaseData);
 
 }

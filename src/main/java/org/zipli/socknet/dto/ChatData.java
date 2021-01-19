@@ -5,28 +5,27 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.List;
+
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
-public class ChatData extends BaseData {
+public class ChatData extends UserData {
     private String chatName;
-    private String secondUserId;
+    private List<String> chatParticipants;
+    private boolean isPrivate;
 
-    public ChatData(String userId, String idChat, String chatName, String secondUserId) {
-        super(userId, idChat);
+    public ChatData(String userId, String chatName, List<String> chatParticipants, boolean isPrivate) {
+        super(userId);
         this.chatName = chatName;
-        this.secondUserId = secondUserId;
+        this.chatParticipants = chatParticipants;
+        this.isPrivate = isPrivate;
     }
 
-    public ChatData(String userId, String idChat, String chatName) {
-        super(userId, idChat);
+    public ChatData(String userId, String chatName, List<String> chatParticipants) {
+        super(userId);
         this.chatName = chatName;
+        this.chatParticipants = chatParticipants;
     }
-
-    public ChatData(String idChat, String chatName) {
-        super(null, idChat);
-        this.chatName = chatName;
-    }
-
 }
