@@ -48,7 +48,7 @@ public class AccountController {
         }
     }
 
-    @PutMapping("/update-avatar")
+    @DeleteMapping("/update-avatar")
     public ResponseEntity<?> updateAvatar(@RequestBody @Valid AvatarRequest data) {
         try {
             return ResponseEntity.ok(userService.updateAvatar(data));

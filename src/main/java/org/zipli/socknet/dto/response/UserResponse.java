@@ -21,7 +21,6 @@ public class UserResponse {
         return "UserResponse{" +
                 "userId='" + userId + '\'' +
                 ", userName='" + userName + '\'' +
-                ", avatar='" + avatar + '\'' +
                 '}';
     }
 }
