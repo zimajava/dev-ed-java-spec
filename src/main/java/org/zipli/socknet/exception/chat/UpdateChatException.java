@@ -1,15 +1,17 @@
 package org.zipli.socknet.exception.chat;
 
+import org.zipli.socknet.exception.WsException;
+
 public class UpdateChatException extends RuntimeException {
 
-    private final int numberException;
+    private final WsException exceptionCode;
 
-    public UpdateChatException(String message, int numberException) {
+    public UpdateChatException(String message, WsException exceptionCode) {
         super(message);
-        this.numberException = numberException;
+        this.exceptionCode = exceptionCode;
     }
 
     public int getNumberException() {
-        return numberException;
+        return exceptionCode.getNumberException();
     }
 }

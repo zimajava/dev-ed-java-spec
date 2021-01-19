@@ -23,15 +23,8 @@ public class Chat {
     private boolean isPrivate;
     private List<String> idMessages;
     private List<String> idUsers;
+    private List<String> idFiles;
     private String creatorUserId;
-
-    public Chat(String chatName, boolean isPrivate, List<String> idMessages, List<String> idUsers, String creatorUserId) {
-        this.chatName = chatName;
-        this.isPrivate = isPrivate;
-        this.idMessages = idMessages;
-        this.idUsers = idUsers;
-        this.creatorUserId = creatorUserId;
-    }
 
     public Chat(String chatName, boolean isPrivate, List<String> idUsers, String creatorUserId) {
         this.chatName = chatName;
@@ -46,6 +39,16 @@ public class Chat {
         this.isPrivate = isPrivate;
         this.idMessages = new ArrayList<>();
         this.idUsers = new ArrayList<>();
+        this.idFiles = new ArrayList<>();
         this.creatorUserId = creatorUserId;
+    }
+
+    public Chat(String chatName, boolean isPrivate, List<String> idUsers, String userId, List<String> fileIds) {
+        this.chatName = chatName;
+        this.isPrivate = isPrivate;
+        this.idUsers = idUsers;
+        this.creatorUserId = userId;
+        this.idFiles = fileIds;
+        this.idMessages = new ArrayList<>();
     }
 }

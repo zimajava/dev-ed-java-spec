@@ -1,5 +1,6 @@
 package org.zipli.socknet.service.password;
 
+import org.bson.types.ObjectId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -58,7 +59,6 @@ class ResetPasswordServiceTest {
 
     @Test
     void generateResetPasswordToken_UserIsNotFound() {
-
         assertThrows(UserNotFoundException.class, () -> {
             resetPasswordService.generateResetPasswordToken(email);
         });

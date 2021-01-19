@@ -1,9 +1,7 @@
 package org.zipli.socknet.dto;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -91,6 +89,20 @@ public class WsMessage {
                             data.findValue("userName").asText(),
                             data.findValue("chatName").asText(),
                             data.findValue("signal").asText()
+                    ));
+                case FILE_SEND:
+                case FILE_DELETE:
+                    JsonNode bytesNode = data.get("bytes");
+                    final int[] i = {0};
+                    byte[] finalBytes = new byte[bytesNode.size()];
+                    bytesNode.forEach(b -> finalBytes[i[0]++] = (byte) b.intValue());
+
+                    return new WsMessage(command, new FileData(
+                            data.findValue("idUser").asText(),
+                            data.findValue("idChat").asText(),
+                            data.findValue("fileId").asText(),
+                            data.findValue("title").asText(),
+                            finalBytes
                     ));
                 default:
                     return new WsMessage(command, new BaseData(
