@@ -36,7 +36,7 @@ public class AccountController {
         }
     }
 
-    @PutMapping("/delete-avatar/{userId}")
+    @DeleteMapping("/delete-avatar/{userId}")
     public ResponseEntity<?> deleteAvatar(@PathVariable String userId) {
         try {
             return ResponseEntity.ok(userService.deleteAvatar(userId));
@@ -48,7 +48,7 @@ public class AccountController {
         }
     }
 
-    @DeleteMapping("/update-avatar")
+    @PutMapping("/update-avatar")
     public ResponseEntity<?> updateAvatar(@RequestBody @Valid AvatarRequest data) {
         try {
             return ResponseEntity.ok(userService.updateAvatar(data));
