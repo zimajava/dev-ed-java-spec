@@ -14,14 +14,24 @@ import java.util.List;
 @ToString
 @NoArgsConstructor
 public class MessageData extends BaseData {
-    private String messageId;
+    private String messageId = "defaultId";
     private String textMessage;
     private Date timestamp;
     private List<Message> messages;
 
-
     public MessageData(List<Message> messages) {
         this.messages = messages;
+    }
+
+    public MessageData(String userId, String chatId, String messageId) {
+        super(userId, chatId);
+        this.messageId = messageId;
+    }
+
+    public MessageData(String userId, String chatId, String messageId, String textMessage) {
+        super(userId, chatId);
+        this.messageId = messageId;
+        this.textMessage = textMessage;
     }
 
     public MessageData(String userId, String chatId, String textMessage, Date timestamp) {

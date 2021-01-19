@@ -67,11 +67,11 @@ public class ChatService implements IChatService {
             chat.getIdUsers().parallelStream()
                     .forEach(userId -> emitterService.sendMessageToUser(userId,
                             new WsMessageResponse(Command.CHAT_USER_ADD,
-                                    new FullChatData(data.getUserId(),
+                                    new ChatData(data.getUserId(),
+                                            chat.getId(),
                                             chat.getChatName(),
                                             chat.getIdUsers(),
-                                            chat.isPrivate(),
-                                            chat.getId()
+                                            chat.isPrivate()
                                     )
                             ))
                     );
@@ -83,7 +83,7 @@ public class ChatService implements IChatService {
     }
 
     @Override
-    public Chat updateChat(FullChatData data) throws UpdateChatException {
+    public Chat updateChat(ChatData data) throws UpdateChatException {
 
         Chat chat = chatRepository.findChatById(data.getChatId());
         if (chat != null) {
@@ -94,11 +94,11 @@ public class ChatService implements IChatService {
                 finalChat.getIdUsers().parallelStream()
                         .forEach(userId -> emitterService.sendMessageToUser(userId,
                                 new WsMessageResponse(Command.CHAT_UPDATE,
-                                        new FullChatData(data.getUserId(),
+                                        new ChatData(data.getUserId(),
+                                                finalChat.getId(),
                                                 finalChat.getChatName(),
                                                 finalChat.getIdUsers(),
-                                                finalChat.isPrivate(),
-                                                finalChat.getId()
+                                                finalChat.isPrivate()
                                         )
                                 ))
                         );
@@ -116,7 +116,7 @@ public class ChatService implements IChatService {
     }
 
     @Override
-    public void deleteChat(FullChatData data) throws DeleteChatException {
+    public void deleteChat(BaseData data) throws DeleteChatException {
 
         Chat chat = chatRepository.findChatById(data.getChatId());
         if (chat != null) {
@@ -135,11 +135,11 @@ public class ChatService implements IChatService {
                 chat.getIdUsers().parallelStream()
                         .forEach(userId -> emitterService.sendMessageToUser(userId,
                                 new WsMessageResponse(Command.CHAT_DELETE,
-                                        new FullChatData(data.getUserId(),
+                                        new ChatData(data.getUserId(),
+                                                chat.getId(),
                                                 chat.getChatName(),
                                                 chat.getIdUsers(),
-                                                chat.isPrivate(),
-                                                chat.getId()
+                                                chat.isPrivate()
                                         )
                                 ))
                         );
@@ -156,11 +156,11 @@ public class ChatService implements IChatService {
     }
 
     @Override
-    public Chat leaveChat(FullChatData data) {
+    public Chat leaveChat(BaseData data) {
 
         Chat chat = chatRepository.findChatById(data.getChatId());
         if (chat != null) {
-            chat.getIdUsers().remove(data.getChatId());
+            chat.getIdUsers().remove(data.getUserId());
             final Chat finalChat = chatRepository.save(chat);
 
             User user = userRepository.getUserById(data.getChatId());
@@ -170,11 +170,11 @@ public class ChatService implements IChatService {
             finalChat.getIdUsers().parallelStream()
                     .forEach(userId -> emitterService.sendMessageToUser(userId,
                             new WsMessageResponse(Command.CHAT_LEAVE,
-                                    new FullChatData(data.getUserId(),
+                                    new ChatData(data.getUserId(),
+                                            finalChat.getId(),
                                             finalChat.getChatName(),
                                             finalChat.getIdUsers(),
-                                            finalChat.isPrivate(),
-                                            finalChat.getId()
+                                            finalChat.isPrivate()
                                     )
                             ))
                     );
@@ -186,7 +186,7 @@ public class ChatService implements IChatService {
     }
 
     @Override
-    public Chat joinChat(FullChatData data) {
+    public Chat joinChat(BaseData data) {
 
         Chat chat = chatRepository.findChatById(data.getChatId());
 
@@ -204,11 +204,11 @@ public class ChatService implements IChatService {
                 finalChat.getIdUsers().parallelStream()
                         .forEach(userId -> emitterService.sendMessageToUser(userId,
                                 new WsMessageResponse(Command.CHAT_USER_ADD,
-                                        new FullChatData(data.getUserId(),
+                                        new ChatData(data.getUserId(),
+                                                finalChat.getId(),
                                                 finalChat.getChatName(),
                                                 finalChat.getIdUsers(),
-                                                finalChat.isPrivate(),
-                                                finalChat.getId()
+                                                finalChat.isPrivate()
                                         )
                                 ))
                         );

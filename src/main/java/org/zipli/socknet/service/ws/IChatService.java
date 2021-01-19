@@ -1,7 +1,7 @@
 package org.zipli.socknet.service.ws;
 
+import org.zipli.socknet.dto.BaseData;
 import org.zipli.socknet.dto.ChatData;
-import org.zipli.socknet.dto.FullChatData;
 import org.zipli.socknet.dto.UserData;
 import org.zipli.socknet.exception.auth.UserNotFoundException;
 import org.zipli.socknet.exception.chat.*;
@@ -13,15 +13,15 @@ public interface IChatService {
 
     Chat createChat(ChatData data) throws CreateChatException, UserNotFoundException;
 
-    Chat updateChat(FullChatData data) throws UpdateChatException;
+    Chat updateChat(ChatData data) throws UpdateChatException;
 
-    void deleteChat(FullChatData data) throws DeleteChatException;
+    void deleteChat(BaseData data) throws DeleteChatException;
 
     List<Chat> showChatsByUser(UserData data);
 
-    Chat leaveChat(FullChatData data) throws LeaveChatException;
+    Chat leaveChat(BaseData data) throws LeaveChatException;
 
-    Chat joinChat(FullChatData data) throws JoinChatException;
+    Chat joinChat(BaseData data) throws JoinChatException;
 
 
 }
