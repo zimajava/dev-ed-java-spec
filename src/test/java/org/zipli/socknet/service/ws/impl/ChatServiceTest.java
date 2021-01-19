@@ -136,7 +136,7 @@
 //        Chat chat = chatService.joinChat(dataChat);
 //        User userUpdate = userRepository.getUserById(user.getId());
 //
-//        assertTrue(chat.getIdUsers().contains(dataChat.getIdUser()));
+//        assertTrue(chat.getIdUsers().contains(dataChat.getUserId()));
 //        assertTrue(userUpdate.getChatsId().contains(chat.getId()));
 //    }
 //
@@ -164,7 +164,7 @@
 //        chat.getIdUsers().add(user.getId());
 //        chat = chatRepository.save(chat);
 //
-//        dataChat.setIdChat(chat.getId());
+//        dataChat.setChatId(chat.getId());
 //
 //        Chat newChat = chatService.leaveChat(dataChat);
 //
