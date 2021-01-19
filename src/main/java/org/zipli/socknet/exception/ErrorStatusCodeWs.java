@@ -1,6 +1,6 @@
 package org.zipli.socknet.exception;
 
-public enum WsException {
+public enum ErrorStatusCodeWs {
     CHAT_ACCESS_ERROR(101),
     MESSAGE_ACCESS_ERROR(102),
     ALREADY_EXISTS(103),
@@ -17,7 +17,7 @@ public enum WsException {
 
     private final int numberException;
 
-    WsException(int numberException) {
+    ErrorStatusCodeWs(int numberException) {
         this.numberException = numberException;
     }
 

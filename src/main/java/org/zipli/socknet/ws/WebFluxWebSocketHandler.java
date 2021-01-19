@@ -136,7 +136,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                             eventCommand,
                             chatData.getIdUser());
                 } catch (CreateChatException e) {
-                    log.error(commandFail, eventCommand, messageData.getIdUser() + e.getMessage(), chatData.getChatName());
+                    log.error(commandFail, eventCommand, chatData.getIdUser() + e.getMessage(), chatData.getChatName());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
                                     ErrorStatusCodeWs.ALREADY_EXISTS.getNumberException()))
@@ -163,7 +163,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                             chatData.getIdChat(),
                             updatedChat.getChatName());
                 } catch (UpdateChatException e) {
-                    log.error(commandFail, eventCommand, messageData.getIdUser());
+                    log.error(commandFail, eventCommand, chatData.getIdUser());
                     log.error(e.getMessage(), chatData.getChatName());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
@@ -192,7 +192,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                     log.info("Chat {} delete.",
                             chatData.getIdChat());
                 } catch (DeleteChatException e) {
-                    log.error(commandFail, eventCommand, messageData.getIdUser());
+                    log.error(commandFail, eventCommand, chatData.getIdUser());
                     log.error(e.getMessage(), chatData.getChatName());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
@@ -218,7 +218,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                             eventCommand,
                             chatData.getIdUser() + "For chat: " + chatData.getIdChat());
                 } catch (LeaveChatException e) {
-                    log.error(commandFail, eventCommand, messageData.getIdUser());
+                    log.error(commandFail, eventCommand, chatData.getIdUser());
                     log.error(e.getMessage(), chatData.getChatName());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
@@ -244,7 +244,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                             eventCommand,
                             chatData.getIdUser() + "For chat: " + chatData.getIdChat());
                 } catch (JoinChatException e) {
-                    log.error(commandFail, eventCommand, messageData.getIdUser() + e.getMessage(), chatData.getChatName());
+                    log.error(commandFail, eventCommand, chatData.getIdUser() + e.getMessage(), chatData.getChatName());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
                                     ErrorStatusCodeWs.CHAT_ACCESS_ERROR.getNumberException())
@@ -270,7 +270,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                             eventCommand,
                             chatData.getIdUser());
                 } catch (UserNotFoundException e) {
-                    log.error(commandFail, eventCommand, messageData.getIdUser() + e.getMessage());
+                    log.error(commandFail, eventCommand, chatData.getIdUser() + e.getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
                                     ErrorStatusCodeWs.USER_NOT_FOUND_EXCEPTION.getNumberException())
@@ -420,7 +420,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                     videoService.startVideoCall(videoData);
                     log.info(commandSuccess,
                             eventCommand,
-                            messageData.getIdUser()
+                            videoData.getIdUser()
                     );
                 } catch (VideoCallException e) {
                     log.error(commandFail, eventCommand, videoData.getIdUser());
@@ -448,7 +448,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                     videoService.joinVideoCall(videoData);
                     log.info(commandSuccess,
                             eventCommand,
-                            messageData.getIdUser()
+                            videoData.getIdUser()
                     );
                 } catch (VideoCallException e) {
                     log.error(e.getMessage(), videoData.getIdChat());
@@ -475,21 +475,21 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                     videoService.exitFromVideoCall(videoData);
                     log.info(commandSuccess,
                             eventCommand,
-                            messageData.getIdUser()
+                            videoData.getIdUser()
                     );
                 } catch (VideoCallException e) {
-                    log.error(commandFail, eventCommand, messageData.getIdUser());
+                    log.error(commandFail, eventCommand, videoData.getIdUser());
                     log.error(e.getMessage(), videoData.getIdChat());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand, ErrorStatusCodeWs.VIDEO_CALL_EXCEPTION.getNumberException())
                     ));
                 } catch (ChatNotFoundException e) {
-                    log.error(commandFail, eventCommand, messageData.getIdUser() + e.getMessage(), videoData.getIdChat());
+                    log.error(commandFail, eventCommand, videoData.getIdUser() + e.getMessage(), videoData.getIdChat());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand, ErrorStatusCodeWs.CHAT_NOT_FOUND_EXCEPTION.getNumberException()))
                     );
                 } catch (Exception e) {
-                    log.error(commandFail, eventCommand, messageData.getIdUser() + e.getMessage());
+                    log.error(commandFail, eventCommand, videoData.getIdUser() + e.getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand, e.getMessage()))
                     );
