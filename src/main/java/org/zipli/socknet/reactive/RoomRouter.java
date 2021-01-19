@@ -1,17 +1,12 @@
 package org.zipli.socknet.reactive;
 
-import com.sun.mail.iap.Response;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
-import org.springframework.http.codec.ServerSentEvent;
-import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.RequestPredicates;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
-import org.zipli.socknet.dto.WsMessageResponse;
 
 @Configuration
 public class RoomRouter {
@@ -27,20 +22,33 @@ public class RoomRouter {
                                 .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
                         roomHandler::getRoom)
                 .andRoute(RequestPredicates
-                                .POST(PATH + "/joinRoom/{idRoom}")
+                                .POST(PATH + "/leaveRoom/{idRoom}")
                                 .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
-                        roomHandler::joinRoom)
-                .andRoute(RequestPredicates
-                                .GET(PATH + "/subscribeMessage/{idRoom}")
-                                .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
-                        roomHandler::getMessage)
+                        roomHandler::leaveRoom)
                 .andRoute(RequestPredicates
                                 .POST(PATH + "/createRoom")
                                 .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
                         roomHandler::createRoom)
                 .andRoute(RequestPredicates
-                                .POST(PATH + "/new-massege")
+                                .POST(PATH + "/getRooms")
                                 .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
-                        roomHandler::saveMessage);
+                        roomHandler::getRooms)
+                .andRoute(RequestPredicates
+                                .POST(PATH + "/deleteRoom/{idRoom}")
+                                .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
+                        roomHandler::deleteRoom)
+                .andRoute(RequestPredicates
+                                .POST(PATH + "/new-massege/{idRoom}")
+                                .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
+                        roomHandler::saveMessage)
+                .andRoute(RequestPredicates
+                                .GET(PATH + "/subscribeMessage/{idRoom}")
+                                .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
+                        roomHandler::subscribeMessage)
+                .andRoute(RequestPredicates
+                                .POST(PATH + "/getMessages")
+                                .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
+                        roomHandler::getMessagesByRoom)
+                ;
     }
 }

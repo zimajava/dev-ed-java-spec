@@ -9,14 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class MessageDto {
-
-    private String userName;
-
+public class RoomsDao {
     private String roomId;
-
-    private String textMessage;
-
-    private String signal;
-
+    private String nameRoom;
 }

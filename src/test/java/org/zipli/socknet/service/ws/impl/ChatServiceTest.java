@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.zipli.socknet.dto.ChatData;
 import org.zipli.socknet.dto.ChatGroupData;
-import org.zipli.socknet.dto.ChatGroupResponse;
 import org.zipli.socknet.exception.chat.CreateChatException;
 import org.zipli.socknet.exception.chat.DeleteChatException;
 import org.zipli.socknet.model.Chat;
@@ -15,7 +14,6 @@ import org.zipli.socknet.model.User;
 import org.zipli.socknet.repository.ChatRepository;
 import org.zipli.socknet.repository.MessageRepository;
 import org.zipli.socknet.repository.UserRepository;
-import org.zipli.socknet.security.encryption.Hashing;
 import org.zipli.socknet.security.jwt.JwtUtils;
 
 import java.util.ArrayList;
@@ -38,8 +36,6 @@ class ChatServiceTest {
     UserRepository userRepository;
     @Autowired
     ChatRepository chatRepository;
-    @Autowired
-    FileService fileService;
     @Autowired
     MessageRepository messageRepository;
 

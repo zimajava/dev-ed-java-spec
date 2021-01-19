@@ -12,9 +12,7 @@ import org.zipli.socknet.dto.MessageDto;
 import org.zipli.socknet.dto.UserInfoByRoom;
 import org.zipli.socknet.exception.ErrorStatusCodeRoom;
 import org.zipli.socknet.exception.message.SendMessageException;
-import org.zipli.socknet.exception.room.CreateRoomException;
-import org.zipli.socknet.exception.room.GetRoomException;
-import org.zipli.socknet.exception.room.JoinRoomException;
+import org.zipli.socknet.exception.room.*;
 import org.zipli.socknet.service.room.IRoomService;
 import reactor.core.publisher.Mono;
 
@@ -22,7 +20,7 @@ import java.util.Optional;
 
 @Slf4j
 @Component
-public class RoomHandler {
+public class RoomHandler implements IRoomHandler{
 
     final IRoomService roomService;
 
@@ -40,6 +38,12 @@ public class RoomHandler {
             return ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON)
                     .body(BodyInserters.fromValue(ErrorStatusCodeRoom.ROOM_NOT_EXIT.getNumberException()));
         }
+    }
+
+    @Override
+    public Mono<ServerResponse> getRooms(ServerRequest request) {
+        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(roomService.getRooms()));
     }
 
     public Mono<ServerResponse> joinRoom(ServerRequest request) {
@@ -61,11 +65,57 @@ public class RoomHandler {
         }
     }
 
-    public Mono<ServerResponse> getMessage(ServerRequest request) {
+    @Override
+    public Mono<ServerResponse> leaveRoom(ServerRequest request) {
         String idRoom = request.pathVariable("idRoom");
-        return ServerResponse.ok().body(BodyInserters.fromPublisher(roomService.getMessage(idRoom),
+        Optional<UserInfoByRoom> userInfoByRoom = request.bodyToMono(UserInfoByRoom.class).blockOptional();
+        if (userInfoByRoom.isPresent()) {
+            try {
+                return ServerResponse.ok().contentType(MediaType.TEXT_EVENT_STREAM)
+                        .body(BodyInserters.fromValue(roomService.leaveRoom(idRoom, userInfoByRoom.get())));
+            } catch (LiveRoomException e) {
+                log.error(e.getMessage(), idRoom);
+                return ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON)
+                        .body(BodyInserters.fromValue(ErrorStatusCodeRoom.ROOM_NOT_EXIT.getNumberException()));
+            }
+        } else {
+            return ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON)
+                    .body(BodyInserters.fromValue(ErrorStatusCodeRoom.INCORRECT_REQUEST.getNumberException()));
+        }
+    }
+
+    @Override
+    public Mono<ServerResponse> deleteRoom(ServerRequest request) {
+        String idRoom = request.pathVariable("idRoom");
+        try {
+            roomService.deleteRoom(idRoom);
+            return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
+                    .body(BodyInserters.fromValue("Ok"));
+        }catch (Exception e){
+            return ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON)
+                    .body(BodyInserters.fromValue(ErrorStatusCodeRoom.ROOM_NOT_EXIT.getNumberException()));
+        }
+
+    }
+
+    public Mono<ServerResponse> subscribeMessage(ServerRequest request) {
+        String idRoom = request.pathVariable("idRoom");
+        return ServerResponse.ok().body(BodyInserters.fromPublisher(roomService.subscribeMessage(idRoom),
                 new ParameterizedTypeReference<ServerSentEvent<MessageDto>>() {
                 }));
+    }
+
+    @Override
+    public Mono<ServerResponse> getMessagesByRoom(ServerRequest request) {
+        String idRoom = request.pathVariable("idRoom");
+        try {
+            return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
+                    .body(BodyInserters.fromValue(roomService.getMessagesByRoom(idRoom)));
+        } catch (GetMessagesByRoomException e) {
+            log.error(e.getMessage(), idRoom);
+            return ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON)
+                    .body(BodyInserters.fromValue(ErrorStatusCodeRoom.ROOM_NOT_EXIT.getNumberException()));
+        }
     }
 
     public Mono<ServerResponse> createRoom(ServerRequest request) {
