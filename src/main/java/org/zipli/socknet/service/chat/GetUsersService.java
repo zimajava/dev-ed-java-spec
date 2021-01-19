@@ -9,7 +9,6 @@ import org.zipli.socknet.exception.chat.GetAllUsersException;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.repository.UserRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,7 +31,7 @@ public class GetUsersService {
             throw new GetAllUsersException(ErrorStatusCode.USERS_DOES_NOT_EXIST);
         }
         return users.stream()
-                .map(e -> new UserResponse(e.getId(), e.getUserName(), e.getAvatar()))
+                .map(UserResponse::new)
                 .collect(Collectors.toList());
     }
 }
