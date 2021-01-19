@@ -12,18 +12,11 @@ import java.util.List;
 public class ChatGroupData extends BaseData {
     private String chatName;
     private List<String> groupUsersIds;
-    private boolean isRoom;
-
-    public ChatGroupData(String idUser, String idChat, String chatName, List<String> secondUserId, boolean isRoom) {
-        super(idUser, idChat);
-        this.chatName = chatName;
-        this.groupUsersIds = secondUserId;
-        this.isRoom = isRoom;
-    }
 
     public ChatGroupData(String idUser, String idChat, String chatName, List<String> secondUserId) {
         super(idUser, idChat);
         this.chatName = chatName;
         this.groupUsersIds = secondUserId;
     }
+
 }
