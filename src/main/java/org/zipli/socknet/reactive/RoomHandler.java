@@ -32,20 +32,17 @@ public class RoomHandler implements IRoomHandler {
     public Mono<ServerResponse> getRoom(ServerRequest request) {
         String idRoom = request.pathVariable("idRoom");
         try {
-            return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-                    .body(BodyInserters.fromValue(roomService.getRoom(idRoom)));
+            return serverResponseOk(roomService.getRoom(idRoom));
         } catch (GetRoomException e) {
             log.error("Get Room fail:");
             log.error(e.getMessage(), idRoom);
-            return ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON)
-                    .body(BodyInserters.fromValue(e.getErrorStatusCodeRoom().getNumberException()));
+            return serverResponseBadRequest(e.getErrorStatusCodeRoom().getNumberException());
         }
     }
 
     @Override
     public Mono<ServerResponse> getRooms(ServerRequest request) {
-        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(roomService.getRooms()));
+        return serverResponseOk(roomService.getRooms());
     }
 
     public Mono<ServerResponse> joinRoom(ServerRequest request) {
@@ -54,17 +51,14 @@ public class RoomHandler implements IRoomHandler {
 
         if (userInfoByRoom.isPresent()) {
             try {
-                return ServerResponse.ok().contentType(MediaType.TEXT_EVENT_STREAM)
-                        .body(BodyInserters.fromValue(roomService.joinRoom(idRoom, userInfoByRoom.get())));
+                return serverResponseOk(roomService.joinRoom(idRoom, userInfoByRoom.get()));
             } catch (JoinRoomException e) {
                 log.error("Join Room fail:");
                 log.error(e.getMessage(), idRoom);
-                return ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON)
-                        .body(BodyInserters.fromValue(e.getErrorStatusCodeRoom().getNumberException()));
+                return serverResponseBadRequest(e.getErrorStatusCodeRoom().getNumberException());
             }
         } else {
-            return ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON)
-                    .body(BodyInserters.fromValue(ErrorStatusCodeRoom.INCORRECT_REQUEST.getNumberException()));
+            return serverResponseBadRequest(ErrorStatusCodeRoom.INCORRECT_REQUEST.getNumberException());
         }
     }
 
@@ -74,17 +68,14 @@ public class RoomHandler implements IRoomHandler {
         Optional<UserInfoByRoom> userInfoByRoom = request.bodyToMono(UserInfoByRoom.class).blockOptional();
         if (userInfoByRoom.isPresent()) {
             try {
-                return ServerResponse.ok().contentType(MediaType.TEXT_EVENT_STREAM)
-                        .body(BodyInserters.fromValue(roomService.leaveRoom(idRoom, userInfoByRoom.get())));
+                return serverResponseOk(roomService.leaveRoom(idRoom, userInfoByRoom.get()));
             } catch (LiveRoomException e) {
                 log.error("Leave Room fail:");
                 log.error(e.getMessage(), idRoom);
-                return ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON)
-                        .body(BodyInserters.fromValue(e.getErrorStatusCodeRoom().getNumberException()));
+                return serverResponseBadRequest(e.getErrorStatusCodeRoom().getNumberException());
             }
         } else {
-            return ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON)
-                    .body(BodyInserters.fromValue(ErrorStatusCodeRoom.INCORRECT_REQUEST.getNumberException()));
+            return serverResponseBadRequest(ErrorStatusCodeRoom.INCORRECT_REQUEST.getNumberException());
         }
     }
 
@@ -93,11 +84,9 @@ public class RoomHandler implements IRoomHandler {
         String idRoom = request.pathVariable("idRoom");
         try {
             roomService.deleteRoom(idRoom);
-            return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-                    .body(BodyInserters.fromValue("Ok"));
+            return serverResponseOk("OK");
         } catch (Exception e) {
-            return ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON)
-                    .body(BodyInserters.fromValue(ErrorStatusCodeRoom.ROOM_NOT_EXIT.getNumberException()));
+            return serverResponseBadRequest(ErrorStatusCodeRoom.ROOM_NOT_EXIT.getNumberException());
         }
 
     }
@@ -114,13 +103,11 @@ public class RoomHandler implements IRoomHandler {
     public Mono<ServerResponse> getMessagesByRoom(ServerRequest request) {
         String idRoom = request.pathVariable("idRoom");
         try {
-            return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-                    .body(BodyInserters.fromValue(roomService.getMessagesByRoom(idRoom)));
+            return serverResponseOk(roomService.getMessagesByRoom(idRoom));
         } catch (GetMessagesByRoomException e) {
             log.error("Get Messages By Room fail:");
             log.error(e.getMessage(), idRoom);
-            return ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON)
-                    .body(BodyInserters.fromValue(e.getErrorStatusCodeRoom().getNumberException()));
+            return serverResponseBadRequest(e.getErrorStatusCodeRoom().getNumberException());
         }
     }
 
@@ -129,17 +116,14 @@ public class RoomHandler implements IRoomHandler {
         Optional<String> chatName = request.queryParam("chatName");
         if (userName.isPresent() && chatName.isPresent()) {
             try {
-                return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-                        .body(BodyInserters.fromValue(roomService.createRoom(userName.get(), chatName.get())));
+                return serverResponseOk(roomService.createRoom(userName.get(), chatName.get()));
             } catch (CreateRoomException e) {
                 log.error("Create Room fail:");
                 log.error(e.getMessage(), chatName);
-                return ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON)
-                        .body(BodyInserters.fromValue(e.getErrorStatusCodeRoom().getNumberException()));
+                return serverResponseBadRequest(e.getErrorStatusCodeRoom().getNumberException());
             }
         } else {
-            return ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON)
-                    .body(BodyInserters.fromValue(ErrorStatusCodeRoom.INCORRECT_REQUEST.getNumberException()));
+            return serverResponseBadRequest(ErrorStatusCodeRoom.INCORRECT_REQUEST.getNumberException());
         }
     }
 
@@ -148,17 +132,25 @@ public class RoomHandler implements IRoomHandler {
         Optional<MessageSseDto> message = request.bodyToMono(MessageSseDto.class).blockOptional();
         if (message.isPresent()) {
             try {
-                return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-                        .body(BodyInserters.fromValue(roomService.saveMessage(idRoom, message.get())));
+                return serverResponseOk(roomService.saveMessage(idRoom, message.get()));
             } catch (SendMessageException e) {
                 log.error("Save message fail:");
                 log.error(e.getMessage(), idRoom);
-                return ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON)
-                        .body(BodyInserters.fromValue(ErrorStatusCodeRoom.ROOM_NOT_EXIT.getNumberException()));
+                return serverResponseBadRequest(ErrorStatusCodeRoom.ROOM_NOT_EXIT.getNumberException());
             }
         } else {
-            return ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON)
-                    .body(BodyInserters.fromValue(ErrorStatusCodeRoom.INCORRECT_REQUEST.getNumberException()));
+            return serverResponseBadRequest(ErrorStatusCodeRoom.INCORRECT_REQUEST.getNumberException());
         }
     }
+
+    private Mono<ServerResponse> serverResponseBadRequest(Object object) {
+        return ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(object));
+    }
+
+    private Mono<ServerResponse> serverResponseOk(Object object) {
+        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(object));
+    }
+
 }
