@@ -160,5 +160,11 @@ public class RoomService implements IRoomService {
     public void deleteRoom(String idRoom) {
         roomRepository.deleteById(idRoom);
         emitterMap.remove(idRoom);
+        emitterMap.get(idRoom).tryEmitNext(ServerSentEvent.<MessageDto>builder()
+                .id(String.valueOf(messageIdEvent.getAndIncrement()))
+                .event("DELETE_ROOM_EVENT")
+                .data(new MessageDto("",idRoom,"",""))
+                .build());
+
     }
 }
