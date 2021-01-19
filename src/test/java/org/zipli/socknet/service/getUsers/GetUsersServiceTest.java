@@ -21,12 +21,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 public class GetUsersServiceTest {
-    private final String id = "ddjfdlkfje";
     private final String email = "ddjfdlkfje@gmail.com";
     private final String password = "Password5";
     private final String userName = "Valve";
     private final String nickName = "Valve";
-    private final String avatar = "dsdsds";
 
     @Autowired
     GetUsersService getUsersService;
@@ -37,14 +35,18 @@ public class GetUsersServiceTest {
     @MockBean
     EmailConfirmationService emailConfirmationService;
 
-    UserResponse userResponse = new UserResponse(id, userName, avatar);
+
     User user = new User(email, password, userName, nickName);
+    UserResponse userResponse = new UserResponse(user);
     List<UserResponse> usersResponse = new ArrayList<>();
     List<User> users = new ArrayList<>();
 
+
     @BeforeEach
     void setUp() {
+        String id = "ddjfdlkfje";
         user.setId(id);
+        String avatar = "dsdsds";
         user.setAvatar(avatar);
         users.add(user);
         usersResponse.add(userResponse);

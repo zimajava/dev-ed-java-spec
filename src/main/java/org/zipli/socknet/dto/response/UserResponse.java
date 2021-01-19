@@ -6,30 +6,35 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.zipli.socknet.model.User;
 
+import java.util.List;
+
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserResponse {
-    private String userId;
+    private String email;
     private String userName;
+    private String nickName;
+    private List<String> chatsId;
     private String avatar;
 
     public UserResponse(User user) {
-        this.userId = user.getId();
-        this.userName= user.getUserName();
-        if (user.getAvatar()==null){
-            this.avatar="";
-        }else {
-            this.avatar=user.getAvatar();
+        this.email = user.getEmail();
+        this.userName = user.getUserName();
+        this.nickName = user.getNickName();
+        this.chatsId = user.getChatsId();
+        if (user.getAvatar() == null) {
+            this.avatar = "";
+        } else {
+            this.avatar = user.getAvatar();
         }
     }
 
     @Override
     public String toString() {
         return "UserResponse{" +
-                "userId='" + userId + '\'' +
                 ", userName='" + userName + '\'' +
                 '}';
     }
