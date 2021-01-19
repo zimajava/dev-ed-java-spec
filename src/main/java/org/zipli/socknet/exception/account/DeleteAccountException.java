@@ -4,7 +4,7 @@ import org.zipli.socknet.exception.ErrorStatusCode;
 
 public class DeleteAccountException extends RuntimeException {
 
-    private ErrorStatusCode errorStatusCode;
+    private final ErrorStatusCode errorStatusCode;
 
     public DeleteAccountException(ErrorStatusCode errorStatusCode) {
         this.errorStatusCode = errorStatusCode;

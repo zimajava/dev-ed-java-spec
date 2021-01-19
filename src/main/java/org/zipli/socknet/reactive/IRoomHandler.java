@@ -2,11 +2,7 @@ package org.zipli.socknet.reactive;
 
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
-import org.zipli.socknet.dto.MessageRoom;
-import org.zipli.socknet.exception.room.GetMessagesByRoomException;
 import reactor.core.publisher.Mono;
-
-import java.util.List;
 
 public interface IRoomHandler {
 

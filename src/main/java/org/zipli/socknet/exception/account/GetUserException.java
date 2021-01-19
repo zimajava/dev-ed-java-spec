@@ -4,7 +4,7 @@ import org.zipli.socknet.exception.ErrorStatusCode;
 
 public class GetUserException extends RuntimeException {
 
-    private ErrorStatusCode errorStatusCode;
+    private final ErrorStatusCode errorStatusCode;
 
     public GetUserException(ErrorStatusCode errorStatusCode) {
         this.errorStatusCode = errorStatusCode;

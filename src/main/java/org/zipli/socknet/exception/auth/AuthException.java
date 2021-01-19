@@ -4,7 +4,7 @@ import org.zipli.socknet.exception.ErrorStatusCode;
 
 public class AuthException extends RuntimeException {
 
-    private ErrorStatusCode errorStatusCode;
+    private final ErrorStatusCode errorStatusCode;
 
     public AuthException(ErrorStatusCode errorStatusCode) {
         this.errorStatusCode = errorStatusCode;

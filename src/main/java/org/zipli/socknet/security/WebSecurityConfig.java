@@ -5,8 +5,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -18,21 +16,18 @@ import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import org.zipli.socknet.security.jwt.AuthTokenManager;
 import reactor.core.publisher.Mono;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Configuration
 @EnableWebFluxSecurity
 //@PropertySource("")
 public class WebSecurityConfig {
-    @Value("${cors.urls}")
-    private List<String> corsUrls;
-
-    @Value("${cors.path}")
-    private String corsPath;
-
     private final AuthTokenManager authTokenManager;
     private final SecurityContextRepository securityContextRepository;
+    @Value("${cors.urls}")
+    private List<String> corsUrls;
+    @Value("${cors.path}")
+    private String corsPath;
 
     public WebSecurityConfig(AuthTokenManager authTokenManager, SecurityContextRepository securityContextRepository) {
         this.authTokenManager = authTokenManager;

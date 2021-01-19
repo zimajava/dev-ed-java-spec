@@ -27,16 +27,14 @@ public class RoomService implements IRoomService {
 
     final RoomRepository roomRepository;
     final MessageRepository messageRepository;
-
-    public RoomService(RoomRepository roomRepository, MessageRepository messageRepository) {
-        this.roomRepository = roomRepository;
-        this.messageRepository = messageRepository;
-    }
-
     private final Map<String, Sinks.Many<ServerSentEvent<MessageDto>>> emitterMap = new ConcurrentHashMap<>();
     private final Map<String, AtomicLong> eventIdGeneration = new ConcurrentHashMap<>();
     private final AtomicLong messageIdEvent = new AtomicLong();
     private final String ROOM_NOT_EXIT = "Room {} not exit";
+    public RoomService(RoomRepository roomRepository, MessageRepository messageRepository) {
+        this.roomRepository = roomRepository;
+        this.messageRepository = messageRepository;
+    }
 
     @Override
     public Room getRoom(String idRoom) throws GetRoomException {
@@ -146,7 +144,7 @@ public class RoomService implements IRoomService {
         Optional<Room> roomOptional = roomRepository.findById(idRoom);
         if (roomOptional.isPresent()) {
             return roomOptional.get().getMessages();
-        }else {
+        } else {
             throw new GetMessagesByRoomException(ROOM_NOT_EXIT);
         }
     }
@@ -163,7 +161,7 @@ public class RoomService implements IRoomService {
         emitterMap.get(idRoom).tryEmitNext(ServerSentEvent.<MessageDto>builder()
                 .id(String.valueOf(messageIdEvent.getAndIncrement()))
                 .event("DELETE_ROOM_EVENT")
-                .data(new MessageDto("",idRoom,"",""))
+                .data(new MessageDto("", idRoom, "", ""))
                 .build());
 
     }

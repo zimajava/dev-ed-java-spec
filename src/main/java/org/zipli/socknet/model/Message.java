@@ -1,6 +1,5 @@
 package org.zipli.socknet.model;
 
-import com.sun.mail.iap.ByteArray;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

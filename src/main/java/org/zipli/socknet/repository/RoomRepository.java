@@ -8,5 +8,6 @@ import org.zipli.socknet.model.Room;
 @Repository
 public interface RoomRepository extends MongoRepository<Room, String> {
     boolean existsByChatName(String chatName);
+
     boolean existsById(String id);
 }

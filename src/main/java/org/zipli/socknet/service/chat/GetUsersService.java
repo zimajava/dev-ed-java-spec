@@ -9,7 +9,6 @@ import org.zipli.socknet.exception.chat.GetAllUsersException;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.repository.UserRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 

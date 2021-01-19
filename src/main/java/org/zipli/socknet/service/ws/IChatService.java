@@ -2,7 +2,6 @@ package org.zipli.socknet.service.ws;
 
 import org.zipli.socknet.dto.ChatData;
 import org.zipli.socknet.dto.ChatGroupData;
-import org.zipli.socknet.dto.ChatGroupResponse;
 import org.zipli.socknet.exception.auth.UserNotFoundException;
 import org.zipli.socknet.exception.chat.*;
 import org.zipli.socknet.model.Chat;

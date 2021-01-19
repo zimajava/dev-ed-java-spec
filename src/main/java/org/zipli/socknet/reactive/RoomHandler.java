@@ -20,7 +20,7 @@ import java.util.Optional;
 
 @Slf4j
 @Component
-public class RoomHandler implements IRoomHandler{
+public class RoomHandler implements IRoomHandler {
 
     final IRoomService roomService;
 
@@ -91,7 +91,7 @@ public class RoomHandler implements IRoomHandler{
             roomService.deleteRoom(idRoom);
             return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
                     .body(BodyInserters.fromValue("Ok"));
-        }catch (Exception e){
+        } catch (Exception e) {
             return ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON)
                     .body(BodyInserters.fromValue(ErrorStatusCodeRoom.ROOM_NOT_EXIT.getNumberException()));
         }

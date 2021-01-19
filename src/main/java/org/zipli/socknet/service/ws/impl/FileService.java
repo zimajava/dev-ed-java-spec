@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.zipli.socknet.dto.Command;
 import org.zipli.socknet.dto.FileData;
 import org.zipli.socknet.dto.WsMessageResponse;
-import org.zipli.socknet.exception.*;
+import org.zipli.socknet.exception.ErrorStatusCodeWs;
 import org.zipli.socknet.exception.chat.UpdateChatException;
 import org.zipli.socknet.exception.file.FileDeleteException;
 import org.zipli.socknet.exception.file.FindFileException;
