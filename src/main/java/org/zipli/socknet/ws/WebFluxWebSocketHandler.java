@@ -468,7 +468,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                     fileService.sendFile(fileData);
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand, "File is successfully sended")));
-                    log.info(commandSuccess, eventCommand, fileData.getIdUser(), "To chat: ", fileData.getIdChat());
+                    log.info(commandSuccess, eventCommand, fileData.getUserId(), "To chat: ", fileData.getChatId());
                 } catch (SendFileException e) {
                     log.error("Failed to load file in a GridFs {} reason {}", fileData.getFileId(), e.getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
@@ -484,9 +484,9 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                     fileService.deleteFile(fileData);
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand, "File is successfully deleted")));
-                    log.info(commandSuccess, eventCommand, fileData.getIdUser(), "in chat: ", fileData.getIdChat(), "file: ", fileData.getFileId());
+                    log.info(commandSuccess, eventCommand, fileData.getUserId(), "in chat: ", fileData.getChatId(), "file: ", fileData.getFileId());
                 } catch (FileDeleteException e) {
-                    log.error("Failed to find the file to delete or the creator of the file is wrong {} reason {}", fileData.getIdUser(), e.getMessage());
+                    log.error("Failed to find the file to delete or the creator of the file is wrong {} reason {}", fileData.getUserId(), e.getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
                                     WsException.FILE_ACCESS_ERROR.getNumberException()))
