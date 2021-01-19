@@ -8,8 +8,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
-import org.zipli.socknet.dto.MessageDto;
 import org.zipli.socknet.dto.UserInfoByRoom;
+import org.zipli.socknet.dto.room.BaseSseDto;
+import org.zipli.socknet.dto.room.MessageSseDto;
 import org.zipli.socknet.exception.ErrorStatusCodeRoom;
 import org.zipli.socknet.exception.message.SendMessageException;
 import org.zipli.socknet.exception.room.*;
@@ -34,9 +35,10 @@ public class RoomHandler implements IRoomHandler {
             return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
                     .body(BodyInserters.fromValue(roomService.getRoom(idRoom)));
         } catch (GetRoomException e) {
+            log.error("Get Room fail:");
             log.error(e.getMessage(), idRoom);
             return ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON)
-                    .body(BodyInserters.fromValue(ErrorStatusCodeRoom.ROOM_NOT_EXIT.getNumberException()));
+                    .body(BodyInserters.fromValue(e.getErrorStatusCodeRoom().getNumberException()));
         }
     }
 
@@ -55,9 +57,10 @@ public class RoomHandler implements IRoomHandler {
                 return ServerResponse.ok().contentType(MediaType.TEXT_EVENT_STREAM)
                         .body(BodyInserters.fromValue(roomService.joinRoom(idRoom, userInfoByRoom.get())));
             } catch (JoinRoomException e) {
+                log.error("Join Room fail:");
                 log.error(e.getMessage(), idRoom);
                 return ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON)
-                        .body(BodyInserters.fromValue(ErrorStatusCodeRoom.ROOM_NOT_EXIT.getNumberException()));
+                        .body(BodyInserters.fromValue(e.getErrorStatusCodeRoom().getNumberException()));
             }
         } else {
             return ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON)
@@ -74,9 +77,10 @@ public class RoomHandler implements IRoomHandler {
                 return ServerResponse.ok().contentType(MediaType.TEXT_EVENT_STREAM)
                         .body(BodyInserters.fromValue(roomService.leaveRoom(idRoom, userInfoByRoom.get())));
             } catch (LiveRoomException e) {
+                log.error("Leave Room fail:");
                 log.error(e.getMessage(), idRoom);
                 return ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON)
-                        .body(BodyInserters.fromValue(ErrorStatusCodeRoom.ROOM_NOT_EXIT.getNumberException()));
+                        .body(BodyInserters.fromValue(e.getErrorStatusCodeRoom().getNumberException()));
             }
         } else {
             return ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON)
@@ -100,9 +104,10 @@ public class RoomHandler implements IRoomHandler {
 
     public Mono<ServerResponse> subscribeMessage(ServerRequest request) {
         String idRoom = request.pathVariable("idRoom");
-        return ServerResponse.ok().body(BodyInserters.fromPublisher(roomService.subscribeMessage(idRoom),
-                new ParameterizedTypeReference<ServerSentEvent<MessageDto>>() {
-                }));
+        return ServerResponse.ok().contentType(MediaType.TEXT_EVENT_STREAM)
+                .body(BodyInserters.fromPublisher(roomService.subscribeMessage(idRoom),
+                        new ParameterizedTypeReference<ServerSentEvent<BaseSseDto>>() {
+                        }));
     }
 
     @Override
@@ -112,23 +117,25 @@ public class RoomHandler implements IRoomHandler {
             return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
                     .body(BodyInserters.fromValue(roomService.getMessagesByRoom(idRoom)));
         } catch (GetMessagesByRoomException e) {
+            log.error("Get Messages By Room fail:");
             log.error(e.getMessage(), idRoom);
             return ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON)
-                    .body(BodyInserters.fromValue(ErrorStatusCodeRoom.ROOM_NOT_EXIT.getNumberException()));
+                    .body(BodyInserters.fromValue(e.getErrorStatusCodeRoom().getNumberException()));
         }
     }
 
     public Mono<ServerResponse> createRoom(ServerRequest request) {
-        Optional<String> idUser = request.queryParam("idUser");
+        Optional<String> userName = request.queryParam("userName");
         Optional<String> chatName = request.queryParam("chatName");
-        if (idUser.isPresent() && chatName.isPresent()) {
+        if (userName.isPresent() && chatName.isPresent()) {
             try {
                 return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
-                        .body(BodyInserters.fromValue(roomService.createRoom(idUser.get(), chatName.get())));
+                        .body(BodyInserters.fromValue(roomService.createRoom(userName.get(), chatName.get())));
             } catch (CreateRoomException e) {
+                log.error("Create Room fail:");
                 log.error(e.getMessage(), chatName);
                 return ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON)
-                        .body(BodyInserters.fromValue(ErrorStatusCodeRoom.ROOM_NOT_EXIT.getNumberException()));
+                        .body(BodyInserters.fromValue(e.getErrorStatusCodeRoom().getNumberException()));
             }
         } else {
             return ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON)
@@ -138,12 +145,13 @@ public class RoomHandler implements IRoomHandler {
 
     public Mono<ServerResponse> saveMessage(ServerRequest request) {
         String idRoom = request.pathVariable("idRoom");
-        Optional<MessageDto> message = request.bodyToMono(MessageDto.class).blockOptional();
+        Optional<MessageSseDto> message = request.bodyToMono(MessageSseDto.class).blockOptional();
         if (message.isPresent()) {
             try {
                 return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
                         .body(BodyInserters.fromValue(roomService.saveMessage(idRoom, message.get())));
             } catch (SendMessageException e) {
+                log.error("Save message fail:");
                 log.error(e.getMessage(), idRoom);
                 return ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON)
                         .body(BodyInserters.fromValue(ErrorStatusCodeRoom.ROOM_NOT_EXIT.getNumberException()));

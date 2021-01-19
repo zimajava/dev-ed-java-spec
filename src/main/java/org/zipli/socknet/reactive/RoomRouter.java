@@ -38,7 +38,7 @@ public class RoomRouter {
                                 .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
                         roomHandler::deleteRoom)
                 .andRoute(RequestPredicates
-                                .POST(PATH + "/new-massege/{idRoom}")
+                                .POST(PATH + "/newMessage/{idRoom}")
                                 .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
                         roomHandler::saveMessage)
                 .andRoute(RequestPredicates
@@ -46,7 +46,7 @@ public class RoomRouter {
                                 .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
                         roomHandler::subscribeMessage)
                 .andRoute(RequestPredicates
-                                .GET(PATH + "/getMessages")
+                                .GET(PATH + "/getMessages/{idRoom}")
                                 .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
                         roomHandler::getMessagesByRoom)
                 ;

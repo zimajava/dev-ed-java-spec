@@ -1,4 +1,4 @@
-package org.zipli.socknet.dto;
+package org.zipli.socknet.dto.room;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,14 +9,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class MessageDto {
-
-    private String userName;
+public class BaseSseDto {
 
     private String roomId;
-
-    private String textMessage;
-
-    private String signal;
 
 }
