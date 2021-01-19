@@ -1,6 +1,5 @@
 package org.zipli.socknet.service.account;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -52,7 +51,7 @@ public class UserService implements IUserService {
         if (user == null) {
             throw new DeleteAvatarException(ErrorStatusCode.USER_ID_DOES_NOT_CORRECT);
         }
-        user.setAvatar("");
+        user.setAvatar(null);
         userRepository.save(user);
         return user;
     }
@@ -146,7 +145,7 @@ public class UserService implements IUserService {
         user.setNickName("deleted account");
         user.setConfirm(false);
         user.setPassword(null);
-        user.setAvatar("");
+        user.setAvatar(null);
         userRepository.save(user);
         return userId;
     }

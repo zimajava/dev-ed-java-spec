@@ -47,7 +47,7 @@ public class AuthController {
                     .badRequest()
                     .body(e.getErrorStatusCode().getValue());
         }
-        return ResponseEntity.ok("User registered successfully!");
+        return ResponseEntity.ok("User registered successfully!"+user.getId());
     }
 
     @PostMapping("/confirm-mail")
