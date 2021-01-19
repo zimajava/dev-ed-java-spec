@@ -48,5 +48,4 @@ public class MessageData extends BaseData {
     }
 
 
-
 }

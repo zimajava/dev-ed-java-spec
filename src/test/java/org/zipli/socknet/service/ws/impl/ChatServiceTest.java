@@ -52,15 +52,13 @@ class ChatServiceTest {
         log.info(String.valueOf(chat));
 
         dataChat = new ChatData(user.getId(),
-                chat.getId(),
-                "vgtunj");
-//        userData = new UserData(user.getId());
+                chat.getId(), "testChatName", new ArrayList<String>(),false);
     }
 
     @Test
     void createGroupChat_Pass() {
 
-        Chat chat = chatService.createChat(userData);
+        Chat chat = chatService.createChat(dataChat);
 
         assertTrue(chatRepository.existsByChatName(chat.getChatName()));
         chatRepository.deleteAll();
@@ -70,25 +68,13 @@ class ChatServiceTest {
     void createGroupChat_Fail() {
 
         try {
-            Chat chatOne = chatService.createChat(userData);
-            Chat chatTwo = chatService.createChat(userData);
+            Chat chatOne = chatService.createChat(dataChat);
+            Chat chatTwo = chatService.createChat(dataChat);
         } catch (CreateChatException e) {
             assertEquals(e.getMessage(), "Such a chat {} already exists");
         }
         chatRepository.deleteAll();
     }
-
-//    @Test
-//    void createPrivateChat_Pass() {
-//
-//        User user = userRepository.save(new User("kkkk@gma.vv", "ghjk", "teaama", "morgen"));
-//        dataChat.setChatParticipants(user.getId());
-//        Chat chat = chatService.createPrivateChat(dataChat);
-//
-//        assertTrue(chatRepository.existsByChatName(chat.getChatName()));
-//        assertEquals(chat.getIdUsers().size(), 2);
-//        chatRepository.deleteAll();
-//    }
 
     @Test
     void removeChat_Pass() {

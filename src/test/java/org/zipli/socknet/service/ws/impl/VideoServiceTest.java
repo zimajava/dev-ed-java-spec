@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.zipli.socknet.dto.BaseData;
-import org.zipli.socknet.dto.UserData;
 import org.zipli.socknet.dto.video.VideoData;
 import org.zipli.socknet.exception.chat.ChatNotFoundException;
 import org.zipli.socknet.exception.video.VideoCallException;

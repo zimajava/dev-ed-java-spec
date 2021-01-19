@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class BaseData extends UserData{
+public class BaseData extends UserData {
     private String chatId;
 
     public BaseData(String userId) {

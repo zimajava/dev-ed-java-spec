@@ -3,7 +3,6 @@ package org.zipli.socknet.service.ws.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.zipli.socknet.dto.BaseData;
-import org.zipli.socknet.dto.UserData;
 import org.zipli.socknet.dto.Command;
 import org.zipli.socknet.dto.WsMessageResponse;
 import org.zipli.socknet.dto.video.VideoCallState;

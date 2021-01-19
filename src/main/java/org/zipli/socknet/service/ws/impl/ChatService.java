@@ -163,7 +163,7 @@ public class ChatService implements IChatService {
             chat.getIdUsers().remove(data.getUserId());
             final Chat finalChat = chatRepository.save(chat);
 
-            User user = userRepository.getUserById(data.getChatId());
+            User user = userRepository.getUserById(data.getUserId());
             user.getChatsId().remove(chat.getId());
             userRepository.save(user);
 
