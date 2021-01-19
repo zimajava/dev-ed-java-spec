@@ -2,6 +2,7 @@ package org.zipli.socknet.service.ws;
 
 import org.zipli.socknet.dto.ChatData;
 import org.zipli.socknet.dto.FullChatData;
+import org.zipli.socknet.dto.UserData;
 import org.zipli.socknet.exception.auth.UserNotFoundException;
 import org.zipli.socknet.exception.chat.*;
 import org.zipli.socknet.model.Chat;
@@ -16,7 +17,7 @@ public interface IChatService {
 
     void deleteChat(FullChatData data) throws DeleteChatException;
 
-    List<Chat> showChatsByUser(ChatData data);
+    List<Chat> showChatsByUser(UserData data);
 
     Chat leaveChat(FullChatData data) throws LeaveChatException;
 

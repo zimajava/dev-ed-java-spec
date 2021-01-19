@@ -227,7 +227,7 @@ public class ChatService implements IChatService {
     }
 
     @Override
-    public List<Chat> showChatsByUser(ChatData data) throws UserNotFoundException {
+    public List<Chat> showChatsByUser(UserData data) throws UserNotFoundException {
 
         User user = userRepository.getUserById(data.getUserId());
         if (user != null) {

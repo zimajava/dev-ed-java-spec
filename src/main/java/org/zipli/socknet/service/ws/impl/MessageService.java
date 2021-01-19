@@ -2,6 +2,7 @@ package org.zipli.socknet.service.ws.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.zipli.socknet.dto.BaseData;
 import org.zipli.socknet.dto.Command;
 import org.zipli.socknet.dto.MessageData;
 import org.zipli.socknet.dto.WsMessageResponse;
@@ -38,7 +39,7 @@ public class MessageService implements IMessageService {
 
 
     @Override
-    public List<Message> getMessages(MessageData data) throws GetMessageException {
+    public List<Message> getMessages(BaseData data) throws GetMessageException {
 
         Chat chat = chatRepository.findChatById(data.getChatId());
         if (chat != null) {

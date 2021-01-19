@@ -26,7 +26,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
 
-import java.util.Collections;
 import java.util.List;
 
 import static org.zipli.socknet.dto.Command.ERROR_CREATE_CONNECT;
@@ -43,6 +42,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
     private FullChatData fullChatData;
     private MessageData messageData;
     private VideoData videoData;
+    private BaseData baseData;
 
     public WebFluxWebSocketHandler(IMessageService messageService, IEmitterService emitterService, IChatService chatService, IVideoService videoService) {
         this.messageService = messageService;
@@ -130,15 +130,15 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                             fullChatData.getChatId(),
                             fullChatData.getChatName());
                 } catch (UpdateChatException e) {
-                    log.error(commandFail, eventCommand, messageData.getUserId());
-                    log.error(e.getMessage(), chatData.getChatName());
+                    log.error(commandFail, eventCommand, fullChatData.getUserId());
+                    log.error(e.getMessage(), fullChatData.getChatName());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
                                     e.getNumberException())
                             )
                     );
                 } catch (Exception e) {
-                    log.error(commandFail, eventCommand, chatData.getUserId() + e.getMessage());
+                    log.error(commandFail, eventCommand, fullChatData.getUserId() + e.getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
                                     WsException.UNEXPECTED_EXCEPTION.getNumberException())
@@ -158,14 +158,14 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                             fullChatData.getChatId());
                 } catch (DeleteChatException e) {
                     log.error(commandFail, eventCommand, fullChatData.getUserId());
-                    log.error(e.getMessage(), chatData.getChatName());
+                    log.error(e.getMessage(), fullChatData.getChatName());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
                                     e.getMessage())
                             )
                     );
                 } catch (Exception e) {
-                    log.error(commandFail, eventCommand, chatData.getUserId() + e.getMessage());
+                    log.error(commandFail, eventCommand, fullChatData.getUserId() + e.getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
                                     WsException.UNEXPECTED_EXCEPTION.getNumberException()))
@@ -200,12 +200,12 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
             case CHAT_USER_ADD:
                 fullChatData = (FullChatData) wsMessage.getData();
                 try {
-                    Chat joinedChat = chatService.joinChat(fullChatData);
+                    chatService.joinChat(fullChatData);
                     log.info(commandSuccess,
                             eventCommand,
                             fullChatData.getUserId() + "For chat: " + fullChatData.getChatId());
                 } catch (JoinChatException e) {
-                    log.error(commandFail, eventCommand, messageData.getUserId() + e.getMessage(), chatData.getChatName());
+                    log.error(commandFail, eventCommand, fullChatData.getUserId() + e.getMessage(), fullChatData.getChatName());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
                                     WsException.CHAT_ACCESS_ERROR.getNumberException())
@@ -222,9 +222,8 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                 break;
 
             case CHATS_GET_BY_USER_ID:
-                fullChatData = (FullChatData) wsMessage.getData();
                 try {
-                    List<Chat> chatsByUserId = chatService.showChatsByUser(fullChatData);
+                    List<Chat> chatsByUserId = chatService.showChatsByUser(wsMessage.getData());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(new WsMessageResponse(eventCommand,
                             chatsByUserId)));
                     log.info(commandSuccess,
@@ -345,9 +344,9 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                 break;
 
             case MESSAGES_GET_BY_CHAT_ID:
-                messageData = (MessageData) wsMessage.getData();
+                baseData = (BaseData) wsMessage.getData();
                 try {
-                    List<Message> messagesByChatId = messageService.getMessages(messageData);
+                    List<Message> messagesByChatId = messageService.getMessages(baseData);
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(new WsMessageResponse(eventCommand,
                             new MessageData(messagesByChatId))));
                     log.info(commandSuccess,
@@ -369,6 +368,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                     );
                 }
                 break;
+
             case VIDEO_CALL_START:
                 videoData = (VideoData) wsMessage.getData();
                 try {
@@ -425,7 +425,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                 break;
 
             case VIDEO_CALL_EXIT:
-                BaseData baseData = (BaseData) wsMessage.getData();
+                baseData = (BaseData) wsMessage.getData();
                 try {
                     videoService.exitFromVideoCall(baseData);
                     log.info(commandSuccess,
