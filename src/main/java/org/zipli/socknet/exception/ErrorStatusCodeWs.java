@@ -1,23 +1,23 @@
 package org.zipli.socknet.exception;
 
-public enum ErrorStatusCodeWs {
-    CHAT_ACCESS_ERROR(11),
-    MESSAGE_ACCESS_ERROR(12),
-    ALREADY_EXISTS(13),
-    CHAT_NOT_EXISTS(14),
-    MESSAGE_NOT_EXISTS(15),
-    UNEXPECTED_EXCEPTION(16),
-    USER_NOT_FOUND_EXCEPTION(17),
-    CHAT_NOT_FOUND_EXCEPTION(18),
-    VIDEO_CALL_EXCEPTION(19),
-    FILE_ACCESS_ERROR(20),
-    GRIDFSFILE_IS_NOT_FOUND(21),
-    FILE_WAS_NOT_LOADING_CORRECT(22),
-    FILE_IS_NOT_IN_A_DB(23);
+public enum WsException {
+    CHAT_ACCESS_ERROR(101),
+    MESSAGE_ACCESS_ERROR(102),
+    ALREADY_EXISTS(103),
+    CHAT_NOT_EXISTS(104),
+    MESSAGE_NOT_EXISTS(105),
+    UNEXPECTED_EXCEPTION(106),
+    USER_NOT_FOUND_EXCEPTION(107),
+    CHAT_NOT_FOUND_EXCEPTION(108),
+    VIDEO_CALL_EXCEPTION(109),
+    FILE_ACCESS_ERROR(110),
+    GRIDFSFILE_IS_NOT_FOUND(111),
+    FILE_WAS_NOT_LOADING_CORRECT(112),
+    FILE_IS_NOT_IN_A_DB(113);
 
     private final int numberException;
 
-    ErrorStatusCodeWs(int numberException) {
+    WsException(int numberException) {
         this.numberException = numberException;
     }
 
