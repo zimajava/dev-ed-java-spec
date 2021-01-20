@@ -24,7 +24,6 @@ public class MessageData extends BaseData {
         this.messages = messages;
     }
 
-
     public MessageData(List<Message> messages) {
         this.messages = messages;
     }
