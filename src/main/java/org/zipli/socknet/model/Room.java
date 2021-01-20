@@ -21,13 +21,13 @@ public class Room {
 
     @Id
     private String id;
-    private String chatName;
+    private String roomName;
     private String creatorUser;
     private List<UserInfoByRoom> users;
     private List<MessageRoom> messages;
 
-    public Room(String chatName, String creatorUser) {
-        this.chatName = chatName;
+    public Room(String roomName, String creatorUser) {
+        this.roomName = roomName;
         this.users = new ArrayList<>();
         this.creatorUser = creatorUser;
         this.messages = new ArrayList<>();

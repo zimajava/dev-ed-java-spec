@@ -5,6 +5,19 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.http.codec.ServerSentEvent;
+import org.zipli.socknet.dto.MessageRoom;
+import org.zipli.socknet.dto.RoomsDao;
+import org.zipli.socknet.dto.UserInfoByRoom;
+import org.zipli.socknet.dto.room.BaseSseDto;
+import org.zipli.socknet.dto.room.MessageSseDto;
+import org.zipli.socknet.exception.message.SendMessageException;
+import org.zipli.socknet.exception.room.*;
+import org.zipli.socknet.model.Room;
+import org.zipli.socknet.repository.RoomRepository;
+import reactor.core.publisher.Flux;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -12,56 +25,155 @@ import static org.junit.jupiter.api.Assertions.*;
 @DataMongoTest
 class RoomServiceTest {
 
-    @Autowired
     RoomService roomService;
 
-    @BeforeEach
-    void setUp() {
+    @Autowired
+    RoomRepository roomRepository;
 
+    Room roomOne;
+
+    @BeforeEach
+    void setUp() throws CreateRoomException {
+        roomService = new RoomService(roomRepository);
+        roomOne = roomRepository.save(new Room("RoomOne", "UserOne"));
     }
 
     @Test
-    void getRoom() {
+    void getRoom_Pass() throws GetRoomException {
+        Room room = roomService.getRoom(roomOne.getId());
 
+        assertEquals(room.getId(), roomOne.getId());
+        assertEquals(room.getCreatorUser(), roomOne.getCreatorUser());
+        assertEquals(room.getRoomName(), roomOne.getRoomName());
+    }
+
+    @Test
+    void getRoom_Fail() {
+        try {
+            roomService.getRoom("NoValidId");
+        } catch (GetRoomException e) {
+            assertEquals(e.getMessage(), "Room {} not exit");
+        }
     }
 
     @Test
     void getRooms() {
+        List<RoomsDao> roomsDao = roomService.getRooms();
+        List<Room> rooms = roomRepository.findAll();
 
+        assertEquals(roomsDao.size(), rooms.size());
+        assertEquals(roomsDao.get(0).getRoomId(), rooms.get(0).getId());
+        assertEquals(roomsDao.get(0).getNameRoom(), rooms.get(0).getRoomName());
     }
 
     @Test
-    void joinRoom() {
+    void joinRoom_Pass() throws JoinRoomException, CreateRoomException {
 
+        Room roomCreate = roomService.createRoom("User_Join_Pass", "Room_Join_Pass");
+        Room roomJoin = roomService.joinRoom(roomCreate.getId(),
+                new UserInfoByRoom("Artemiy", "", "signal", false));
+        Room room = roomRepository.getRoomById(roomCreate.getId());
+
+        assertEquals(roomJoin.getUsers().get(0).getIdUser(), room.getUsers().get(0).getIdUser());
+        assertEquals(roomJoin.getUsers().get(0).getUsername(), room.getUsers().get(0).getUsername());
+        assertEquals(roomJoin.getUsers().get(0).getSignals(), room.getUsers().get(0).getSignals());
     }
 
     @Test
-    void leaveRoom() {
-
+    void joinRoom_Fail() {
+        try {
+            roomService.joinRoom("NoValidRoom",
+                    new UserInfoByRoom("Artemiy", "", "signal", false));
+        } catch (JoinRoomException e) {
+            assertEquals(e.getMessage(), "Room {} not exit");
+        }
     }
 
     @Test
-    void createRoom() {
+    void leaveRoom_Pass() throws CreateRoomException, JoinRoomException, LiveRoomException {
+        Room roomCreate = roomService.createRoom("User_Leave_Pass", "Room_Leave_Pass");
+        Room roomJoin = roomService.joinRoom(roomCreate.getId(),
+                new UserInfoByRoom("Artemiy", "", "signal", false));
+        log.info("sdaaaaaaa     " + roomJoin.getUsers().get(0).getUsername());
+        Room roomLeave = roomService.leaveRoom(roomCreate.getId(),
+                new UserInfoByRoom("Artemiy", "", "signal", false));
 
+        assertNotEquals(roomJoin.getUsers().size(), roomLeave.getUsers().size() - 1);
     }
 
     @Test
-    void saveMessage() {
+    void createRoom_Pass() throws CreateRoomException {
+        Room roomCreate = roomService.createRoom("User_Create_Room", "Room_Create");
+        Room room = roomRepository.getRoomById(roomCreate.getId());
 
+        assertEquals(room.getId(), roomCreate.getId());
+        assertEquals(room.getCreatorUser(), roomCreate.getCreatorUser());
+        assertEquals(room.getRoomName(), roomCreate.getRoomName());
     }
 
     @Test
-    void getMessagesByRoom() {
-
+    void createRoom_Fail() {
+        try {
+            roomService.createRoom("User_Create_Room_Fail", "Room_Create_Fail");
+            roomService.createRoom("User_Create_Room_Fail", "Room_Create_Fail");
+        } catch (CreateRoomException e) {
+            assertEquals("Room {} already exits", e.getMessage());
+        }
     }
 
     @Test
-    void subscribeMessage() {
+    void saveMessage_Pass() throws SendMessageException, CreateRoomException {
+        Room roomCreate = roomService.createRoom("User_SaveMessage_Pass", "Room_SaveMessage_Pass");
+        MessageRoom messageRoomSave = roomService.saveMessage(roomCreate.getId(), new MessageSseDto());
+        Room room = roomRepository.getRoomById(roomCreate.getId());
 
+        assertEquals(messageRoomSave.getRoomId(),room.getId());
+        assertEquals(messageRoomSave.getTextMessage(),room.getMessages().get(0).getTextMessage());
+        assertEquals(messageRoomSave.getAuthorUserName(),room.getMessages().get(0).getAuthorUserName());
     }
 
     @Test
-    void deleteRoom() {
-
+    void saveMessage_Fail(){
+        try {
+            MessageRoom messageRoomSave = roomService.saveMessage("NoValidId", new MessageSseDto());
+        } catch (SendMessageException e) {
+            assertEquals(e.getMessage(), "Room {} not exit");
+        }
     }
+
+    @Test
+    void getMessagesByRoom_Pass() throws CreateRoomException, SendMessageException, GetMessagesByRoomException {
+        Room roomCreate = roomService.createRoom("User_getMessagesByRoom_Pass", "Room_getMessagesByRoom_Pass");
+        roomService.saveMessage(roomCreate.getId(), new MessageSseDto());
+        List<MessageRoom> messagesByRoom = roomService.getMessagesByRoom(roomCreate.getId());
+        Room room = roomRepository.getRoomById(roomCreate.getId());
+
+        assertEquals(messagesByRoom.get(0).getRoomId(),room.getId());
+        assertEquals(messagesByRoom.get(0).getTextMessage(),room.getMessages().get(0).getTextMessage());
+        assertEquals(messagesByRoom.get(0).getAuthorUserName(),room.getMessages().get(0).getAuthorUserName());
+    }
+
+    @Test
+    void getMessagesByRoom_Fail() {
+        try {
+            roomService.getMessagesByRoom("NoValidId");
+        } catch (GetMessagesByRoomException e) {
+            assertEquals(e.getMessage(), "Room {} not exit");
+        }
+    }
+
+    @Test
+    void subscribeMessage() throws CreateRoomException {
+        Room roomCreate = roomService.createRoom("User_subscribeMessage_Pass", "Room_subscribeMessage_Pass");
+        Flux<ServerSentEvent<BaseSseDto>> serverSentEventFlux = roomService.subscribeMessage(roomCreate.getId());
+        assertNotNull(serverSentEventFlux);
+    }
+
+    @Test
+    void deleteRoom_Pass() throws CreateRoomException {
+        Room roomCreate = roomService.createRoom("User_subscribeMessage_Pass", "Room_subscribeMessage_Pass");
+        roomService.deleteRoom(roomCreate.getId());
+        assertFalse(roomRepository.existsByRoomName(roomCreate.getRoomName()));
+    }
+
 }
