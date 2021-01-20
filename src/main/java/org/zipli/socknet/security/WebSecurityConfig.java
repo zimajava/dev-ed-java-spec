@@ -57,6 +57,7 @@ public class WebSecurityConfig {
                 .pathMatchers("/zipli/auth/signup",
                         "/zipli/auth/signin",
                         "/zipli/auth/forgot_password",
+                        "/zipli/room/**",
                         "/v2/api-docs",
                         "/configuration/ui",
                         "/swagger-resources/**",
