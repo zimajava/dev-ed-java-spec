@@ -68,7 +68,6 @@ class RoomServiceTest {
 
     @Test
     void joinRoom_Pass() throws JoinRoomException, CreateRoomException {
-
         Room roomCreate = roomService.createRoom("User_Join_Pass", "Room_Join_Pass");
         Room roomJoin = roomService.joinRoom(roomCreate.getId(),
                 new UserInfoByRoom("Artemiy", "", "signal", false));
@@ -135,7 +134,7 @@ class RoomServiceTest {
     @Test
     void saveMessage_Fail(){
         try {
-            MessageRoom messageRoomSave = roomService.saveMessage("NoValidId", new MessageSseDto());
+            roomService.saveMessage("NoValidId", new MessageSseDto());
         } catch (SendMessageException e) {
             assertEquals(e.getMessage(), "Room {} not exit");
         }
@@ -171,9 +170,8 @@ class RoomServiceTest {
 
     @Test
     void deleteRoom_Pass() throws CreateRoomException {
-        Room roomCreate = roomService.createRoom("User_subscribeMessage_Pass", "Room_subscribeMessage_Pass");
+        Room roomCreate = roomService.createRoom("User_deleteRoom_Pass", "Room_deleteRoom_Pass");
         roomService.deleteRoom(roomCreate.getId());
         assertFalse(roomRepository.existsByRoomName(roomCreate.getRoomName()));
     }
-
 }
