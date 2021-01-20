@@ -11,7 +11,9 @@ public enum ErrorStatusCode {
     PASSWORD_INCORRECT("The password is incorrect", 8),
     TOKEN_INVALID_OR_BROKEN("Token is invalid or broken", 9),
     PASSWORD_IS_NULL("Password can't be null", 10),
-    USERS_DOES_NOT_EXIST("User's is null", 11);
+    USERS_DOES_NOT_EXIST("User's is null", 11),
+    PARAM_IS_NULL("Parameter by search is null", 12),
+    USERS_DOES_NOT_EXIST_BY_PARAM("Users weren't found by these parameters", 13);
 
     private final int value;
     private final String message;

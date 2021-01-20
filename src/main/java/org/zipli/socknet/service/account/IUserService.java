@@ -1,5 +1,6 @@
 package org.zipli.socknet.service.account;
 
+import org.zipli.socknet.exception.chat.GetAllUsersException;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.payload.request.AvatarRequest;
 import org.zipli.socknet.payload.request.EmailRequest;
@@ -7,6 +8,7 @@ import org.zipli.socknet.payload.request.NickNameRequest;
 import org.zipli.socknet.payload.request.PasswordRequest;
 
 import javax.mail.MessagingException;
+import java.util.List;
 
 
 public interface IUserService {
@@ -25,4 +27,5 @@ public interface IUserService {
 
     String deleteAccount(String userId);
 
+    List<User> getUsersBySearchParam(String param) throws GetAllUsersException;
 }

@@ -13,7 +13,8 @@ public enum WsException {
     FILE_ACCESS_ERROR(110),
     GRIDFSFILE_IS_NOT_FOUND(111),
     FILE_WAS_NOT_LOADING_CORRECT(112),
-    FILE_IS_NOT_IN_A_DB(113);
+    FILE_IS_NOT_IN_A_DB(113),
+    SEARCH_BY_PARAMS_ERROR(114);
 
     private final int numberException;
 

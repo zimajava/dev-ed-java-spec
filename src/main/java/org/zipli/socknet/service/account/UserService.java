@@ -12,6 +12,9 @@ import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
 import org.zipli.socknet.security.services.UserDetailsImpl;
 import org.zipli.socknet.service.email.EmailConfirmationService;
+import org.zipli.socknet.ws.SearchByParamsException;
+
+import java.util.List;
 
 @Service
 public class UserService implements IUserService {
@@ -148,5 +151,18 @@ public class UserService implements IUserService {
         user.setAvatar(null);
         userRepository.save(user);
         return userId;
+    }
+
+    @Override
+    @Transactional
+    public List<User> getUsersBySearchParam(String param) throws SearchByParamsException {
+        if (param == null) {
+            throw new SearchByParamsException(ErrorStatusCode.PARAM_IS_NULL);
+        }
+        List<User> users = userRepository.findUsersByUserNameOrNickName(param);
+        if (users == null) {
+            throw new SearchByParamsException(ErrorStatusCode.USERS_DOES_NOT_EXIST_BY_PARAM);
+        }
+        return users;
     }
 }

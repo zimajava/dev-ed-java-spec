@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketSession;
 import org.zipli.socknet.dto.*;
+import org.zipli.socknet.dto.response.UserInfo;
 import org.zipli.socknet.dto.video.VideoData;
 import org.zipli.socknet.exception.CreateSocketException;
 import org.zipli.socknet.exception.DeleteSessionException;
@@ -12,16 +13,15 @@ import org.zipli.socknet.exception.WsException;
 import org.zipli.socknet.exception.auth.UserNotFoundException;
 import org.zipli.socknet.exception.chat.*;
 import org.zipli.socknet.exception.file.FileDeleteException;
-import org.zipli.socknet.exception.file.FindFileException;
-import org.zipli.socknet.exception.file.SaveFileException;
 import org.zipli.socknet.exception.file.SendFileException;
 import org.zipli.socknet.exception.message.MessageDeleteException;
 import org.zipli.socknet.exception.message.MessageSendException;
 import org.zipli.socknet.exception.message.MessageUpdateException;
 import org.zipli.socknet.exception.video.VideoCallException;
 import org.zipli.socknet.model.Chat;
-import org.zipli.socknet.model.File;
 import org.zipli.socknet.model.Message;
+import org.zipli.socknet.model.User;
+import org.zipli.socknet.service.account.UserService;
 import org.zipli.socknet.service.ws.IChatService;
 import org.zipli.socknet.service.ws.IEmitterService;
 import org.zipli.socknet.service.ws.IMessageService;
@@ -34,6 +34,7 @@ import reactor.core.publisher.Sinks;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.zipli.socknet.dto.Command.ERROR_CREATE_CONNECT;
 
@@ -45,20 +46,23 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
     private final IEmitterService emitterService;
     private final IChatService chatService;
     private final IVideoService videoService;
+    private final UserService userService;
 
     private ChatGroupData groupData;
     private ChatData chatData;
     private MessageData messageData;
     private VideoData videoData;
     private FileData fileData;
+    private SearchData searchData;
 
     public WebFluxWebSocketHandler(IMessageService messageService, IFileService fileService,
-                                   IEmitterService emitterService, IChatService chatService, IVideoService videoService) {
+                                   IEmitterService emitterService, IChatService chatService, IVideoService videoService, UserService userService) {
         this.messageService = messageService;
         this.fileService = fileService;
         this.emitterService = emitterService;
         this.chatService = chatService;
         this.videoService = videoService;
+        this.userService = userService;
     }
 
     @Override
@@ -419,6 +423,7 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                     );
                 }
                 break;
+
             case VIDEO_CALL_START:
                 videoData = (VideoData) wsMessage.getData();
                 try {
@@ -530,8 +535,24 @@ public class WebFluxWebSocketHandler implements WebSocketHandler {
                             new WsMessageResponse(eventCommand,
                                     WsException.FILE_ACCESS_ERROR.getNumberException()))
                     );
-                    break;
                 }
+                break;
+
+            case USERS_GET_BY_SEARCH_PARAM:
+                String param = searchData.getSearchParam();
+                try {
+                    List<User> users = userService.getUsersBySearchParam(param);
+                    List<UserInfo> list = users.stream().map(UserInfo::new).collect(Collectors.toList());
+                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(new WsMessageResponse(eventCommand, list)));
+                    log.info(commandSuccess, "Users by searchParam {} were found", param);
+                } catch (SearchByParamsException e) {
+                    log.error("Failed to find users by param {} reason {}", param, e.getMessage());
+                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
+                            new WsMessageResponse(eventCommand,
+                                    WsException.SEARCH_BY_PARAMS_ERROR.getNumberException()))
+                    );
+                }
+                break;
         }
     }
 }
