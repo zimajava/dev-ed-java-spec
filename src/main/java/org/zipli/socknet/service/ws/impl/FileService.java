@@ -66,10 +66,10 @@ public class FileService implements IFileService {
                 chat = chatRepository.findChatById(data.getChatId());
 
                 if (chat != null) {
-                    chat.getIdFiles().add(file.getId());
+                    chat.getFilesId().add(file.getId());
 
-                    chat.getIdUsers().parallelStream()
-                            .forEach(userId -> emitterService.sendMessageToUser(userId,
+                    chat.getUsersId().parallelStream()
+                        .forEach(userId -> emitterService.sendMessageToUser(userId,
                                     new WsMessageResponse(Command.FILE_SEND,
                                             new FileData(userId,
                                                     chat.getId(),
@@ -98,11 +98,11 @@ public class FileService implements IFileService {
         Chat chat = chatRepository.findChatById(data.getChatId());
         try {
             if (file != null || file.getAuthorId().equals(data.getUserId()) || chat != null) {
-                if (chat.getIdFiles().remove(file.getId())) {
+                if (chat.getFilesId().remove(file.getId())) {
                     final Chat finalChat = chatRepository.save(chat);
 
-                    finalChat.getIdUsers().parallelStream()
-                            .forEach(userId -> emitterService.sendMessageToUser(userId,
+                    finalChat.getUsersId().parallelStream()
+                             .forEach(userId -> emitterService.sendMessageToUser(userId,
                                     new WsMessageResponse(Command.FILE_DELETE,
                                             new FileData(userId,
                                                     finalChat.getId(),

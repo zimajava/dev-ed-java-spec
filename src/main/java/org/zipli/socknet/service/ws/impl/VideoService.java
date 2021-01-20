@@ -37,7 +37,7 @@ public class VideoService implements IVideoService {
 
     public VideoData startVideoCall(VideoData videoData) {
         VideoCallState videoCallState = new VideoCallState(videoData.getUserId(), new CopyOnWriteArrayList<>(), new CopyOnWriteArrayList<>());
-        videoCallState.getIdUsersInCall().add(videoData.getUserId());
+        videoCallState.getUsersInCallId().add(videoData.getUserId());
         videoCallStorage.put(videoData.getChatId(), videoCallState);
 
         Chat chat = chatRepository.findChatById(videoData.getChatId());
@@ -45,12 +45,12 @@ public class VideoService implements IVideoService {
             throw new ChatNotFoundException("Chat {} doesn't exist",
                     WsException.CHAT_NOT_FOUND_EXCEPTION.getNumberException());
         }
-        chat.getIdUsers().parallelStream()
-                .forEach(userId -> emitterService.sendMessageToUser(userId,
+        chat.getUsersId().parallelStream()
+            .forEach(userId -> emitterService.sendMessageToUser(userId,
                         new WsMessageResponse(Command.VIDEO_CALL_START, videoData)));
 
-        List<String> lisOfUsers = videoCallStorage.get(videoData.getChatId()).getIdUsersWhoIsNotOnline();
-        lisOfUsers.addAll(chat.getIdUsers());
+        List<String> lisOfUsers = videoCallStorage.get(videoData.getChatId()).getUsersWhoIsNotOnlineId();
+        lisOfUsers.addAll(chat.getUsersId());
         lisOfUsers.removeAll(emitterService.getMessageEmitter().keySet());
 
         log.info("Start VideoCall in Chat {} by user {}.", videoData.getChatName(), videoData.getUserName());
@@ -65,17 +65,17 @@ public class VideoService implements IVideoService {
             throw new VideoCallException("VideoCall {} doesn't exist",
                     WsException.VIDEO_CALL_EXCEPTION.getNumberException());
         }
-        videoCallState.getIdUsersInCall()
+        videoCallState.getUsersInCallId()
                 .add(videoData.getUserId());
-        videoCallState.getIdUsersWhoIsNotOnline().remove(videoData.getUserId());
+        videoCallState.getUsersWhoIsNotOnlineId().remove(videoData.getUserId());
         Chat chat = chatRepository.findChatById(videoData.getChatId());
         if (chat == null) {
             throw new ChatNotFoundException("Chat {} doesn't exist",
                     WsException.CHAT_NOT_FOUND_EXCEPTION.getNumberException());
         }
 
-        chat.getIdUsers().parallelStream()
-                .forEach(userId -> emitterService.sendMessageToUser(userId,
+        chat.getUsersId().parallelStream()
+            .forEach(userId -> emitterService.sendMessageToUser(userId,
                         new WsMessageResponse(Command.VIDEO_CALL_JOIN, videoData)));
 
         log.info("User {} successfully joined videoCall in Chat {}.", videoData.getUserName(), videoData.getChatName());
@@ -90,14 +90,14 @@ public class VideoService implements IVideoService {
             throw new VideoCallException("VideoCall {} doesn't exist",
                     WsException.VIDEO_CALL_EXCEPTION.getNumberException());
         }
-        videoCallState.getIdUsersInCall()
+        videoCallState.getUsersInCallId()
                 .remove(baseData.getUserId());
         log.debug(videoCallState.toString());
         log.info("User {} leaved from videoCall in chat {}", baseData.getUserId(), baseData.getChatId());
 
         if (videoCallStorage
                 .get(baseData.getChatId())
-                .getIdUsersInCall()
+                .getUsersInCallId()
                 .size() < 2) {
             videoCallStorage.remove(baseData.getChatId());
             log.info("VideoCall in chat {} is over", baseData.getChatId());
@@ -108,8 +108,8 @@ public class VideoService implements IVideoService {
                     WsException.CHAT_NOT_FOUND_EXCEPTION.getNumberException());
         }
 
-        chat.getIdUsers().parallelStream()
-                .forEach(userId -> emitterService.sendMessageToUser(userId,
+        chat.getUsersId().parallelStream()
+            .forEach(userId -> emitterService.sendMessageToUser(userId,
                         new WsMessageResponse(Command.VIDEO_CALL_EXIT, baseData)));
         return baseData;
     }
