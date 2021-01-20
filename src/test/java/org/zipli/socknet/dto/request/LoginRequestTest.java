@@ -1,4 +1,4 @@
-package org.zipli.socknet.payload.request;
+package org.zipli.socknet.dto.request;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package org.zipli.socknet.payload.request;
+package org.zipli.socknet.dto.request;
 
 import lombok.Getter;
 import lombok.Setter;

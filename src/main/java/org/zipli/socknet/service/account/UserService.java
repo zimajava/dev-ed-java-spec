@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.zipli.socknet.exception.*;
 import org.zipli.socknet.exception.account.*;
 import org.zipli.socknet.model.User;
-import org.zipli.socknet.payload.request.*;
+import org.zipli.socknet.dto.request.*;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
 import org.zipli.socknet.security.services.UserDetailsImpl;

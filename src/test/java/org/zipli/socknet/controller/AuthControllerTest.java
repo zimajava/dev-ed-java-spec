@@ -14,7 +14,7 @@ import org.zipli.socknet.exception.auth.AuthException;
 import org.zipli.socknet.exception.auth.NotConfirmAccountException;
 import org.zipli.socknet.exception.auth.UserNotFoundException;
 import org.zipli.socknet.model.User;
-import org.zipli.socknet.payload.request.*;
+import org.zipli.socknet.dto.request.*;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
 import org.zipli.socknet.security.services.UserDetailsImpl;

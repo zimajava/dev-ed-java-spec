@@ -1,4 +1,4 @@
-package org.zipli.socknet.payload.request;
+package org.zipli.socknet.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,12 +16,12 @@ import javax.validation.constraints.Size;
 @Validated
 @NoArgsConstructor
 @AllArgsConstructor
-public class PasswordRequest {
-    private String userId;
+public class ResetPasswordRequest {
+        private String token;
 
-    @NotBlank(message = "Password can't be empty")
-    @NotNull(message = "Password can't be null")
-    @Size(min = 8, max = 16)
-    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,16}$")
-    private String password;
+        @NotBlank(message = "Password can't be empty")
+        @NotNull(message = "Password can't be null")
+        @Size(min = 8, max = 16)
+        @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,16}$")
+        private String password;
 }

@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.*;
 import org.zipli.socknet.dto.response.UserResponse;
 import org.zipli.socknet.exception.*;
 import org.zipli.socknet.exception.account.*;
-import org.zipli.socknet.payload.request.AvatarRequest;
-import org.zipli.socknet.payload.request.EmailRequest;
-import org.zipli.socknet.payload.request.NickNameRequest;
-import org.zipli.socknet.payload.request.PasswordRequest;
+import org.zipli.socknet.dto.request.AvatarRequest;
+import org.zipli.socknet.dto.request.EmailRequest;
+import org.zipli.socknet.dto.request.NickNameRequest;
+import org.zipli.socknet.dto.request.PasswordRequest;
 import org.zipli.socknet.service.account.UserService;
 
 import javax.validation.Valid;

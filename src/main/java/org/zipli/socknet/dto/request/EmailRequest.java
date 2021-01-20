@@ -1,4 +1,4 @@
-package org.zipli.socknet.payload.request;
+package org.zipli.socknet.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,7 +13,9 @@ import javax.validation.constraints.*;
 @Validated
 @NoArgsConstructor
 @AllArgsConstructor
-public class ForgotPasswordRequest {
+public class EmailRequest {
+    private String userId;
+
     @NotBlank(message = "Email can't be empty")
     @NotNull(message = "Email can't be null")
     @Email
