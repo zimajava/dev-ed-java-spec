@@ -35,7 +35,7 @@ public class ChatService implements IChatService {
         this.emitterService = emitterService;
     }
 
-    public Chat createChat(ChatData data) throws CreateChatException, UserNotFoundException {
+    public Chat createChat(FullChatData data) throws CreateChatException, UserNotFoundException {
         if (!chatRepository.existsByChatName(data.getChatName())) {
 
             User userCreator = userRepository.getUserById(data.getUserId());
@@ -67,7 +67,7 @@ public class ChatService implements IChatService {
             chat.getUsersId().parallelStream()
                 .forEach(userId -> emitterService.sendMessageToUser(userId,
                             new WsMessageResponse(Command.CHAT_USER_ADD,
-                                    new ChatData(data.getUserId(),
+                                    new FullChatData(data.getUserId(),
                                             chat.getId(),
                                             chat.getChatName(),
                                             chat.getUsersId(),
@@ -83,7 +83,7 @@ public class ChatService implements IChatService {
     }
 
     @Override
-    public Chat updateChat(ChatData data) throws UpdateChatException {
+    public Chat updateChat(FullChatData data) throws UpdateChatException {
 
         Chat chat = chatRepository.findChatById(data.getChatId());
         if (chat != null) {
@@ -94,7 +94,7 @@ public class ChatService implements IChatService {
                 finalChat.getUsersId().parallelStream()
                          .forEach(userId -> emitterService.sendMessageToUser(userId,
                                 new WsMessageResponse(Command.CHAT_UPDATE,
-                                        new ChatData(data.getUserId(),
+                                        new FullChatData(data.getUserId(),
                                                 finalChat.getId(),
                                                 finalChat.getChatName(),
                                                 finalChat.getUsersId(),
@@ -116,7 +116,7 @@ public class ChatService implements IChatService {
     }
 
     @Override
-    public void deleteChat(BaseData data) throws DeleteChatException {
+    public void deleteChat(ChatData data) throws DeleteChatException {
 
         Chat chat = chatRepository.findChatById(data.getChatId());
         if (chat != null) {
@@ -135,7 +135,7 @@ public class ChatService implements IChatService {
                 chat.getUsersId().parallelStream()
                     .forEach(userId -> emitterService.sendMessageToUser(userId,
                                 new WsMessageResponse(Command.CHAT_DELETE,
-                                        new ChatData(data.getUserId(),
+                                        new FullChatData(data.getUserId(),
                                                 chat.getId(),
                                                 chat.getChatName(),
                                                 chat.getUsersId(),
@@ -156,7 +156,7 @@ public class ChatService implements IChatService {
     }
 
     @Override
-    public Chat leaveChat(BaseData data) {
+    public Chat leaveChat(ChatData data) {
 
         Chat chat = chatRepository.findChatById(data.getChatId());
         if (chat != null) {
@@ -170,7 +170,7 @@ public class ChatService implements IChatService {
             finalChat.getUsersId().parallelStream()
                      .forEach(userId -> emitterService.sendMessageToUser(userId,
                             new WsMessageResponse(Command.CHAT_LEAVE,
-                                    new ChatData(data.getUserId(),
+                                    new FullChatData(data.getUserId(),
                                             finalChat.getId(),
                                             finalChat.getChatName(),
                                             finalChat.getUsersId(),
@@ -186,7 +186,7 @@ public class ChatService implements IChatService {
     }
 
     @Override
-    public Chat joinChat(BaseData data) {
+    public Chat joinChat(ChatData data) {
 
         Chat chat = chatRepository.findChatById(data.getChatId());
 
@@ -204,7 +204,7 @@ public class ChatService implements IChatService {
                 finalChat.getUsersId().parallelStream()
                          .forEach(userId -> emitterService.sendMessageToUser(userId,
                                 new WsMessageResponse(Command.CHAT_USER_ADD,
-                                        new ChatData(data.getUserId(),
+                                        new FullChatData(data.getUserId(),
                                                 finalChat.getId(),
                                                 finalChat.getChatName(),
                                                 finalChat.getUsersId(),
@@ -227,7 +227,7 @@ public class ChatService implements IChatService {
     }
 
     @Override
-    public List<Chat> showChatsByUser(UserData data) throws UserNotFoundException {
+    public List<Chat> showChatsByUser(BaseData data) throws UserNotFoundException {
 
         User user = userRepository.getUserById(data.getUserId());
         if (user != null) {

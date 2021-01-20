@@ -5,7 +5,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.zipli.socknet.dto.BaseData;
+import org.zipli.socknet.dto.ChatData;
 import org.zipli.socknet.dto.video.VideoData;
 import org.zipli.socknet.exception.chat.ChatNotFoundException;
 import org.zipli.socknet.exception.video.VideoCallException;
@@ -20,7 +20,7 @@ public class VideoServiceTest {
 
     private final VideoData videoData = new VideoData("123", "456", "Drew", "ChatName", "Signal");
     private Chat chat = new Chat(videoData.getChatName(), false, videoData.getUserId());
-    private BaseData userData = new BaseData(videoData.getUserId(), videoData.getChatId());
+    private ChatData userData = new ChatData(videoData.getUserId(), videoData.getChatId());
 
     @Autowired
     VideoService videoService;
@@ -73,7 +73,7 @@ public class VideoServiceTest {
         Mockito.when(chatRepository.findChatById(videoData.getChatId())).thenReturn(chat);
         videoService.startVideoCall(videoData);
 
-        BaseData actualVideoData = videoService.exitFromVideoCall(userData);
+        ChatData actualVideoData = videoService.exitFromVideoCall(userData);
 
         assertEquals(videoData.getChatId(), actualVideoData.getChatId());
         assertEquals(videoData.getUserId(), actualVideoData.getUserId());

@@ -7,19 +7,18 @@ import lombok.ToString;
 import org.zipli.socknet.model.Message;
 
 import java.util.Date;
-import java.util.List;
 
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
-public class MessageData extends BaseData {
+public class MessageData extends ChatData {
     private String messageId = "defaultId";
     private String textMessage;
     private Date timestamp;
-    private List<Message> messages;
+    private Message messages;
 
-    public MessageData(List<Message> messages) {
+    public MessageData(Message messages) {
         this.messages = messages;
     }
 

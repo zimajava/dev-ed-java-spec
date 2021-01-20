@@ -21,7 +21,7 @@ import java.util.List;
 @JsonDeserialize(using = WsMessage.Deserializer.class)
 public class WsMessage {
     private Command command;
-    private UserData data;
+    private BaseData data;
 
     public static class Deserializer extends JsonDeserializer<WsMessage> {
 
@@ -30,12 +30,12 @@ public class WsMessage {
             JsonNode node = JsonUtils.json.readTree(jsonParser);
             Command command = Command.valueOf(node.findValue("command").asText());
             JsonNode data = node.findValue("data");
-            List<String> users = new ArrayList<>();
 
             switch (command) {
                 case CHAT_CREATE:
+                    List<String> users = new ArrayList<>();
                     data.get("chatParticipants").forEach(x -> users.add(x.asText()));
-                    return new WsMessage(command, new ChatData(
+                    return new WsMessage(command, new FullChatData(
                             data.findValue("userId").asText(),
                             data.findValue("chatName").asText(),
                             users,
@@ -46,18 +46,18 @@ public class WsMessage {
                 case CHAT_LEAVE:
                 case MESSAGES_GET_BY_CHAT_ID:
                 case VIDEO_CALL_EXIT:
-                    return new WsMessage(command, new BaseData(
+                    return new WsMessage(command, new ChatData(
                             data.findValue("userId").asText(),
                             data.findValue("chatId").asText()
                     ));
                 case CHAT_UPDATE:
-                    return new WsMessage(command, new ChatData(
+                    return new WsMessage(command, new FullChatData(
                             data.findValue("userId").asText(),
                             data.findValue("chatId").asText(),
                             data.findValue("chatName").asText()
                     ));
                 case CHATS_GET_BY_USER_ID:
-                    return new WsMessage(command, new UserData(
+                    return new WsMessage(command, new BaseData(
                             data.findValue("userId").asText()
                     ));
                 case MESSAGE_SEND:
@@ -105,7 +105,7 @@ public class WsMessage {
                             finalBytes
                     ));
                 default:
-                    return new WsMessage(command, new BaseData(
+                    return new WsMessage(command, new ChatData(
                             data.findValue("userId").asText(),
                             data.findValue("chatId").asText()));
             }

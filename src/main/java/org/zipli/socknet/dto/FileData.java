@@ -9,7 +9,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @NoArgsConstructor
-public class FileData extends BaseData {
+public class FileData extends ChatData {
     private String fileId;
 
     private String title;
