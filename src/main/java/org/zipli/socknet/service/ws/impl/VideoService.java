@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-
 @Slf4j
 @Service
 public class VideoService implements IVideoService {
@@ -49,9 +48,9 @@ public class VideoService implements IVideoService {
                 .forEach(userId -> emitterService.sendMessageToUser(userId,
                         new WsMessageResponse(Command.VIDEO_CALL_START, videoData)));
 
-        List<String> lisOfUsers = videoCallStorage.get(videoData.getChatId()).getIdUsersWhoIsNotOnline();
-        lisOfUsers.addAll(chat.getIdUsers());
-        lisOfUsers.removeAll(emitterService.getMessageEmitter().keySet());
+        List<String> usersWhoIsNotOnline = videoCallStorage.get(videoData.getChatId()).getIdUsersWhoIsNotOnline();
+        usersWhoIsNotOnline.addAll(chat.getIdUsers());
+        usersWhoIsNotOnline.removeAll(emitterService.getMessageEmitter().keySet());
 
         log.info("Start VideoCall in Chat {} by user {}.", videoData.getChatName(), videoData.getUserName());
         log.debug(videoCallStorage.get(videoData.getChatId()).toString());

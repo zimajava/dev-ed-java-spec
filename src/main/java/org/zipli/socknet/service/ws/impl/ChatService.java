@@ -15,7 +15,6 @@ import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.service.ws.IChatService;
 import org.zipli.socknet.service.ws.IEmitterService;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,6 +35,7 @@ public class ChatService implements IChatService {
     }
 
     public Chat createChat(FullChatData data) throws CreateChatException, UserNotFoundException {
+
         if (!chatRepository.existsByChatName(data.getChatName())) {
 
             User userCreator = userRepository.getUserById(data.getUserId());
@@ -62,7 +62,7 @@ public class ChatService implements IChatService {
                 }
             }
 
-            log.info("GroupChat {} successfully created", data.getChatName());
+            log.info("Chat {} successfully created id {} user {} ", data.getChatName(), chat.getId(), data.getUserId());
 
             chat.getIdUsers().parallelStream()
                     .forEach(userId -> emitterService.sendMessageToUser(userId,
@@ -75,6 +75,7 @@ public class ChatService implements IChatService {
                                     )
                             ))
                     );
+
             return chat;
         } else {
             throw new CreateChatException("Such a chat {} already exists");
@@ -102,6 +103,8 @@ public class ChatService implements IChatService {
                                         )
                                 ))
                         );
+                log.info("Chat {} update, his name {} user {}", data.getChatId(), data.getChatName(), data.getUserId());
+
                 return chat;
             } else {
                 throw new UpdateChatException("Only the author can update chat {}",
@@ -121,16 +124,22 @@ public class ChatService implements IChatService {
         Chat chat = chatRepository.findChatById(data.getChatId());
         if (chat != null) {
             if (chat.getCreatorUserId().equals(data.getUserId())) {
-                Collection<String> listIdUsers = chat.getIdUsers();
 
-                userRepository.saveAll(userRepository.findUsersByIdIn(listIdUsers).stream()
-                        .map(user -> {
-                            user.getChatsId().remove(data.getChatId());
-                            return user;
-                        })
-                        .collect(Collectors.toList()));
+                userRepository.saveAll(
+                        userRepository.findUsersByIdIn(
+                                chat.getIdUsers()).stream()
+                                .map(user -> {
+                                    user.getChatsId().remove(data.getChatId());
+                                    return user;
+                                })
+                                .collect(Collectors.toList())
+
+                );
+
                 messageRepository.deleteAllByChatId(data.getChatId());
                 chatRepository.deleteById(data.getChatId());
+
+                log.info("Chat {} name {} delete by user {} ", data.getChatId(), data.getUserId(), chat.getChatName());
 
                 chat.getIdUsers().parallelStream()
                         .forEach(userId -> emitterService.sendMessageToUser(userId,
@@ -167,6 +176,8 @@ public class ChatService implements IChatService {
             user.getChatsId().remove(chat.getId());
             userRepository.save(user);
 
+            log.info("Leave chat {} user {}", data.getChatId(), data.getUserId());
+
             finalChat.getIdUsers().parallelStream()
                     .forEach(userId -> emitterService.sendMessageToUser(userId,
                             new WsMessageResponse(Command.CHAT_LEAVE,
@@ -191,16 +202,18 @@ public class ChatService implements IChatService {
         Chat chat = chatRepository.findChatById(data.getChatId());
 
         if (chat != null) {
-            List<String> listIdUsers = chat.getIdUsers();
-            if (!chat.isPrivate() && !listIdUsers.contains(data.getUserId())) {
+            List<String> chatUsers = chat.getIdUsers();
+            if (!chat.isPrivate() && !chatUsers.contains(data.getUserId())) {
 
                 User user = userRepository.getUserById(data.getUserId());
                 user.getChatsId().add(data.getChatId());
                 userRepository.save(user);
-                log.info(String.valueOf(listIdUsers));
-                listIdUsers.add(data.getUserId());
+
+                chatUsers.add(data.getUserId());
                 final Chat finalChat = chatRepository.save(chat);
-                log.info(String.valueOf(finalChat.getIdUsers()));
+
+                log.info("Join Chat user {} to chat {}", data.getUserId(), finalChat.getId());
+
                 finalChat.getIdUsers().parallelStream()
                         .forEach(userId -> emitterService.sendMessageToUser(userId,
                                 new WsMessageResponse(Command.CHAT_USER_ADD,
@@ -222,7 +235,6 @@ public class ChatService implements IChatService {
                     WsException.CHAT_NOT_EXISTS.getNumberException()
             );
         }
-
         return chat;
     }
 
@@ -231,6 +243,7 @@ public class ChatService implements IChatService {
 
         User user = userRepository.getUserById(data.getUserId());
         if (user != null) {
+            log.info("Get Chats By User {}", data.getUserId());
             return chatRepository.getChatsByIdIn(user.getChatsId());
         } else {
             throw new UserNotFoundException(ErrorStatusCode.USER_DOES_NOT_EXIST);

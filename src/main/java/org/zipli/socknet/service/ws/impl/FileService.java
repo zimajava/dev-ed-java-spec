@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.zipli.socknet.dto.Command;
 import org.zipli.socknet.dto.FileData;
 import org.zipli.socknet.dto.WsMessageResponse;
-import org.zipli.socknet.exception.*;
+import org.zipli.socknet.exception.WsException;
 import org.zipli.socknet.exception.chat.UpdateChatException;
 import org.zipli.socknet.exception.file.FileDeleteException;
 import org.zipli.socknet.exception.file.FindFileException;
@@ -67,6 +67,7 @@ public class FileService implements IFileService {
 
                 if (chat != null) {
                     chat.getIdFiles().add(file.getId());
+                    log.info("Send file to db userId {} chatId {}", data.getUserId(), data.getChatId());
 
                     chat.getIdUsers().parallelStream()
                             .forEach(userId -> emitterService.sendMessageToUser(userId,
@@ -117,6 +118,7 @@ public class FileService implements IFileService {
                 }
                 gridFsTemplate.delete(new Query(Criteria.where("_id").is(data.getFileId())));
                 fileRepository.deleteById(file.getId());
+                log.info("File is successfully deleted UserId {} ChatId {} FileId {}", data.getUserId(), data.getChatId(), data.getFileId());
             }
         } catch (Exception e) {
             log.error("Error. The given data is invalid");

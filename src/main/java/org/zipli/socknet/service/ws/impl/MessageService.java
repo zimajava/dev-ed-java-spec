@@ -36,7 +36,6 @@ public class MessageService implements IMessageService {
         this.emitterService = emitterService;
     }
 
-
     @Override
     public List<Message> getMessages(ChatData data) throws GetMessageException {
 
@@ -47,6 +46,7 @@ public class MessageService implements IMessageService {
             for (String idMessage : listIdMessages) {
                 messages.add(messageRepository.getMessageById(idMessage));
             }
+            log.info("Get messages {} In chat:{} ", data.getUserId(), data.getChatId());
             return messages;
         } else {
             throw new GetMessageException("Chat{} doesn't exist");
@@ -75,6 +75,8 @@ public class MessageService implements IMessageService {
                     );
             chatRepository.save(chat);
 
+            log.info("User {} save to chat {} new message {}", data.getUserId(), data.getChatId(), message.getId());
+
             return message;
         } else {
             throw new ChatNotFoundException("Chat {} doesn't exist",
@@ -88,11 +90,14 @@ public class MessageService implements IMessageService {
         Message message = messageRepository.getMessageByIdAndAuthorId(data.getMessageId(), data.getUserId());
 
         if (message != null) {
-
             final Chat finalChat = chatRepository.findChatById(data.getChatId());
+
             if (finalChat != null) {
                 message.setTextMessage(data.getTextMessage());
                 final Message finalMessage = messageRepository.save(message);
+
+                log.info("UpdateMessage with userId {}  to chat {} with author {} new message {} ", data.getUserId(), message.getChatId(), message.getAuthorId(), message.getId());
+
                 finalChat.getIdUsers().parallelStream()
                         .forEach(userId -> emitterService.sendMessageToUser(userId,
                                 new WsMessageResponse(Command.MESSAGE_UPDATE,
@@ -128,6 +133,8 @@ public class MessageService implements IMessageService {
                 chat.getIdMessages().remove(message.getId());
                 final Chat finalChat = chatRepository.save(chat);
 
+                log.info("DeleteMessage user {} in chat {} message {} ", data.getUserId(), data.getChatId(), data.getMessageId());
+
                 finalChat.getIdUsers().parallelStream()
                         .forEach(userId -> emitterService.sendMessageToUser(userId,
                                 new WsMessageResponse(Command.MESSAGE_DELETE,
@@ -146,7 +153,7 @@ public class MessageService implements IMessageService {
             }
             messageRepository.delete(message);
         } else {
-            throw new MessageDeleteException("Only the author can delete message{}");
+            throw new MessageDeleteException("Only the author can delete message");
         }
     }
 
