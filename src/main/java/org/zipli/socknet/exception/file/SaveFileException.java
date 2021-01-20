@@ -2,7 +2,7 @@ package org.zipli.socknet.exception.file;
 
 import org.zipli.socknet.exception.WsException;
 
-public class SaveFileException  extends RuntimeException {
+public class SaveFileException extends RuntimeException {
 
     private final WsException exceptionCode;
 

@@ -46,5 +46,4 @@ public class MessageData extends ChatData {
         this.timestamp = timestamp;
     }
 
-
 }

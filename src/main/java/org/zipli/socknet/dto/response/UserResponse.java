@@ -8,7 +8,6 @@ import org.zipli.socknet.model.User;
 
 import java.util.List;
 
-
 @Getter
 @Setter
 @NoArgsConstructor

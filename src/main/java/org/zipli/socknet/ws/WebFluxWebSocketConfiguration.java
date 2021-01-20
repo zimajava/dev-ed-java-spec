@@ -13,7 +13,7 @@ import java.util.Map;
 @Configuration
 public class WebFluxWebSocketConfiguration {
 
-    private WebSocketHandler webSocketHandler;
+    private final WebSocketHandler webSocketHandler;
 
     public WebFluxWebSocketConfiguration(WebSocketHandler webSocketHandler) {
         this.webSocketHandler = webSocketHandler;

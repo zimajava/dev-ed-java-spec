@@ -8,7 +8,6 @@ import org.zipli.socknet.payload.request.PasswordRequest;
 
 import javax.mail.MessagingException;
 
-
 public interface IUserService {
 
     User findUser(String userId);

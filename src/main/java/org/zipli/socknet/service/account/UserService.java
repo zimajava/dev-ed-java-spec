@@ -4,10 +4,19 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.zipli.socknet.exception.*;
-import org.zipli.socknet.exception.account.*;
+import org.zipli.socknet.exception.DeleteAccountException;
+import org.zipli.socknet.exception.ErrorStatusCode;
+import org.zipli.socknet.exception.GetUserException;
+import org.zipli.socknet.exception.UpdatePasswordException;
+import org.zipli.socknet.exception.account.DeleteAvatarException;
+import org.zipli.socknet.exception.account.UpdateAvatarException;
+import org.zipli.socknet.exception.account.UpdateEmailException;
+import org.zipli.socknet.exception.account.UpdateNickNameException;
 import org.zipli.socknet.model.User;
-import org.zipli.socknet.payload.request.*;
+import org.zipli.socknet.payload.request.AvatarRequest;
+import org.zipli.socknet.payload.request.EmailRequest;
+import org.zipli.socknet.payload.request.NickNameRequest;
+import org.zipli.socknet.payload.request.PasswordRequest;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
 import org.zipli.socknet.security.services.UserDetailsImpl;
@@ -56,7 +65,6 @@ public class UserService implements IUserService {
         return user;
     }
 
-
     @Override
     @Transactional
     public User updateAvatar(AvatarRequest data) throws UpdateAvatarException {
@@ -87,7 +95,6 @@ public class UserService implements IUserService {
         return user;
     }
 
-
     @Override
     @Transactional
     public User updateEmail(EmailRequest data) throws UpdateEmailException {
@@ -113,7 +120,6 @@ public class UserService implements IUserService {
         emailConfirmationService.sendEmail(data.getEmail(), token);
         return user;
     }
-
 
     @Override
     @Transactional
