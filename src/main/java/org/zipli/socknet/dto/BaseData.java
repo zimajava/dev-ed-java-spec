@@ -7,15 +7,10 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class BaseData extends UserData {
-    private String chatId;
+public class BaseData {
+    private String userId;
 
     public BaseData(String userId) {
-        super(userId);
-    }
-
-    public BaseData(String userId, String chatId) {
-        super(userId);
-        this.chatId = chatId;
+        this.userId = userId;
     }
 }

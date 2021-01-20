@@ -5,8 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
-import org.zipli.socknet.dto.ChatData;
-import org.zipli.socknet.dto.UserData;
+import org.zipli.socknet.dto.FullChatData;
+import org.zipli.socknet.dto.BaseData;
 import org.zipli.socknet.exception.chat.CreateChatException;
 import org.zipli.socknet.exception.chat.DeleteChatException;
 import org.zipli.socknet.model.Chat;
@@ -28,9 +28,9 @@ class ChatServiceTest {
     private User user;
     private Chat chat;
 
-    private ChatData dataChat;
+    private FullChatData dataChat;
     private ChatService chatService;
-    private UserData userData;
+    private BaseData baseData;
 
     @Autowired
     UserRepository userRepository;
@@ -51,7 +51,7 @@ class ChatServiceTest {
         chat = chatRepository.save(chat);
         log.info(String.valueOf(chat));
 
-        dataChat = new ChatData(user.getId(),
+        dataChat = new FullChatData(user.getId(),
                 chat.getId(), "testChatName", new ArrayList<String>(),false);
     }
 
@@ -88,10 +88,10 @@ class ChatServiceTest {
 
         userOne.setChatsId(Collections.singletonList(chat.getId()));
         userOne = userRepository.save(userOne);
-        new ChatData(user.getId(),
+        new FullChatData(user.getId(),
                 chat.getId(),
                 chat.getChatName());
-        ChatData dataTree = new ChatData(userOne.getId(), chat.getId(), chat.getChatName());
+        FullChatData dataTree = new FullChatData(userOne.getId(), chat.getId(), chat.getChatName());
 
         chatService.deleteChat(dataTree);
 
@@ -104,7 +104,7 @@ class ChatServiceTest {
     @Test
     void removeChat_Fail() {
 
-        ChatData dataTree = new ChatData("kakoitoId", chat.getId(), chat.getChatName());
+        FullChatData dataTree = new FullChatData("kakoitoId", chat.getId(), chat.getChatName());
 
         try {
             chatService.deleteChat(dataTree);
@@ -116,7 +116,7 @@ class ChatServiceTest {
     @Test
     void joinChat() {
         User user = userRepository.save(new User("dasdasd", "gdsg", "dgsdg", "gdsg"));
-        dataChat = new ChatData(user.getId(),
+        dataChat = new FullChatData(user.getId(),
                 chat.getId(),
                 "vgtunj");
         Chat chat = chatService.joinChat(dataChat);
@@ -129,10 +129,10 @@ class ChatServiceTest {
     @Test
     void updateChat() {
 
-        ChatData chatData = new ChatData(user.getId(), chat.getId(), "NewChatName");
-        Chat chat = chatService.updateChat(chatData);
+        FullChatData fullChatData = new FullChatData(user.getId(), chat.getId(), "NewChatName");
+        Chat chat = chatService.updateChat(fullChatData);
 
-        assertEquals(chat.getChatName(), chatData.getChatName());
+        assertEquals(chat.getChatName(), fullChatData.getChatName());
     }
 
     @Test

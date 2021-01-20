@@ -3,12 +3,12 @@ package org.zipli.socknet.dto.video;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.zipli.socknet.dto.UserData;
+import org.zipli.socknet.dto.BaseData;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class VideoData extends UserData {
+public class VideoData extends BaseData {
     private String chatId;
     private String userName;
     private String chatName;
