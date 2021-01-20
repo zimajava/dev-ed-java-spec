@@ -6,32 +6,45 @@ import lombok.Setter;
 import lombok.ToString;
 import org.zipli.socknet.model.Message;
 
-import java.util.List;
+import java.util.Date;
 
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
-public class MessageData extends BaseData {
-    private String messageId;
+public class MessageData extends ChatData {
+    private String messageId = "defaultId";
     private String textMessage;
-    private List<Message> messages;
+    private Date timestamp;
+    private Message messages;
 
-    public MessageData(String idUser, String chatId, String messageId, String textMessage, List<Message> messages) {
-        super(idUser, chatId);
-        this.messageId = messageId;
-        this.textMessage = textMessage;
+    public MessageData(Message messages) {
         this.messages = messages;
     }
 
-
-    public MessageData(List<Message> messages) {
-        this.messages = messages;
+    public MessageData(String userId, String chatId, String messageId) {
+        super(userId, chatId);
+        this.messageId = messageId;
     }
 
-    public MessageData(String idUser, String chatId, String messageId, String textMessage) {
-        super(idUser, chatId);
+    public MessageData(String userId, String chatId, String messageId, String textMessage) {
+        super(userId, chatId);
         this.messageId = messageId;
         this.textMessage = textMessage;
     }
+
+    public MessageData(String userId, String chatId, String textMessage, Date timestamp) {
+        super(userId, chatId);
+        this.textMessage = textMessage;
+        this.timestamp = timestamp;
+    }
+
+    public MessageData(String userId, String chatId, String messageId, String textMessage, Date timestamp) {
+        super(userId, chatId);
+        this.messageId = messageId;
+        this.textMessage = textMessage;
+        this.timestamp = timestamp;
+    }
+
+
 }

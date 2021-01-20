@@ -1,5 +1,6 @@
 package org.zipli.socknet.service.ws;
 
+import org.zipli.socknet.dto.ChatData;
 import org.zipli.socknet.dto.MessageData;
 import org.zipli.socknet.exception.chat.UpdateChatException;
 import org.zipli.socknet.exception.message.MessageDeleteException;
@@ -10,7 +11,7 @@ import java.util.List;
 
 public interface IMessageService {
 
-    List<Message> getMessages(MessageData data);
+    List<Message> getMessages(ChatData data);
 
     Message sendMessage(MessageData data) throws MessageSendException;
 

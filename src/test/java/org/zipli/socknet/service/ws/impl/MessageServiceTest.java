@@ -68,8 +68,8 @@ class MessageServiceTest {
         Message message = messageService.sendMessage(messageData);
 
         assertEquals(messageData.getTextMessage(), message.getTextMessage());
-        assertEquals(messageData.getIdUser(), message.getAuthorId());
-        assertEquals(messageData.getIdChat(), message.getChatId());
+        assertEquals(messageData.getUserId(), message.getAuthorId());
+        assertEquals(messageData.getChatId(), message.getChatId());
     }
 
 
@@ -93,7 +93,7 @@ class MessageServiceTest {
 
         chat = chatRepository.save(chat);
 
-        messageData.setIdChat(chat.getId());
+        messageData.setChatId(chat.getId());
         List<Message> messages = messageService.getMessages(messageData);
 
         assertEquals(messages.size(), 3);
@@ -141,7 +141,7 @@ class MessageServiceTest {
 
         assertFalse(messageRepository.existsById(messageDelete.getId()));
         assertFalse(chatRepository
-                .findChatById(data.getIdChat())
+                .findChatById(data.getChatId())
                 .getIdMessages()
                 .contains(messageDelete.getId()));
     }

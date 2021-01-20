@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class WsMessageResponse {
     private Command command;
-    private Object message;
+    private Object data;
 }
