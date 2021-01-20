@@ -9,8 +9,7 @@ import org.zipli.socknet.exception.auth.AuthException;
 import org.zipli.socknet.exception.auth.NotConfirmAccountException;
 import org.zipli.socknet.exception.auth.UserNotFoundException;
 import org.zipli.socknet.model.User;
-import org.zipli.socknet.payload.request.LoginRequest;
-import org.zipli.socknet.payload.request.SignupRequest;
+import org.zipli.socknet.payload.request.*;
 import org.zipli.socknet.service.auth.AuthService;
 import org.zipli.socknet.service.email.EmailConfirmationService;
 import org.zipli.socknet.service.password.ResetPasswordService;
@@ -52,11 +51,11 @@ public class AuthController {
     }
 
     @PostMapping("/confirm-mail")
-    public ResponseEntity<?> emailConfirm(@Valid @RequestParam("token") String token) {
+    public ResponseEntity<?> emailConfirm(@Valid @RequestBody ConfirmMailRequest confirmMailRequest) {
         try {
-            emailConfirmationService.confirmAccount(token);
+            emailConfirmationService.confirmAccount(confirmMailRequest.getToken());
         } catch (NotConfirmAccountException e) {
-            log.error("Failed confirm email tokenIsNull {}, reason {}", Objects.isNull(token), e.getErrorStatusCode().getMessage());
+            log.error("Failed confirm email tokenIsNull {}, reason {}", Objects.isNull(confirmMailRequest.getToken()), e.getErrorStatusCode().getMessage());
             return ResponseEntity
                     .badRequest()
                     .body(e.getErrorStatusCode().getValue());
@@ -65,26 +64,26 @@ public class AuthController {
     }
 
     @PostMapping("/forgot_password")
-    public ResponseEntity<?> processForgotPassword(@Valid @RequestParam("email") String email) throws UserNotFoundException {
+    public ResponseEntity<?> processForgotPassword(@Valid @RequestBody ForgotPasswordRequest forgotPasswordRequest) {
         try {
-            resetPasswordService.generateResetPasswordToken(email);
+            resetPasswordService.generateResetPasswordToken(forgotPasswordRequest.getEmail());
         } catch (UserNotFoundException e) {
-            log.error("Failed restore password by email {}, reason {}", email, e.getErrorStatusCode().getMessage());
+            log.error("Failed restore password by email {}, reason {}", forgotPasswordRequest.getEmail(), e.getErrorStatusCode().getMessage());
             return ResponseEntity
                     .badRequest()
                     .body(e.getErrorStatusCode().getValue());
         }
-        resetPasswordService.sendEmailForChangingPassword(email);
+        resetPasswordService.sendEmailForChangingPassword(forgotPasswordRequest.getEmail());
         return ResponseEntity.ok("Password can be changed");
     }
 
     @PostMapping("/reset_password")
-    public ResponseEntity<?> processResetPassword(@Valid @RequestParam("token") String token, String newPassword) {
+    public ResponseEntity<?> processResetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest) {
         try {
-            resetPasswordService.resetPassword(token, newPassword);
+            resetPasswordService.resetPassword(resetPasswordRequest.getToken(), resetPasswordRequest.getPassword());
         } catch (UserNotFoundException e) {
             log.error("Failed update password tokenIsNull {}, reason {}",
-                    Objects.isNull(token), e.getErrorStatusCode().getMessage());
+                    Objects.isNull(resetPasswordRequest.getToken()), e.getErrorStatusCode().getMessage());
             return ResponseEntity
                     .badRequest()
                     .body(e.getErrorStatusCode().getValue());

@@ -31,7 +31,7 @@ public class GetUsersService {
             throw new GetAllUsersException(ErrorStatusCode.USERS_DOES_NOT_EXIST);
         }
         return users.stream()
-                .map(e -> new UserResponse(e.getId(), e.getUserName(), e.getAvatar()))
+                .map(UserResponse::new)
                 .collect(Collectors.toList());
     }
 }

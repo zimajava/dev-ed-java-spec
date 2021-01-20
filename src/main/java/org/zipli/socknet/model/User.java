@@ -30,7 +30,7 @@ public class User {
     private String nickName;
     private boolean isConfirm;
     private List<String> chatsId;
-    private byte[] avatar;
+    private String avatar;
 
     public User(String email, String password, String userName, String nickName) {
         this.email = email;
