@@ -1,7 +1,7 @@
 package org.zipli.socknet.security.services;
 
 import org.junit.jupiter.api.Test;
-import org.zipli.socknet.model.User;
+import org.zipli.socknet.repository.model.User;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
