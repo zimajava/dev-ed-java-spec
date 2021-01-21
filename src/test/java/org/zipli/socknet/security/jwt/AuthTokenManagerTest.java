@@ -8,7 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.zipli.socknet.exception.auth.AuthenticationException;
-import org.zipli.socknet.model.User;
+import org.zipli.socknet.repository.model.User;
 import org.zipli.socknet.security.services.UserDetailsImpl;
 import org.zipli.socknet.security.services.UserDetailsServiceImpl;
 

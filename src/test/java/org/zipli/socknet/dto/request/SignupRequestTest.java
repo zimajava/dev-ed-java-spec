@@ -89,127 +89,127 @@ class SignupRequestTest {
     @Test
     public void isBlank_ShouldReturnFalse() {
         assertFalse(validParameters.getEmail()
-                                   .isBlank());
+                .isBlank());
         assertFalse(validParameters.getPassword()
-                                   .isBlank());
+                .isBlank());
         assertFalse(validParameters.getUserName()
-                                   .isBlank());
+                .isBlank());
         assertFalse(validParameters.getNickName()
-                                   .isBlank());
+                .isBlank());
     }
 
     @Test
     public void isBlank_ShouldReturnTrue() {
         assertTrue(emptySignupRequest.getEmail()
-                                     .isBlank());
+                .isBlank());
         assertTrue(emptySignupRequest.getPassword()
-                                     .isBlank());
+                .isBlank());
         assertTrue(emptySignupRequest.getUserName()
-                                     .isBlank());
+                .isBlank());
         assertTrue(emptySignupRequest.getNickName()
-                                     .isBlank());
+                .isBlank());
     }
 
     @Test
     public void email_ShouldPassValidation() {
         assertTrue(validParameters.getEmail()
-                                  .matches(String.valueOf(emailPattern)));
+                .matches(String.valueOf(emailPattern)));
 
         assertTrue(fieldsWithoutUpperCase.getEmail()
-                                         .matches(String.valueOf(emailPattern)));
+                .matches(String.valueOf(emailPattern)));
 
         assertTrue(fieldsWithSpecificChars.getEmail()
-                                          .matches(String.valueOf(emailPattern)));
+                .matches(String.valueOf(emailPattern)));
     }
 
     @Test
     public void email_ShouldNotPassValidation() {
         assertFalse(fieldsWithTwoDogs.getEmail()
-                                     .matches(String.valueOf(emailPattern)));
+                .matches(String.valueOf(emailPattern)));
 
         assertFalse(fieldsWithSpaces.getEmail()
-                                    .matches(String.valueOf(emailPattern)));
+                .matches(String.valueOf(emailPattern)));
 
         assertFalse(fieldsWithoutLowerCase.getEmail()
-                                          .matches(String.valueOf(emailPattern)));
+                .matches(String.valueOf(emailPattern)));
 
         assertFalse(fieldsLessThan8.getEmail()
-                                   .matches(String.valueOf(emailPattern)));
+                .matches(String.valueOf(emailPattern)));
     }
 
     @Test
     public void password_ShouldPassValidation() {
         assertTrue(validParameters.getPassword()
-                                  .matches(String.valueOf(passwordPattern)));
+                .matches(String.valueOf(passwordPattern)));
     }
 
     @Test
     public void password_ShouldNotPassValidation() {
         assertFalse(fieldsLessThan8.getPassword()
-                                   .matches(String.valueOf(passwordPattern)));
+                .matches(String.valueOf(passwordPattern)));
 
         assertFalse(fieldsMoreThan16.getPassword()
-                                    .matches(String.valueOf(passwordPattern)));
+                .matches(String.valueOf(passwordPattern)));
 
         assertFalse(fieldsWithoutUpperCase.getPassword()
-                                          .matches(String.valueOf(passwordPattern)));
+                .matches(String.valueOf(passwordPattern)));
 
         assertFalse(fieldsWithSpaces.getPassword()
-                                    .matches(String.valueOf(passwordPattern)));
+                .matches(String.valueOf(passwordPattern)));
 
         assertFalse(fieldsWithoutLowerCase.getPassword()
-                                          .matches(String.valueOf(passwordPattern)));
+                .matches(String.valueOf(passwordPattern)));
     }
 
     @Test
     public void userName_ShouldPassValidation() {
         assertTrue(validParameters.getUserName()
-                                  .matches(String.valueOf(userNamePattern)));
+                .matches(String.valueOf(userNamePattern)));
 
         assertTrue(fieldsWithoutLowerCase.getUserName()
-                                         .matches(String.valueOf(userNamePattern)));
+                .matches(String.valueOf(userNamePattern)));
 
         assertTrue(fieldsWithoutUpperCase.getUserName()
-                                         .matches(String.valueOf(userNamePattern)));
+                .matches(String.valueOf(userNamePattern)));
 
         assertTrue(fieldsWithSpecificChars.getUserName()
-                                          .matches(String.valueOf(userNamePattern)));
+                .matches(String.valueOf(userNamePattern)));
     }
 
     @Test
     public void userName_ShouldNotPassValidation() {
         assertFalse(fieldsIsEmpty.getUserName()
-                                   .matches(String.valueOf(userNamePattern)));
+                .matches(String.valueOf(userNamePattern)));
 
         assertFalse(fieldsMoreThan16.getUserName()
-                                    .matches(String.valueOf(userNamePattern)));
+                .matches(String.valueOf(userNamePattern)));
 
         assertFalse(fieldsWithSpaces.getUserName()
-                                    .matches(String.valueOf(userNamePattern)));
+                .matches(String.valueOf(userNamePattern)));
     }
 
     @Test
     public void nickName_ShouldPassValidation() {
         assertTrue(validParameters.getNickName()
-                                  .matches(String.valueOf(nickNamePattern)));
+                .matches(String.valueOf(nickNamePattern)));
 
         assertTrue(fieldsWithoutLowerCase.getNickName()
-                                         .matches(String.valueOf(nickNamePattern)));
+                .matches(String.valueOf(nickNamePattern)));
 
         assertTrue(fieldsWithoutUpperCase.getNickName()
-                                         .matches(String.valueOf(nickNamePattern)));
+                .matches(String.valueOf(nickNamePattern)));
 
         assertTrue(fieldsWithSpecificChars.getNickName()
-                                          .matches(String.valueOf(nickNamePattern)));
+                .matches(String.valueOf(nickNamePattern)));
     }
 
     @Test
     public void nickName_ShouldNotPassValidation() {
         assertFalse(fieldsIsEmpty.getNickName()
-                                   .matches(String.valueOf(nickNamePattern)));
+                .matches(String.valueOf(nickNamePattern)));
 
         assertFalse(fieldsMoreThan16.getNickName()
-                                    .matches(String.valueOf(nickNamePattern)));
+                .matches(String.valueOf(nickNamePattern)));
     }
 
 }

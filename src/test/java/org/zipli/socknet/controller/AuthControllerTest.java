@@ -8,22 +8,22 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.zipli.socknet.dto.request.*;
 import org.zipli.socknet.dto.response.LoginResponse;
 import org.zipli.socknet.exception.ErrorStatusCode;
 import org.zipli.socknet.exception.auth.AuthException;
 import org.zipli.socknet.exception.auth.NotConfirmAccountException;
 import org.zipli.socknet.exception.auth.UserNotFoundException;
-import org.zipli.socknet.model.User;
-import org.zipli.socknet.dto.request.*;
 import org.zipli.socknet.repository.UserRepository;
+import org.zipli.socknet.repository.model.User;
 import org.zipli.socknet.security.jwt.JwtUtils;
 import org.zipli.socknet.security.services.UserDetailsImpl;
 import org.zipli.socknet.service.auth.AuthService;
-import org.zipli.socknet.service.email.EmailConfirmationService;
-import org.zipli.socknet.service.password.ResetPasswordService;
+import org.zipli.socknet.service.user.EmailConfirmationService;
+import org.zipli.socknet.service.user.ResetPasswordService;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 @SpringBootTest
 class AuthControllerTest {

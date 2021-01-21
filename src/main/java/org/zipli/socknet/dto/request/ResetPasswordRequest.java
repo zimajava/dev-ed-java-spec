@@ -17,11 +17,11 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ResetPasswordRequest {
-        private String token;
+    private String token;
 
-        @NotBlank(message = "Password can't be empty")
-        @NotNull(message = "Password can't be null")
-        @Size(min = 8, max = 16)
-        @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,16}$")
-        private String password;
+    @NotBlank(message = "Password can't be empty")
+    @NotNull(message = "Password can't be null")
+    @Size(min = 8, max = 16)
+    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,16}$")
+    private String password;
 }
