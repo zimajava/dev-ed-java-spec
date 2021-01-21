@@ -2,11 +2,10 @@ package org.zipli.socknet.security.services;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.zipli.socknet.model.User;
+import org.zipli.socknet.repository.model.User;
 
 import java.util.Collection;
 import java.util.Objects;
-
 
 public class UserDetailsImpl implements UserDetails {
 

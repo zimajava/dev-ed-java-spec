@@ -2,7 +2,7 @@ package org.zipli.socknet.repository;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
-import org.zipli.socknet.model.User;
+import org.zipli.socknet.repository.model.User;
 
 import java.util.Collection;
 import java.util.List;
@@ -18,6 +18,7 @@ public interface UserRepository extends MongoRepository<User, String> {
     List<User> findUsersByIdIn(Collection<String> id);
 
     List<User> findAllByIsConfirm(boolean confirm);
+
     User findUserByEmail(String email);
 
     User findUserByUserName(String username);

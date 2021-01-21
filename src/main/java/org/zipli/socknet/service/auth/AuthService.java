@@ -4,14 +4,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.zipli.socknet.dto.response.LoginResponse;
-import org.zipli.socknet.exception.auth.AuthException;
 import org.zipli.socknet.exception.ErrorStatusCode;
-import org.zipli.socknet.model.User;
+import org.zipli.socknet.exception.auth.AuthException;
+import org.zipli.socknet.repository.model.User;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
 import org.zipli.socknet.security.services.UserDetailsImpl;
-import org.zipli.socknet.service.email.EmailConfirmationService;
-
+import org.zipli.socknet.service.user.EmailConfirmationService;
 
 @Service
 public class AuthService implements IAuthService {

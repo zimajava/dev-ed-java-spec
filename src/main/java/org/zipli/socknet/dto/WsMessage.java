@@ -1,7 +1,9 @@
 package org.zipli.socknet.dto;
 
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,7 +15,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 
 @Getter
 @AllArgsConstructor
@@ -40,15 +41,6 @@ public class WsMessage {
                             data.findValue("chatName").asText(),
                             users,
                             data.findValue("isPrivate").asBoolean()
-                    ));
-                case CHAT_DELETE:
-                case CHAT_USER_ADD:
-                case CHAT_LEAVE:
-                case MESSAGES_GET_BY_CHAT_ID:
-                case VIDEO_CALL_EXIT:
-                    return new WsMessage(command, new ChatData(
-                            data.findValue("userId").asText(),
-                            data.findValue("chatId").asText()
                     ));
                 case CHAT_UPDATE:
                     return new WsMessage(command, new FullChatData(
@@ -104,6 +96,11 @@ public class WsMessage {
                             data.findValue("title").asText(),
                             finalBytes
                     ));
+                case CHAT_DELETE:
+                case CHAT_USER_ADD:
+                case CHAT_LEAVE:
+                case MESSAGES_GET_BY_CHAT_ID:
+                case VIDEO_CALL_EXIT:
                 default:
                     return new WsMessage(command, new ChatData(
                             data.findValue("userId").asText(),
