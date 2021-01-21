@@ -115,6 +115,8 @@ public class EventHandler {
                 ChatData chatLeave = (ChatData) message.getData();
                 try {
                     chatService.leaveChat(chatLeave);
+                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
+                            new WsMessageResponse(eventCommand, chatLeave)));
 
                 } catch (LeaveChatException e) {
                     log.error(commandFail, eventCommand, chatLeave, e.getMessage());
