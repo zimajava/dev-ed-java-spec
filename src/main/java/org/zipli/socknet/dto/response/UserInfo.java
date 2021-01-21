@@ -4,10 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.zipli.socknet.model.User;
+import org.zipli.socknet.repository.model.User;
 
 import java.util.List;
-
 
 @Getter
 @Setter

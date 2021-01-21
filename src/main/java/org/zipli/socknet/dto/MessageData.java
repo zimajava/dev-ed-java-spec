@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.zipli.socknet.model.Message;
+import org.zipli.socknet.repository.model.Message;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ import java.util.List;
 @Setter
 @ToString
 @NoArgsConstructor
-public class MessageData extends BaseData {
+public class MessageData extends ChatData {
     private String messageId;
     private String textMessage;
     private List<Message> messages;
@@ -21,10 +21,6 @@ public class MessageData extends BaseData {
         super(idUser, chatId);
         this.messageId = messageId;
         this.textMessage = textMessage;
-        this.messages = messages;
-    }
-
-    public MessageData(List<Message> messages) {
         this.messages = messages;
     }
 

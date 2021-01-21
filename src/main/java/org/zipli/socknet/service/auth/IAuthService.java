@@ -1,7 +1,7 @@
 package org.zipli.socknet.service.auth;
 
 import org.zipli.socknet.dto.response.LoginResponse;
-import org.zipli.socknet.model.User;
+import org.zipli.socknet.repository.model.User;
 
 import javax.mail.MessagingException;
 

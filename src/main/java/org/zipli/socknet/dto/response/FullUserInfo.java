@@ -3,7 +3,7 @@ package org.zipli.socknet.dto.response;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.zipli.socknet.model.User;
+import org.zipli.socknet.repository.model.User;
 
 import java.util.List;
 

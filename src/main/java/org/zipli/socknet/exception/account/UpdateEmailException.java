@@ -4,7 +4,7 @@ import org.zipli.socknet.exception.ErrorStatusCode;
 
 public class UpdateEmailException extends RuntimeException {
 
-    private ErrorStatusCode errorStatusCode;
+    private final ErrorStatusCode errorStatusCode;
 
     public UpdateEmailException(ErrorStatusCode errorStatusCode) {
         this.errorStatusCode = errorStatusCode;
