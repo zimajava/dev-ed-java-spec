@@ -74,7 +74,7 @@ class RoomHandlerTest {
         Mono<ServerResponse> serverResponseGetRoom = roomHandler.getRoom(request);
 
         assertEquals(ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(ErrorStatusCodeRoom.ROOM_NOT_EXIT)), serverResponseGetRoom);
+                .body(BodyInserters.fromValue(ErrorStatusCodeRoom.ROOM_NOT_EXIT)).toString(), serverResponseGetRoom.toString());
         assertEquals(Objects.requireNonNull(serverResponseGetRoom.block()).statusCode(), HttpStatus.BAD_REQUEST);
     }
 
