@@ -20,7 +20,9 @@ import org.zipli.socknet.dto.request.PasswordRequest;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
 import org.zipli.socknet.security.services.UserDetailsImpl;
-import org.zipli.socknet.ws.SearchByParamsException;
+import org.zipli.socknet.exception.SearchByParamsException;
+
+import java.util.List;
 
 @Service
 public class UserService implements IUserService {
@@ -162,7 +164,7 @@ public class UserService implements IUserService {
         if (param == null) {
             throw new SearchByParamsException(ErrorStatusCode.PARAM_IS_NULL);
         }
-        List<User> users = userRepository.findUsersByUserNameOrNickName(param);
+        List<User> users = userRepository.findUsersByUserNameOrNickNameOrEmail(param);
         if (users == null) {
             throw new SearchByParamsException(ErrorStatusCode.USERS_DOES_NOT_EXIST_BY_PARAM);
         }

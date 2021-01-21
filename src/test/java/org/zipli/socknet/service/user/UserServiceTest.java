@@ -231,4 +231,5 @@ public class UserServiceTest {
             userService.deleteAccount(user.getId());
         });
     }
+
 }

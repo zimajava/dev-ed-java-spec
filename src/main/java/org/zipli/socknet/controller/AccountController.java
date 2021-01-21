@@ -3,7 +3,7 @@ package org.zipli.socknet.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.zipli.socknet.dto.response.UserResponse;
+import org.zipli.socknet.dto.response.FullUserInfo;
 import org.zipli.socknet.exception.DeleteAccountException;
 import org.zipli.socknet.exception.GetUserException;
 import org.zipli.socknet.exception.UpdatePasswordException;

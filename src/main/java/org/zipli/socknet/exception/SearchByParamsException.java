@@ -1,4 +1,4 @@
-package org.zipli.socknet.ws;
+package org.zipli.socknet.exception;
 
 import org.zipli.socknet.exception.ErrorStatusCode;
 

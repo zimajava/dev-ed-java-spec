@@ -3,8 +3,10 @@ package org.zipli.socknet.service.chat;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.zipli.socknet.dto.*;
+import org.zipli.socknet.dto.response.UserInfo;
 import org.zipli.socknet.dto.response.WsMessageResponse;
 import org.zipli.socknet.dto.video.VideoData;
+import org.zipli.socknet.exception.SearchByParamsException;
 import org.zipli.socknet.exception.WsException;
 import org.zipli.socknet.exception.auth.UserNotFoundException;
 import org.zipli.socknet.exception.chat.*;
@@ -15,6 +17,8 @@ import org.zipli.socknet.exception.message.MessageSendException;
 import org.zipli.socknet.exception.message.MessageUpdateException;
 import org.zipli.socknet.exception.video.VideoCallException;
 import org.zipli.socknet.repository.model.Chat;
+import org.zipli.socknet.repository.model.User;
+import org.zipli.socknet.service.user.UserService;
 import org.zipli.socknet.util.JsonUtils;
 import reactor.core.publisher.Sinks;
 
@@ -30,12 +34,14 @@ public class EventHandler {
     private final IFileService fileService;
     private final IChatService chatService;
     private final IVideoService videoService;
+    private final UserService userService;
 
-    public EventHandler(IMessageService messageService, IFileService fileService, IChatService chatService, IVideoService videoService) {
+    public EventHandler(IMessageService messageService, IFileService fileService, IChatService chatService, IVideoService videoService, UserService userService) {
         this.messageService = messageService;
         this.fileService = fileService;
         this.chatService = chatService;
         this.videoService = videoService;
+        this.userService = userService;
     }
 
     public void process(Sinks.Many<String> emitter, WsMessage message) {
@@ -373,8 +379,25 @@ public class EventHandler {
                             new WsMessageResponse(eventCommand,
                                     WsException.FILE_ACCESS_ERROR.getNumberException()))
                     );
-                    break;
                 }
+                break;
+
+            case USERS_GET_BY_SEARCH_PARAM:
+                SearchData searchData = (SearchData) message.getData();
+                String param = searchData.getSearchParam();
+                try {
+                    List<User> users = userService.getUsersBySearchParam(param);
+                    List<UserInfo> list = users.stream().map(UserInfo::new).collect(Collectors.toList());
+                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(new WsMessageResponse(eventCommand, list)));
+                    log.info("Users by searchParam {} were found", param);
+                } catch (SearchByParamsException e) {
+                    log.error("Failed to find users by param {} reason {}", param, e.getMessage());
+                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
+                            new WsMessageResponse(eventCommand,
+                                    WsException.SEARCH_BY_PARAMS_ERROR.getNumberException()))
+                    );
+                }
+                break;
         }
     }
 

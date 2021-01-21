@@ -7,6 +7,7 @@ import org.zipli.socknet.dto.request.NickNameRequest;
 import org.zipli.socknet.dto.request.PasswordRequest;
 
 import javax.mail.MessagingException;
+import java.util.List;
 
 public interface IUserService {
 
@@ -23,5 +24,7 @@ public interface IUserService {
     User updatePassword(PasswordRequest data);
 
     String deleteAccount(String userId);
+
+    List<User> getUsersBySearchParam(String param);
 
 }

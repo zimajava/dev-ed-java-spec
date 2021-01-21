@@ -9,7 +9,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @NoArgsConstructor
-public class SearchData extends UserData {
+public class SearchData extends BaseData {
     private String searchParam;
 
     public SearchData(String searchParam) {
