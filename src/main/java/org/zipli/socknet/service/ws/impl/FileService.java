@@ -61,9 +61,9 @@ public class FileService implements IFileService {
 
             GridFSFile gridFSFile = gridFsTemplate.findOne(new Query(Criteria.where("_id").is(id)));
             if (gridFSFile != null) {
-                file = new File(data.getIdUser(), data.getIdChat(), new Date(), data.getTitle(), data.getBytes());
+                file = new File(data.getUserId(), data.getChatId(), new Date(), data.getTitle(), data.getBytes());
                 finalFile = fileRepository.save(file);
-                chat = chatRepository.findChatById(data.getIdChat());
+                chat = chatRepository.findChatById(data.getChatId());
 
                 if (chat != null) {
                     chat.getIdFiles().add(file.getId());
@@ -95,9 +95,9 @@ public class FileService implements IFileService {
     @Override
     public void deleteFile(FileData data) throws FileDeleteException {
         File file = fileRepository.getFileById(data.getFileId());
-        Chat chat = chatRepository.findChatById(data.getIdChat());
+        Chat chat = chatRepository.findChatById(data.getChatId());
         try {
-            if (file != null || file.getAuthorId().equals(data.getIdUser()) || chat != null) {
+            if (file != null || file.getAuthorId().equals(data.getUserId()) || chat != null) {
                 if (chat.getIdFiles().remove(file.getId())) {
                     final Chat finalChat = chatRepository.save(chat);
 

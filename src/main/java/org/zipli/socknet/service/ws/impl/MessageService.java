@@ -2,6 +2,7 @@ package org.zipli.socknet.service.ws.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.zipli.socknet.dto.ChatData;
 import org.zipli.socknet.dto.Command;
 import org.zipli.socknet.dto.MessageData;
 import org.zipli.socknet.dto.WsMessageResponse;
@@ -20,7 +21,6 @@ import org.zipli.socknet.service.ws.IEmitterService;
 import org.zipli.socknet.service.ws.IMessageService;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -38,9 +38,9 @@ public class MessageService implements IMessageService {
 
 
     @Override
-    public List<Message> getMessages(MessageData data) throws GetMessageException {
+    public List<Message> getMessages(ChatData data) throws GetMessageException {
 
-        Chat chat = chatRepository.findChatById(data.getIdChat());
+        Chat chat = chatRepository.findChatById(data.getChatId());
         if (chat != null) {
             List<String> listIdMessages = chat.getIdMessages();
             List<Message> messages = new ArrayList<>();
@@ -56,19 +56,20 @@ public class MessageService implements IMessageService {
     @Override
     public Message sendMessage(MessageData data) throws MessageSendException, ChatNotFoundException {
 
-        Message message = new Message(data.getIdUser(), data.getIdChat(), new Date(), data.getTextMessage());
+        Message message = new Message(data.getUserId(), data.getChatId(), data.getTimestamp(), data.getTextMessage());
         final Message finalMessage = messageRepository.save(message);
-        Chat chat = chatRepository.findChatById(data.getIdChat());
+        Chat chat = chatRepository.findChatById(data.getChatId());
         if (chat != null) {
             chat.getIdMessages().add(message.getId());
 
             chat.getIdUsers().parallelStream()
                     .forEach(userId -> emitterService.sendMessageToUser(userId,
                             new WsMessageResponse(Command.MESSAGE_SEND,
-                                    new MessageData(userId,
+                                    new MessageData(data.getUserId(),
                                             chat.getId(),
                                             finalMessage.getId(),
-                                            finalMessage.getTextMessage()
+                                            finalMessage.getTextMessage(),
+                                            finalMessage.getDate()
                                     )
                             ))
                     );
@@ -84,21 +85,22 @@ public class MessageService implements IMessageService {
     @Override
     public Message updateMessage(MessageData data) throws MessageUpdateException, ChatNotFoundException {
 
-        Message message = messageRepository.getMessageByIdAndAuthorId(data.getMessageId(), data.getIdUser());
+        Message message = messageRepository.getMessageByIdAndAuthorId(data.getMessageId(), data.getUserId());
 
         if (message != null) {
 
-            final Chat finalChat = chatRepository.findChatById(data.getIdChat());
+            final Chat finalChat = chatRepository.findChatById(data.getChatId());
             if (finalChat != null) {
                 message.setTextMessage(data.getTextMessage());
                 final Message finalMessage = messageRepository.save(message);
                 finalChat.getIdUsers().parallelStream()
                         .forEach(userId -> emitterService.sendMessageToUser(userId,
                                 new WsMessageResponse(Command.MESSAGE_UPDATE,
-                                        new MessageData(userId,
+                                        new MessageData(data.getUserId(),
                                                 finalChat.getId(),
                                                 finalMessage.getId(),
-                                                finalMessage.getTextMessage()
+                                                finalMessage.getTextMessage(),
+                                                finalMessage.getDate()
                                         )
                                 ))
                         );
@@ -118,10 +120,10 @@ public class MessageService implements IMessageService {
     @Override
     public void deleteMessage(MessageData data) throws MessageDeleteException, UpdateChatException {
 
-        Message message = messageRepository.getMessageByIdAndAuthorId(data.getMessageId(), data.getIdUser());
+        Message message = messageRepository.getMessageByIdAndAuthorId(data.getMessageId(), data.getUserId());
 
         if (message != null) {
-            Chat chat = chatRepository.findChatById(data.getIdChat());
+            Chat chat = chatRepository.findChatById(data.getChatId());
             if (chat != null) {
                 chat.getIdMessages().remove(message.getId());
                 final Chat finalChat = chatRepository.save(chat);
@@ -129,10 +131,11 @@ public class MessageService implements IMessageService {
                 finalChat.getIdUsers().parallelStream()
                         .forEach(userId -> emitterService.sendMessageToUser(userId,
                                 new WsMessageResponse(Command.MESSAGE_DELETE,
-                                        new MessageData(userId,
+                                        new MessageData(data.getUserId(),
                                                 finalChat.getId(),
                                                 message.getId(),
-                                                message.getTextMessage()
+                                                message.getTextMessage(),
+                                                message.getDate()
                                         )
                                 ))
                         );

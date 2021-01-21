@@ -9,12 +9,14 @@ import org.zipli.socknet.dto.BaseData;
 @Setter
 @NoArgsConstructor
 public class VideoData extends BaseData {
+    private String chatId;
     private String userName;
     private String chatName;
     private String signal;
 
-    public VideoData(String idUser, String idChat, String userName, String chatName, String signal) {
-        super(idUser, idChat);
+    public VideoData(String idUser, String chatId, String userName, String chatName, String signal) {
+        super(idUser);
+        this.chatId = chatId;
         this.userName = userName;
         this.chatName = chatName;
         this.signal = signal;

@@ -69,7 +69,7 @@ public class EmitterService implements IEmitterService {
                 log.info("User = {userId: {} is online: {}, sent.}", userId, wsMessage.getCommand());
             });
         } else {
-            if (wsMessage.getCommand().equals(Command.CHAT_LEAVE) || wsMessage.getCommand().equals(Command.CHAT_JOIN)) {
+            if (wsMessage.getCommand().equals(Command.CHAT_LEAVE) || wsMessage.getCommand().equals(Command.CHAT_USER_ADD)) {
                 log.info("User = {userId: {} isn't online: {}, not sent.}", userId, wsMessage.getCommand());
             } else {
                 log.info("User = {userId: {} isn't online: {} not sent.}", userId, wsMessage.getCommand());

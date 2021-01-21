@@ -72,7 +72,7 @@ class FileServiceTest {
 
         Mockito.doReturn(chat)
                 .when(chatRepository)
-                .findChatById(fileData.getIdChat());
+                .findChatById(fileData.getChatId());
 
         File fileAdd = new File(user.getId(), "chatId", new Date(), "title");
         fileAdd.setId("3");
@@ -83,8 +83,8 @@ class FileServiceTest {
         final File file = fileService.sendFile(fileData);
 
         assertEquals(fileData.getTitle(), file.getTitle());
-        assertEquals(fileData.getIdUser(), file.getAuthorId());
-        assertEquals(fileData.getIdChat(), file.getChatId());
+        assertEquals(fileData.getUserId(), file.getAuthorId());
+        assertEquals(fileData.getChatId(), file.getChatId());
     }
 
     @Test
