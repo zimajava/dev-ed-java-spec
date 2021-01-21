@@ -17,7 +17,6 @@ import org.zipli.socknet.repository.MessageRepository;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -29,20 +28,18 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 @DataMongoTest
 class MessageServiceTest {
 
-    private User user;
-    private Chat chat;
-    private MessageData messageData;
-    private MessageService messageService;
-    private Message message;
-
     @Autowired
     UserRepository userRepository;
     @Autowired
     MessageRepository messageRepository;
     @Autowired
     ChatRepository chatRepository;
-
     EmitterService emitterService = new EmitterService(userRepository, new JwtUtils());
+    private User user;
+    private Chat chat;
+    private MessageData messageData;
+    private MessageService messageService;
+    private Message message;
 
     @BeforeEach
     void setUp() {

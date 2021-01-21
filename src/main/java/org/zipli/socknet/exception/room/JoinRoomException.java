@@ -1,14 +1,12 @@
 package org.zipli.socknet.exception.room;
 
-import org.zipli.socknet.dto.EventCommandSse;
 import org.zipli.socknet.exception.ErrorStatusCodeRoom;
 
 public class JoinRoomException extends Throwable {
 
     private final ErrorStatusCodeRoom errorStatusCodeRoom;
 
-    public JoinRoomException(String message,ErrorStatusCodeRoom errorStatusCodeRoom) {
-        super(message);
+    public JoinRoomException(ErrorStatusCodeRoom errorStatusCodeRoom) {
         this.errorStatusCodeRoom = errorStatusCodeRoom;
     }
 

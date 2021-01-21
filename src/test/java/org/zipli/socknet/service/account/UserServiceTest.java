@@ -15,7 +15,6 @@ import org.zipli.socknet.payload.request.PasswordRequest;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.service.email.EmailConfirmationService;
 
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -143,7 +142,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void updateEmailTest_Pass()  {
+    void updateEmailTest_Pass() {
         Mockito.when(userRepository.getUserById(user.getId())).thenReturn(user);
         assertEquals(userService.updateEmail(new EmailRequest(user.getId(), "vlad3415@ukr.net")),
                 user);
@@ -159,7 +158,7 @@ public class UserServiceTest {
     @Test
     void updateEmailTest_NullUserId() {
         assertThrows(UpdateEmailException.class, () -> {
-            userService.updateEmail(new EmailRequest(null , "vlad345@ukr.net"));
+            userService.updateEmail(new EmailRequest(null, "vlad345@ukr.net"));
         });
     }
 
@@ -176,7 +175,7 @@ public class UserServiceTest {
         Mockito.when(userRepository.getUserById(user.getId())).thenReturn(user);
         Mockito.when(userRepository.getUserByEmail("Vlad@ukr.net")).thenReturn(user);
         assertThrows(UpdateEmailException.class, () -> {
-            userService.updateEmail(new EmailRequest(user.getId() , "Vlad@ukr.net"));
+            userService.updateEmail(new EmailRequest(user.getId(), "Vlad@ukr.net"));
         });
     }
 

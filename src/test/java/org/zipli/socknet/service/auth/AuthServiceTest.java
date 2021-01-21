@@ -26,12 +26,6 @@ public class AuthServiceTest {
     private final String nickName = "Nick";
     private final String password = "$2a$10$ZKsGzTIrXTbap75SkIp4Oeadp4WdPoXyQ/sziesEl.wFEVmzNCQtm";
     User user = new User(email, password, userName, nickName);
-
-    @BeforeEach
-    void setUp() {
-        user.setId("5ffc8765a11fd");
-    }
-
     @Autowired
     private AuthService authService;
     @MockBean
@@ -41,6 +35,10 @@ public class AuthServiceTest {
     @MockBean
     private PasswordEncoder passwordEncoder;
 
+    @BeforeEach
+    void setUp() {
+        user.setId("5ffc8765a11fd");
+    }
 
     @Test
     public void loginByEmailWithConfirmedEmailAndPassword_Pass() {
@@ -111,7 +109,7 @@ public class AuthServiceTest {
     }
 
     @Test
-    public void loginByUsernameWithCorrectPassword_Pass(){
+    public void loginByUsernameWithCorrectPassword_Pass() {
         Mockito.when(userRepository.findUserByUserName(userName)).thenReturn(user);
         Mockito.when(passwordEncoder.matches(password, user.getPassword())).thenReturn(true);
         user.setConfirm(true);
@@ -127,14 +125,13 @@ public class AuthServiceTest {
     }
 
     @Test
-    public void loginByUsernameWithCorrectPassword_Fail(){
+    public void loginByUsernameWithCorrectPassword_Fail() {
         Mockito.when(userRepository.findUserByUserName(userName)).thenReturn(user);
         Mockito.when(passwordEncoder.matches(password, user.getPassword())).thenReturn(false);
 
         assertThrows(AuthException.class, () -> authService.login(email, password), "User entered an incorrect password");
 
     }
-
 
 
     @Test

@@ -1,6 +1,5 @@
-package org.zipli.socknet.dto.room;
+package org.zipli.socknet.dto.response;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -8,19 +7,19 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class RoomSseDto extends BaseSseDto{
+public class RoomEventResponse extends BaseEventResponse {
 
     private String signal;
 
     private String userName;
 
-    public RoomSseDto(String roomId, String signal, String userName) {
+    public RoomEventResponse(String roomId, String signal, String userName) {
         super(roomId);
         this.signal = signal;
         this.userName = userName;
     }
 
-    public RoomSseDto(String signal, String userName) {
+    public RoomEventResponse(String signal, String userName) {
         this.signal = signal;
         this.userName = userName;
     }

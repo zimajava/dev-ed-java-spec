@@ -1,4 +1,4 @@
-package org.zipli.socknet.dto.room;
+package org.zipli.socknet.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class BaseSseDto {
+public class BaseEventResponse {
 
     private String roomId;
 

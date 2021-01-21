@@ -2,11 +2,11 @@ package org.zipli.socknet.exception.room;
 
 import org.zipli.socknet.exception.ErrorStatusCodeRoom;
 
-public class GetMessagesByRoomException extends Throwable {
+public class SendMessageToRoomException extends Throwable {
 
     private final ErrorStatusCodeRoom errorStatusCodeRoom;
 
-    public GetMessagesByRoomException(ErrorStatusCodeRoom errorStatusCodeRoom) {
+    public SendMessageToRoomException(ErrorStatusCodeRoom errorStatusCodeRoom) {
         this.errorStatusCodeRoom = errorStatusCodeRoom;
     }
 

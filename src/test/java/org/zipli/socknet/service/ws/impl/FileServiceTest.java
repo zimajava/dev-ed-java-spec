@@ -1,7 +1,8 @@
 package org.zipli.socknet.service.ws.impl;
 
 import com.mongodb.client.gridfs.model.GridFSFile;
-import org.bson.*;
+import org.bson.BsonValue;
+import org.bson.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -20,7 +21,10 @@ import org.zipli.socknet.model.User;
 import org.zipli.socknet.repository.ChatRepository;
 import org.zipli.socknet.repository.FileRepository;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -28,12 +32,8 @@ import static org.mockito.ArgumentMatchers.any;
 @SpringBootTest
 class FileServiceTest {
 
-    private FileData fileData;
-    private User user;
-
     @Autowired
     FileService fileService;
-
     @MockBean
     FileRepository fileRepository;
     @MockBean
@@ -46,6 +46,8 @@ class FileServiceTest {
     Document metadata;
     @MockBean
     Chat chat;
+    private FileData fileData;
+    private User user;
 
     @BeforeEach
     void setup() {
@@ -159,7 +161,7 @@ class FileServiceTest {
 
     @Test
     void deleteFile_FailFileDeleteException() {
-      FileData data = new FileData(
+        FileData data = new FileData(
                 "wrongUser",
                 null,
                 "fileId",

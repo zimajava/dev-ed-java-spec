@@ -25,21 +25,18 @@ import static org.junit.jupiter.api.Assertions.*;
 @Slf4j
 @DataMongoTest
 class ChatServiceTest {
-    private User user;
-    private Chat chat;
-
-    private ChatData dataChat;
-    private ChatService chatService;
-    private ChatGroupData chatGroupData;
-
     @Autowired
     UserRepository userRepository;
     @Autowired
     ChatRepository chatRepository;
     @Autowired
     MessageRepository messageRepository;
-
     EmitterService emitterService = new EmitterService(userRepository, new JwtUtils());
+    private User user;
+    private Chat chat;
+    private ChatData dataChat;
+    private ChatService chatService;
+    private ChatGroupData chatGroupData;
 
     @BeforeEach
     void setUp() {

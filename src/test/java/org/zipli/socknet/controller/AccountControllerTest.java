@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.ResponseEntity;
 import org.zipli.socknet.dto.response.UserResponse;
-import org.zipli.socknet.exception.*;
+import org.zipli.socknet.exception.ErrorStatusCode;
 import org.zipli.socknet.exception.account.*;
 import org.zipli.socknet.model.User;
 import org.zipli.socknet.payload.request.AvatarRequest;
@@ -17,8 +17,6 @@ import org.zipli.socknet.payload.request.EmailRequest;
 import org.zipli.socknet.payload.request.NickNameRequest;
 import org.zipli.socknet.payload.request.PasswordRequest;
 import org.zipli.socknet.service.account.UserService;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

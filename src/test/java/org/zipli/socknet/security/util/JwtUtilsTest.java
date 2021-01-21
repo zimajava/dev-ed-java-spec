@@ -12,15 +12,13 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 class JwtUtilsTest {
 
-    @Autowired
-    JwtUtils jwtUtils;
-
     private final UserDetailsImpl userDetails = new UserDetailsImpl(
             new User("dsadasd",
                     "dsadsad",
                     "dasdasdasd",
                     "sas"));
-
+    @Autowired
+    JwtUtils jwtUtils;
     String email = "jkbuigt7";
 
     @Test

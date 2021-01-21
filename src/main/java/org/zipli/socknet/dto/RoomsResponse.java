@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class RoomsDao {
+public class RoomsResponse {
     private String roomId;
     private String nameRoom;
 }

@@ -19,14 +19,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class VideoServiceTest {
 
     private final VideoData videoData = new VideoData("123", "456", "Drew", "ChatName", "Signal");
-    private Chat chat = new Chat(videoData.getChatName(), false, videoData.getIdUser());
-    private BaseData baseData = new BaseData(videoData.getIdUser(), videoData.getIdChat());
-
     @Autowired
     VideoService videoService;
-
     @MockBean
     ChatRepository chatRepository;
+    private Chat chat = new Chat(videoData.getChatName(), false, videoData.getIdUser());
+    private BaseData baseData = new BaseData(videoData.getIdUser(), videoData.getIdChat());
 
     @Test
     public void startVideoCall_Pass() {

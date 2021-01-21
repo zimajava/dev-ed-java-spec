@@ -9,10 +9,9 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.zipli.socknet.dto.UserInfoByRoom;
-import org.zipli.socknet.dto.room.BaseSseDto;
-import org.zipli.socknet.dto.room.MessageSseDto;
+import org.zipli.socknet.dto.response.BaseEventResponse;
+import org.zipli.socknet.dto.response.MessageEventResponse;
 import org.zipli.socknet.exception.ErrorStatusCodeRoom;
-import org.zipli.socknet.exception.message.SendMessageException;
 import org.zipli.socknet.exception.room.*;
 import org.zipli.socknet.service.room.IRoomService;
 import reactor.core.publisher.Mono;
@@ -34,8 +33,7 @@ public class RoomHandler implements IRoomHandler {
         try {
             return serverResponseOk(roomService.getRoom(idRoom));
         } catch (GetRoomException e) {
-            log.error("Get Room fail:");
-            log.error(e.getMessage(), idRoom);
+            log.error("Get Room fail: Room {} not exit", idRoom);
             return serverResponseBadRequest(e.getErrorStatusCodeRoom().getNumberException());
         }
     }
@@ -53,11 +51,11 @@ public class RoomHandler implements IRoomHandler {
             try {
                 return serverResponseOk(roomService.joinRoom(idRoom, userInfoByRoom.get()));
             } catch (JoinRoomException e) {
-                log.error("Join Room fail:");
-                log.error(e.getMessage(), idRoom);
+                log.error("Join Room fail: Room {} not exit", idRoom);
                 return serverResponseBadRequest(e.getErrorStatusCodeRoom().getNumberException());
             }
         } else {
+            log.error("Join Room {} fail: INCORRECT_REQUEST", idRoom);
             return serverResponseBadRequest(ErrorStatusCodeRoom.INCORRECT_REQUEST.getNumberException());
         }
     }
@@ -70,11 +68,11 @@ public class RoomHandler implements IRoomHandler {
             try {
                 return serverResponseOk(roomService.leaveRoom(idRoom, userInfoByRoom.get()));
             } catch (LiveRoomException e) {
-                log.error("Leave Room fail:");
-                log.error(e.getMessage(), idRoom);
+                log.error("Leave Room fail: Room {} not exit", idRoom);
                 return serverResponseBadRequest(e.getErrorStatusCodeRoom().getNumberException());
             }
         } else {
+            log.error("Leave Room {} fail: INCORRECT_REQUEST", idRoom);
             return serverResponseBadRequest(ErrorStatusCodeRoom.INCORRECT_REQUEST.getNumberException());
         }
     }
@@ -86,6 +84,7 @@ public class RoomHandler implements IRoomHandler {
             roomService.deleteRoom(idRoom);
             return serverResponseOk("OK");
         } catch (Exception e) {
+            log.error("Delete Room fail: Room {} not exit", idRoom);
             return serverResponseBadRequest(ErrorStatusCodeRoom.ROOM_NOT_EXIT.getNumberException());
         }
 
@@ -95,7 +94,7 @@ public class RoomHandler implements IRoomHandler {
         String idRoom = request.pathVariable("idRoom");
         return ServerResponse.ok().contentType(MediaType.TEXT_EVENT_STREAM)
                 .body(BodyInserters.fromPublisher(roomService.subscribeMessage(idRoom),
-                        new ParameterizedTypeReference<ServerSentEvent<BaseSseDto>>() {
+                        new ParameterizedTypeReference<ServerSentEvent<BaseEventResponse>>() {
                         }));
     }
 
@@ -105,8 +104,7 @@ public class RoomHandler implements IRoomHandler {
         try {
             return serverResponseOk(roomService.getMessagesByRoom(idRoom));
         } catch (GetMessagesByRoomException e) {
-            log.error("Get Messages By Room fail:");
-            log.error(e.getMessage(), idRoom);
+            log.error("Get Messages By Room fail: Room {} not exit", idRoom);
             return serverResponseBadRequest(e.getErrorStatusCodeRoom().getNumberException());
         }
     }
@@ -118,27 +116,27 @@ public class RoomHandler implements IRoomHandler {
             try {
                 return serverResponseOk(roomService.createRoom(userName.get(), chatName.get()));
             } catch (CreateRoomException e) {
-                log.error("Create Room fail:");
-                log.error(e.getMessage(), chatName);
+                log.error("Create Room fail. ROOM_ALREADY_EXISTS: Chat Name - {}", chatName.get());
                 return serverResponseBadRequest(e.getErrorStatusCodeRoom().getNumberException());
             }
         } else {
+            log.error("Create Room fail. INCORRECT_REQUEST: User Name - {}, Chat Name - {}", userName.get(), chatName.get());
             return serverResponseBadRequest(ErrorStatusCodeRoom.INCORRECT_REQUEST.getNumberException());
         }
     }
 
     public Mono<ServerResponse> saveMessage(ServerRequest request) {
         String idRoom = request.pathVariable("idRoom");
-        Optional<MessageSseDto> message = request.bodyToMono(MessageSseDto.class).blockOptional();
+        Optional<MessageEventResponse> message = request.bodyToMono(MessageEventResponse.class).blockOptional();
         if (message.isPresent()) {
             try {
                 return serverResponseOk(roomService.saveMessage(idRoom, message.get()));
-            } catch (SendMessageException e) {
-                log.error("Save message fail:");
-                log.error(e.getMessage(), idRoom);
-                return serverResponseBadRequest(ErrorStatusCodeRoom.ROOM_NOT_EXIT.getNumberException());
+            } catch (SendMessageToRoomException e) {
+                log.error("Save message fail: Room {} not exit", idRoom);
+                return serverResponseBadRequest(e.getErrorStatusCodeRoom().getNumberException());
             }
         } else {
+            log.error("Create Room fail. INCORRECT_REQUEST: MessageEventResponse - {}", message.get());
             return serverResponseBadRequest(ErrorStatusCodeRoom.INCORRECT_REQUEST.getNumberException());
         }
     }

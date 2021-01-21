@@ -7,11 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.http.codec.ServerSentEvent;
 import org.zipli.socknet.dto.MessageRoom;
-import org.zipli.socknet.dto.RoomsDao;
+import org.zipli.socknet.dto.RoomsResponse;
 import org.zipli.socknet.dto.UserInfoByRoom;
-import org.zipli.socknet.dto.room.BaseSseDto;
-import org.zipli.socknet.dto.room.MessageSseDto;
-import org.zipli.socknet.exception.message.SendMessageException;
+import org.zipli.socknet.dto.response.BaseEventResponse;
+import org.zipli.socknet.dto.response.MessageEventResponse;
+import org.zipli.socknet.exception.ErrorStatusCodeRoom;
 import org.zipli.socknet.exception.room.*;
 import org.zipli.socknet.model.Room;
 import org.zipli.socknet.repository.RoomRepository;
@@ -52,18 +52,19 @@ class RoomServiceTest {
         try {
             roomService.getRoom("NoValidId");
         } catch (GetRoomException e) {
-            assertEquals(e.getMessage(), "Room {} not exit");
+            assertEquals(e.getErrorStatusCodeRoom(),
+                    ErrorStatusCodeRoom.ROOM_NOT_EXIT);
         }
     }
 
     @Test
     void getRooms() {
-        List<RoomsDao> roomsDao = roomService.getRooms();
+        List<RoomsResponse> roomsResponse = roomService.getRooms();
         List<Room> rooms = roomRepository.findAll();
 
-        assertEquals(roomsDao.size(), rooms.size());
-        assertEquals(roomsDao.get(0).getRoomId(), rooms.get(0).getId());
-        assertEquals(roomsDao.get(0).getNameRoom(), rooms.get(0).getRoomName());
+        assertEquals(roomsResponse.size(), rooms.size());
+        assertEquals(roomsResponse.get(0).getRoomId(), rooms.get(0).getId());
+        assertEquals(roomsResponse.get(0).getNameRoom(), rooms.get(0).getRoomName());
     }
 
     @Test
@@ -84,7 +85,7 @@ class RoomServiceTest {
             roomService.joinRoom("NoValidRoom",
                     new UserInfoByRoom("Artemiy", "", "signal", false));
         } catch (JoinRoomException e) {
-            assertEquals(e.getMessage(), "Room {} not exit");
+            assertEquals(e.getErrorStatusCodeRoom(), ErrorStatusCodeRoom.ROOM_NOT_EXIT);
         }
     }
 
@@ -116,40 +117,40 @@ class RoomServiceTest {
             roomService.createRoom("User_Create_Room_Fail", "Room_Create_Fail");
             roomService.createRoom("User_Create_Room_Fail", "Room_Create_Fail");
         } catch (CreateRoomException e) {
-            assertEquals("Room {} already exits", e.getMessage());
+            assertEquals(e.getErrorStatusCodeRoom(), ErrorStatusCodeRoom.ROOM_ALREADY_EXISTS);
         }
     }
 
     @Test
-    void saveMessage_Pass() throws SendMessageException, CreateRoomException {
+    void saveMessage_Pass() throws CreateRoomException, SendMessageToRoomException {
         Room roomCreate = roomService.createRoom("User_SaveMessage_Pass", "Room_SaveMessage_Pass");
-        MessageRoom messageRoomSave = roomService.saveMessage(roomCreate.getId(), new MessageSseDto());
+        MessageRoom messageRoomSave = roomService.saveMessage(roomCreate.getId(), new MessageEventResponse());
         Room room = roomRepository.getRoomById(roomCreate.getId());
 
-        assertEquals(messageRoomSave.getRoomId(),room.getId());
-        assertEquals(messageRoomSave.getTextMessage(),room.getMessages().get(0).getTextMessage());
-        assertEquals(messageRoomSave.getAuthorUserName(),room.getMessages().get(0).getAuthorUserName());
+        assertEquals(messageRoomSave.getRoomId(), room.getId());
+        assertEquals(messageRoomSave.getTextMessage(), room.getMessages().get(0).getTextMessage());
+        assertEquals(messageRoomSave.getAuthorUserName(), room.getMessages().get(0).getAuthorUserName());
     }
 
     @Test
-    void saveMessage_Fail(){
+    void saveMessage_Fail() {
         try {
-            roomService.saveMessage("NoValidId", new MessageSseDto());
-        } catch (SendMessageException e) {
-            assertEquals(e.getMessage(), "Room {} not exit");
+            roomService.saveMessage("NoValidId", new MessageEventResponse());
+        } catch (SendMessageToRoomException e) {
+            assertEquals(e.getErrorStatusCodeRoom(), ErrorStatusCodeRoom.INCORRECT_REQUEST);
         }
     }
 
     @Test
-    void getMessagesByRoom_Pass() throws CreateRoomException, SendMessageException, GetMessagesByRoomException {
+    void getMessagesByRoom_Pass() throws CreateRoomException, GetMessagesByRoomException, SendMessageToRoomException {
         Room roomCreate = roomService.createRoom("User_getMessagesByRoom_Pass", "Room_getMessagesByRoom_Pass");
-        roomService.saveMessage(roomCreate.getId(), new MessageSseDto());
+        roomService.saveMessage(roomCreate.getId(), new MessageEventResponse());
         List<MessageRoom> messagesByRoom = roomService.getMessagesByRoom(roomCreate.getId());
         Room room = roomRepository.getRoomById(roomCreate.getId());
 
-        assertEquals(messagesByRoom.get(0).getRoomId(),room.getId());
-        assertEquals(messagesByRoom.get(0).getTextMessage(),room.getMessages().get(0).getTextMessage());
-        assertEquals(messagesByRoom.get(0).getAuthorUserName(),room.getMessages().get(0).getAuthorUserName());
+        assertEquals(messagesByRoom.get(0).getRoomId(), room.getId());
+        assertEquals(messagesByRoom.get(0).getTextMessage(), room.getMessages().get(0).getTextMessage());
+        assertEquals(messagesByRoom.get(0).getAuthorUserName(), room.getMessages().get(0).getAuthorUserName());
     }
 
     @Test
@@ -157,14 +158,14 @@ class RoomServiceTest {
         try {
             roomService.getMessagesByRoom("NoValidId");
         } catch (GetMessagesByRoomException e) {
-            assertEquals(e.getMessage(), "Room {} not exit");
+            assertEquals(e.getErrorStatusCodeRoom(), ErrorStatusCodeRoom.ROOM_NOT_EXIT);
         }
     }
 
     @Test
     void subscribeMessage() throws CreateRoomException {
         Room roomCreate = roomService.createRoom("User_subscribeMessage_Pass", "Room_subscribeMessage_Pass");
-        Flux<ServerSentEvent<BaseSseDto>> serverSentEventFlux = roomService.subscribeMessage(roomCreate.getId());
+        Flux<ServerSentEvent<BaseEventResponse>> serverSentEventFlux = roomService.subscribeMessage(roomCreate.getId());
         assertNotNull(serverSentEventFlux);
     }
 
