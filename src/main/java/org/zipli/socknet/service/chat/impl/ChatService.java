@@ -128,7 +128,7 @@ public class ChatService implements IChatService {
 
                 userRepository.saveAll(
                         userRepository.findUsersByIdIn(
-                                chat.getIdUsers()).stream()
+                                chat.getUsersId()).stream()
                                 .map(user -> {
                                     user.getChatsId().remove(data.getChatId());
                                     return user;
