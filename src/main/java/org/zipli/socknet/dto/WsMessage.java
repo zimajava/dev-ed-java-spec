@@ -42,15 +42,6 @@ public class WsMessage {
                             users,
                             data.findValue("isPrivate").asBoolean()
                     ));
-                case CHAT_DELETE:
-                case CHAT_USER_ADD:
-                case CHAT_LEAVE:
-                case MESSAGES_GET_BY_CHAT_ID:
-                case VIDEO_CALL_EXIT:
-                    return new WsMessage(command, new ChatData(
-                            data.findValue("userId").asText(),
-                            data.findValue("chatId").asText()
-                    ));
                 case CHAT_UPDATE:
                     return new WsMessage(command, new FullChatData(
                             data.findValue("userId").asText(),
@@ -105,6 +96,11 @@ public class WsMessage {
                             data.findValue("title").asText(),
                             finalBytes
                     ));
+                case CHAT_DELETE:
+                case CHAT_USER_ADD:
+                case CHAT_LEAVE:
+                case MESSAGES_GET_BY_CHAT_ID:
+                case VIDEO_CALL_EXIT:
                 default:
                     return new WsMessage(command, new ChatData(
                             data.findValue("userId").asText(),

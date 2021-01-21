@@ -3,7 +3,7 @@ package org.zipli.socknet.security.util;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.zipli.socknet.model.User;
+import org.zipli.socknet.repository.model.User;
 import org.zipli.socknet.security.jwt.JwtUtils;
 import org.zipli.socknet.security.services.UserDetailsImpl;
 
@@ -12,15 +12,13 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 class JwtUtilsTest {
 
-    @Autowired
-    JwtUtils jwtUtils;
-
     private final UserDetailsImpl userDetails = new UserDetailsImpl(
             new User("dsadasd",
                     "dsadsad",
                     "dasdasdasd",
                     "sas"));
-
+    @Autowired
+    JwtUtils jwtUtils;
     String email = "jkbuigt7";
 
     @Test

@@ -11,11 +11,11 @@ import org.zipli.socknet.exception.account.DeleteAvatarException;
 import org.zipli.socknet.exception.account.UpdateAvatarException;
 import org.zipli.socknet.exception.account.UpdateEmailException;
 import org.zipli.socknet.exception.account.UpdateNickNameException;
-import org.zipli.socknet.payload.request.AvatarRequest;
-import org.zipli.socknet.payload.request.EmailRequest;
-import org.zipli.socknet.payload.request.NickNameRequest;
-import org.zipli.socknet.payload.request.PasswordRequest;
-import org.zipli.socknet.service.account.UserService;
+import org.zipli.socknet.dto.request.AvatarRequest;
+import org.zipli.socknet.dto.request.EmailRequest;
+import org.zipli.socknet.dto.request.NickNameRequest;
+import org.zipli.socknet.dto.request.PasswordRequest;
+import org.zipli.socknet.service.user.UserService;
 
 import javax.validation.Valid;
 import java.util.Objects;
@@ -111,7 +111,7 @@ public class AccountController {
         try {
             return ResponseEntity.ok(userService.deleteAccount(userId));
         } catch (DeleteAccountException e) {
-            log.error("Failed delete account by userId {}, reason {}", userId, e.getErrorStatusCode().getMessage());
+            log.error("Failed delete user by userId {}, reason {}", userId, e.getErrorStatusCode().getMessage());
             return ResponseEntity
                     .badRequest()
                     .body(e.getErrorStatusCode().getValue());

@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.zipli.socknet.model.Message;
+import org.zipli.socknet.repository.model.Message;
 
 import java.util.Date;
 
