@@ -8,31 +8,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.codec.ServerSentEvent;
-import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import org.zipli.socknet.dto.MessageRoom;
 import org.zipli.socknet.dto.RoomsResponse;
 import org.zipli.socknet.dto.UserInfoByRoomResponse;
-import org.zipli.socknet.dto.response.BaseEventResponse;
 import org.zipli.socknet.exception.ErrorStatusCodeRoom;
+import org.zipli.socknet.exception.room.GetMessagesByRoomException;
 import org.zipli.socknet.exception.room.GetRoomException;
 import org.zipli.socknet.exception.room.JoinRoomException;
 import org.zipli.socknet.exception.room.LiveRoomException;
 import org.zipli.socknet.model.Room;
-import org.zipli.socknet.repository.RoomRepository;
 import org.zipli.socknet.service.room.RoomService;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.publisher.Sinks;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @Slf4j
 @SpringBootTest
@@ -49,12 +41,15 @@ class RoomHandlerTest {
     private final Room room = new Room("RoomName", "CreatorUser");
     private final String idRoom = "";
     private List<RoomsResponse> roomsResponses;
-    private final UserInfoByRoomResponse userInfoByRoomResponse = new UserInfoByRoomResponse("", "", "", false);
-
+    private final UserInfoByRoomResponse userInfoByRoomResponse =
+            new UserInfoByRoomResponse("", "", "", false);
+    private final MessageRoom messageRoom =
+            new MessageRoom("AuthorUser","IdRoom","Text",new Date());
     @BeforeEach
     void setUp() {
         roomsResponses = new ArrayList<>();
         roomsResponses.add(new RoomsResponse("123", "RoomName"));
+
     }
 
     @Test
@@ -62,7 +57,7 @@ class RoomHandlerTest {
         Mockito.when(request.pathVariable("idRoom")).thenReturn(idRoom);
         Mockito.when(roomService.getRoom(idRoom)).thenReturn(room);
         Mono<ServerResponse> serverResponseGetRoom = roomHandler.getRoom(request);
-
+        //log.info(serverResponseGetRoom.i);
 //        assertEquals(ServerResponse.ok().contentType(MediaType.APPLICATION_JSON)
 //                .body(BodyInserters.fromValue(room)).toString(), serverResponseGetRoom.toString());
         assertEquals(Objects.requireNonNull(serverResponseGetRoom.block()).statusCode(), HttpStatus.OK);
@@ -72,7 +67,6 @@ class RoomHandlerTest {
     void getRoom_Fail() throws GetRoomException {
         Mockito.when(roomService.getRoom(null)).thenThrow(new GetRoomException(ErrorStatusCodeRoom.ROOM_NOT_EXIT));
         Mono<ServerResponse> serverResponseGetRoom = roomHandler.getRoom(request);
-
 //        assertEquals(ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON)
 //                .body(BodyInserters.fromValue(ErrorStatusCodeRoom.ROOM_NOT_EXIT)).toString(), serverResponseGetRoom.toString());
         assertEquals(Objects.requireNonNull(serverResponseGetRoom.block()).statusCode(), HttpStatus.BAD_REQUEST);
@@ -171,7 +165,24 @@ class RoomHandlerTest {
     }
 
     @Test
-    void getMessagesByRoom() {
+    void getMessagesByRoom_Pass() throws GetMessagesByRoomException {
+        Mockito.when(request.pathVariable("idRoom")).thenReturn(idRoom);
+        Mono<ServerResponse> serverResponseGetMessagesByRoom = roomHandler.getMessagesByRoom(request);
+        Mockito.when(roomService.getMessagesByRoom(idRoom))
+                .thenReturn(Collections.singletonList(messageRoom));
+
+        assertEquals(Objects.requireNonNull(serverResponseGetMessagesByRoom.block()).statusCode(), HttpStatus.OK);
+    }
+
+    @Test
+    void getMessagesByRoom_Fail() throws GetMessagesByRoomException {
+        Mockito.when(request.pathVariable("idRoom")).thenReturn(idRoom);
+        Mono<ServerResponse> serverResponseGetMessagesByRoom = roomHandler.getMessagesByRoom(request);
+        Mockito.when(roomService.getMessagesByRoom(idRoom))
+                .thenReturn(Collections.singletonList(messageRoom));
+
+        assertEquals(Objects.requireNonNull(serverResponseGetMessagesByRoom.block()).statusCode(), HttpStatus.OK);
+        //Mockito.when(request.bodyToMono(UserInfoByRoomResponse.class)).thenReturn(Mono.just(userInfoByRoomResponse));
     }
 
     @Test
