@@ -9,8 +9,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.zipli.socknet.dto.response.LoginResponse;
 import org.zipli.socknet.exception.auth.AuthException;
-import org.zipli.socknet.model.User;
 import org.zipli.socknet.repository.UserRepository;
+import org.zipli.socknet.repository.model.User;
 import org.zipli.socknet.security.jwt.JwtUtils;
 import org.zipli.socknet.security.services.UserDetailsImpl;
 
@@ -51,7 +51,6 @@ public class AuthServiceTest {
 
         Mockito.when(userRepository.findUserByEmail(email)).thenReturn(user);
         LoginResponse actualLoginResponse = authService.login(email, password);
-
 
         assertEquals(expectedLoginResponse.getUserId(), actualLoginResponse.getUserId());
         assertEquals(expectedLoginResponse.getAccessToken(), actualLoginResponse.getAccessToken());
@@ -132,7 +131,6 @@ public class AuthServiceTest {
         assertThrows(AuthException.class, () -> authService.login(email, password), "User entered an incorrect password");
 
     }
-
 
     @Test
     public void registration_Pass() {

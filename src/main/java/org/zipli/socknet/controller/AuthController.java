@@ -11,11 +11,11 @@ import org.zipli.socknet.dto.response.LoginResponse;
 import org.zipli.socknet.exception.auth.AuthException;
 import org.zipli.socknet.exception.auth.NotConfirmAccountException;
 import org.zipli.socknet.exception.auth.UserNotFoundException;
-import org.zipli.socknet.model.User;
-import org.zipli.socknet.payload.request.*;
+import org.zipli.socknet.repository.model.User;
+import org.zipli.socknet.dto.request.*;
 import org.zipli.socknet.service.auth.AuthService;
-import org.zipli.socknet.service.email.EmailConfirmationService;
-import org.zipli.socknet.service.password.ResetPasswordService;
+import org.zipli.socknet.service.user.EmailConfirmationService;
+import org.zipli.socknet.service.user.ResetPasswordService;
 
 import javax.validation.Valid;
 import java.util.Objects;

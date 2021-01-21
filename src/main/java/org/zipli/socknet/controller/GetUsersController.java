@@ -1,13 +1,12 @@
 package org.zipli.socknet.controller;
 
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.zipli.socknet.exception.chat.GetAllUsersException;
-import org.zipli.socknet.service.chat.GetUsersService;
+import org.zipli.socknet.service.user.GetUsersService;
 
 @RestController
 @Slf4j
