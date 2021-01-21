@@ -36,7 +36,6 @@ class ChatServiceTest {
     private Chat chat;
     private FullChatData dataChat;
     private ChatService chatService;
-    private BaseData baseData;
 
     @BeforeEach
     void setUp() {

@@ -165,7 +165,7 @@ public class UserService implements IUserService {
             throw new SearchByParamsException(ErrorStatusCode.PARAM_IS_NULL);
         }
         List<User> users = userRepository.findUsersByUserNameOrNickNameOrEmail(param);
-        if (users == null) {
+        if (users.isEmpty()) {
             throw new SearchByParamsException(ErrorStatusCode.USERS_DOES_NOT_EXIST_BY_PARAM);
         }
         return users;

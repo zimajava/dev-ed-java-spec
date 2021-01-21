@@ -12,6 +12,7 @@ import org.zipli.socknet.dto.request.NickNameRequest;
 import org.zipli.socknet.dto.request.PasswordRequest;
 import org.zipli.socknet.exception.DeleteAccountException;
 import org.zipli.socknet.exception.GetUserException;
+import org.zipli.socknet.exception.SearchByParamsException;
 import org.zipli.socknet.exception.UpdatePasswordException;
 import org.zipli.socknet.exception.account.DeleteAvatarException;
 import org.zipli.socknet.exception.account.UpdateAvatarException;
@@ -19,6 +20,10 @@ import org.zipli.socknet.exception.account.UpdateEmailException;
 import org.zipli.socknet.exception.account.UpdateNickNameException;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.repository.model.User;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -31,6 +36,7 @@ public class UserServiceTest {
     private final String nickName = "Nicki";
     private final String password = "qwerty";
     private final String avatar = "avatar";
+    private final String searchParam = "Val";
 
     @Autowired
     UserService userService;
@@ -232,4 +238,29 @@ public class UserServiceTest {
         });
     }
 
+    @Test
+    void getUsersBySearchParam_Pass() {
+        User secondUser = new User("em@g.com", "pass", "Value", "Nick");
+        List<User> list = Stream.of(user, secondUser).collect(Collectors.toList());
+
+        Mockito.when(userRepository.findUsersByUserNameOrNickNameOrEmail(searchParam))
+                .thenReturn(List.of(user, secondUser));
+
+        assertEquals(list, userService.getUsersBySearchParam(searchParam));
+    }
+
+    @Test
+    void getUsersBySearchParam_Null_Param() {
+        assertThrows(SearchByParamsException.class, () -> {
+            userService.getUsersBySearchParam(null);
+        });
+    }
+
+    @Test
+    void getUsersBySearchParam_Users_Exist() {
+        assertThrows(SearchByParamsException.class, () -> {
+            userService.getUsersBySearchParam(searchParam);
+            Mockito.when(userRepository.findUsersByUserNameOrNickNameOrEmail(searchParam)).thenReturn(null);
+        });
+    }
 }
