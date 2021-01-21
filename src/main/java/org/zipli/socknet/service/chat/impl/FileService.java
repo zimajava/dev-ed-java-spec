@@ -18,10 +18,10 @@ import org.zipli.socknet.exception.file.FileDeleteException;
 import org.zipli.socknet.exception.file.FindFileException;
 import org.zipli.socknet.exception.file.SaveFileException;
 import org.zipli.socknet.exception.file.SendFileException;
-import org.zipli.socknet.repository.model.Chat;
-import org.zipli.socknet.repository.model.File;
 import org.zipli.socknet.repository.ChatRepository;
 import org.zipli.socknet.repository.FileRepository;
+import org.zipli.socknet.repository.model.Chat;
+import org.zipli.socknet.repository.model.File;
 import org.zipli.socknet.service.chat.IFileService;
 
 import java.io.ByteArrayInputStream;
@@ -70,6 +70,7 @@ public class FileService implements IFileService {
                     log.info("Send file to db userId {} chatId {}", data.getUserId(), data.getChatId());
 
                     chat.getIdUsers().parallelStream()
+                            .filter(e -> !e.equals(data.getUserId()))
                             .forEach(userId -> emitterService.sendMessageToUser(userId,
                                     new WsMessageResponse(Command.FILE_SEND,
                                             new FileData(userId,
@@ -98,11 +99,12 @@ public class FileService implements IFileService {
         File file = fileRepository.getFileById(data.getFileId());
         Chat chat = chatRepository.findChatById(data.getChatId());
         try {
-            if (file != null || file.getAuthorId().equals(data.getUserId()) || chat != null) {
+            if (file != null && file.getAuthorId().equals(data.getUserId()) && chat != null) {
                 if (chat.getIdFiles().remove(file.getId())) {
                     final Chat finalChat = chatRepository.save(chat);
 
                     finalChat.getIdUsers().parallelStream()
+                            .filter(e -> !e.equals(data.getUserId()))
                             .forEach(userId -> emitterService.sendMessageToUser(userId,
                                     new WsMessageResponse(Command.FILE_DELETE,
                                             new FileData(userId,
