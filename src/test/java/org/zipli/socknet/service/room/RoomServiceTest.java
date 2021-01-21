@@ -8,7 +8,7 @@ import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.http.codec.ServerSentEvent;
 import org.zipli.socknet.dto.MessageRoom;
 import org.zipli.socknet.dto.RoomsResponse;
-import org.zipli.socknet.dto.UserInfoByRoom;
+import org.zipli.socknet.dto.UserInfoByRoomResponse;
 import org.zipli.socknet.dto.response.BaseEventResponse;
 import org.zipli.socknet.dto.response.MessageEventResponse;
 import org.zipli.socknet.exception.ErrorStatusCodeRoom;
@@ -71,7 +71,7 @@ class RoomServiceTest {
     void joinRoom_Pass() throws JoinRoomException, CreateRoomException {
         Room roomCreate = roomService.createRoom("User_Join_Pass", "Room_Join_Pass");
         Room roomJoin = roomService.joinRoom(roomCreate.getId(),
-                new UserInfoByRoom("Artemiy", "", "signal", false));
+                new UserInfoByRoomResponse("Artemiy", "", "signal", false));
         Room room = roomRepository.getRoomById(roomCreate.getId());
 
         assertEquals(roomJoin.getUsers().get(0).getIdUser(), room.getUsers().get(0).getIdUser());
@@ -83,7 +83,7 @@ class RoomServiceTest {
     void joinRoom_Fail() {
         try {
             roomService.joinRoom("NoValidRoom",
-                    new UserInfoByRoom("Artemiy", "", "signal", false));
+                    new UserInfoByRoomResponse("Artemiy", "", "signal", false));
         } catch (JoinRoomException e) {
             assertEquals(e.getErrorStatusCodeRoom(), ErrorStatusCodeRoom.ROOM_NOT_EXIT);
         }
@@ -93,10 +93,10 @@ class RoomServiceTest {
     void leaveRoom_Pass() throws CreateRoomException, JoinRoomException, LiveRoomException {
         Room roomCreate = roomService.createRoom("User_Leave_Pass", "Room_Leave_Pass");
         Room roomJoin = roomService.joinRoom(roomCreate.getId(),
-                new UserInfoByRoom("Artemiy", "", "signal", false));
+                new UserInfoByRoomResponse("Artemiy", "", "signal", false));
         log.info("sdaaaaaaa     " + roomJoin.getUsers().get(0).getUsername());
         Room roomLeave = roomService.leaveRoom(roomCreate.getId(),
-                new UserInfoByRoom("Artemiy", "", "signal", false));
+                new UserInfoByRoomResponse("Artemiy", "", "signal", false));
 
         assertNotEquals(roomJoin.getUsers().size(), roomLeave.getUsers().size() - 1);
     }

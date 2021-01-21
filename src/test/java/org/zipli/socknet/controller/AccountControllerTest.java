@@ -177,7 +177,6 @@ public class AccountControllerTest {
 
     @Test
     void updateEmailTest_NullData() {
-
         Mockito.doThrow(new UpdateEmailException(ErrorStatusCode.DATA_IS_NULL))
                 .when(userService)
                 .updateEmail(emailRequest);

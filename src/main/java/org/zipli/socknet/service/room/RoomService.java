@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.zipli.socknet.dto.EventCommandSse;
 import org.zipli.socknet.dto.MessageRoom;
 import org.zipli.socknet.dto.RoomsResponse;
-import org.zipli.socknet.dto.UserInfoByRoom;
+import org.zipli.socknet.dto.UserInfoByRoomResponse;
 import org.zipli.socknet.dto.response.BaseEventResponse;
 import org.zipli.socknet.dto.response.MessageEventResponse;
 import org.zipli.socknet.dto.response.RoomEventResponse;
@@ -57,13 +57,12 @@ public class RoomService implements IRoomService {
     }
 
     @Override
-    public Room joinRoom(String idRoom, UserInfoByRoom userInfoByRoom) throws JoinRoomException {
+    public Room joinRoom(String idRoom, UserInfoByRoomResponse userInfoByRoomResponse) throws JoinRoomException {
         Optional<Room> roomOptional = roomRepository.findById(idRoom);
 
         if (roomOptional.isPresent()) {
-
             Room room = roomOptional.get();
-            room.getUsers().add(userInfoByRoom);
+            room.getUsers().add(userInfoByRoomResponse);
             room = roomRepository.save(room);
 
             chatIdEmitterMap.get(idRoom).tryEmitNext(ServerSentEvent.<BaseEventResponse>builder()
@@ -71,8 +70,8 @@ public class RoomService implements IRoomService {
                     .event(EventCommandSse.JOIN_ROOM_EVENT.name())
                     .data(new RoomEventResponse(
                             idRoom,
-                            userInfoByRoom.getSignals(),
-                            userInfoByRoom.getUsername()))
+                            userInfoByRoomResponse.getSignals(),
+                            userInfoByRoomResponse.getUsername()))
                     .build());
             return room;
         } else {
@@ -81,12 +80,12 @@ public class RoomService implements IRoomService {
     }
 
     @Override
-    public Room leaveRoom(String idRoom, UserInfoByRoom userInfoByRoom) throws LiveRoomException {
+    public Room leaveRoom(String idRoom, UserInfoByRoomResponse userInfoByRoomResponse) throws LiveRoomException {
         Optional<Room> roomOptional = roomRepository.findById(idRoom);
 
         if (roomOptional.isPresent()) {
             Room room = roomOptional.get();
-            room.getUsers().removeIf(userInfo -> userInfo.getUsername().equals(userInfoByRoom.getUsername()));
+            room.getUsers().removeIf(userInfo -> userInfo.getUsername().equals(userInfoByRoomResponse.getUsername()));
             room = roomRepository.save(room);
 
             chatIdEmitterMap.get(idRoom).tryEmitNext(ServerSentEvent.<BaseEventResponse>builder()
@@ -95,8 +94,8 @@ public class RoomService implements IRoomService {
                     .event(EventCommandSse.LEAVE_ROOM_EVENT.name())
                     .data(new RoomEventResponse(
                             idRoom,
-                            userInfoByRoom.getSignals(),
-                            userInfoByRoom.getUsername()))
+                            userInfoByRoomResponse.getSignals(),
+                            userInfoByRoomResponse.getUsername()))
                     .build());
             return room;
         } else {

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
-import org.zipli.socknet.dto.UserInfoByRoom;
+import org.zipli.socknet.dto.UserInfoByRoomResponse;
 import org.zipli.socknet.dto.response.BaseEventResponse;
 import org.zipli.socknet.dto.response.MessageEventResponse;
 import org.zipli.socknet.exception.ErrorStatusCodeRoom;
@@ -45,7 +45,7 @@ public class RoomHandler implements IRoomHandler {
 
     public Mono<ServerResponse> joinRoom(ServerRequest request) {
         String idRoom = request.pathVariable("idRoom");
-        Optional<UserInfoByRoom> userInfoByRoom = request.bodyToMono(UserInfoByRoom.class).blockOptional();
+        Optional<UserInfoByRoomResponse> userInfoByRoom = request.bodyToMono(UserInfoByRoomResponse.class).blockOptional();
 
         if (userInfoByRoom.isPresent()) {
             try {
@@ -63,7 +63,7 @@ public class RoomHandler implements IRoomHandler {
     @Override
     public Mono<ServerResponse> leaveRoom(ServerRequest request) {
         String idRoom = request.pathVariable("idRoom");
-        Optional<UserInfoByRoom> userInfoByRoom = request.bodyToMono(UserInfoByRoom.class).blockOptional();
+        Optional<UserInfoByRoomResponse> userInfoByRoom = request.bodyToMono(UserInfoByRoomResponse.class).blockOptional();
         if (userInfoByRoom.isPresent()) {
             try {
                 return serverResponseOk(roomService.leaveRoom(idRoom, userInfoByRoom.get()));

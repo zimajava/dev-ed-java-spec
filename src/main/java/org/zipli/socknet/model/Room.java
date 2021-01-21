@@ -7,7 +7,7 @@ import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.zipli.socknet.dto.MessageRoom;
-import org.zipli.socknet.dto.UserInfoByRoom;
+import org.zipli.socknet.dto.UserInfoByRoomResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ public class Room {
     private String id;
     private String roomName;
     private String creatorUser;
-    private List<UserInfoByRoom> users;
+    private List<UserInfoByRoomResponse> users;
     private List<MessageRoom> messages;
 
     public Room(String roomName, String creatorUser) {
