@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 public class EventHandler {
-    private static final String commandFail = "Command {} Fail with message {} and param {} ";
+    private static final String commandFail = "Command {} fail with message {}  error message {} ";
 
     private final IMessageService messageService;
     private final IFileService fileService;
