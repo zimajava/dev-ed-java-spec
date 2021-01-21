@@ -20,10 +20,7 @@ import org.zipli.socknet.dto.request.PasswordRequest;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.security.jwt.JwtUtils;
 import org.zipli.socknet.security.services.UserDetailsImpl;
-import org.zipli.socknet.service.email.EmailConfirmationService;
 import org.zipli.socknet.ws.SearchByParamsException;
-
-import java.util.List;
 
 @Service
 public class UserService implements IUserService {
