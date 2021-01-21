@@ -9,8 +9,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.ResponseEntity;
 import org.zipli.socknet.exception.ErrorStatusCode;
 import org.zipli.socknet.exception.chat.GetAllUsersException;
-import org.zipli.socknet.model.User;
-import org.zipli.socknet.service.chat.GetUsersService;
+import org.zipli.socknet.repository.model.User;
+import org.zipli.socknet.service.user.GetUsersService;
 
 import java.util.ArrayList;
 import java.util.List;

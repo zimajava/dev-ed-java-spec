@@ -8,10 +8,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.zipli.socknet.dto.response.UserResponse;
 import org.zipli.socknet.exception.chat.GetAllUsersException;
-import org.zipli.socknet.model.User;
 import org.zipli.socknet.repository.UserRepository;
-import org.zipli.socknet.service.chat.GetUsersService;
-import org.zipli.socknet.service.email.EmailConfirmationService;
+import org.zipli.socknet.repository.model.User;
+import org.zipli.socknet.service.user.EmailConfirmationService;
+import org.zipli.socknet.service.user.GetUsersService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,12 +35,10 @@ public class GetUsersServiceTest {
     @MockBean
     EmailConfirmationService emailConfirmationService;
 
-
     User user = new User(email, password, userName, nickName);
     UserResponse userResponse = new UserResponse(user);
     List<UserResponse> usersResponse = new ArrayList<>();
     List<User> users = new ArrayList<>();
-
 
     @BeforeEach
     void setUp() {
