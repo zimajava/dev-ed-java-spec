@@ -23,10 +23,7 @@ public class UserInfo {
         this.email = user.getEmail();
         this.userName = user.getUserName();
         this.nickName = user.getNickName();
-        if (user.getAvatar() == null) {
-            this.avatar = "";
-        } else {
-            this.avatar = user.getAvatar();
-        }
+        this.avatar = user.getAvatar();
     }
+
 }

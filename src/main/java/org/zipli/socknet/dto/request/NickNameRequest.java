@@ -18,6 +18,6 @@ public class NickNameRequest {
     private String userId;
 
     @NotBlank(message = "Nickname can't be empty")
-    @Pattern(regexp = "^[a-zA-Z0-9_ .-]{8,16}$")
+    @Pattern(regexp = "^.{1,16}$")
     private String nickName;
 }

@@ -60,7 +60,7 @@ class EmitterServiceTest {
     void addMessageEmitterByToken_Pass() throws CreateSocketException {
 
         Mockito.when(jwtUtils.getUserNameFromJwtToken(token)).thenReturn(user.getUserName());
-        Mockito.when(userRepository.findUserByUserName(user.getUserName())).thenReturn(user);
+        Mockito.when(userRepository.getUserByUserName(user.getUserName())).thenReturn(user);
         userId = emitterService.addMessageEmitterByToken(token, emitter);
         assertEquals(emitterService.getMessageEmitter().size(), 1);
     }
@@ -68,7 +68,7 @@ class EmitterServiceTest {
     @Test
     void sendMessageToUser_Pass() throws CreateSocketException {
         Mockito.when(jwtUtils.getUserNameFromJwtToken(token)).thenReturn(user.getUserName());
-        Mockito.when(userRepository.findUserByUserName(user.getUserName())).thenReturn(user);
+        Mockito.when(userRepository.getUserByUserName(user.getUserName())).thenReturn(user);
 
         userId = emitterService.addMessageEmitterByToken(token, emitter);
 
@@ -107,7 +107,7 @@ class EmitterServiceTest {
     @Test
     void deleteMessageEmitterByUserId_Pass() throws CreateSocketException, DeleteSessionException {
         Mockito.when(jwtUtils.getUserNameFromJwtToken(token)).thenReturn(user.getUserName());
-        Mockito.when(userRepository.findUserByUserName(user.getUserName())).thenReturn(user);
+        Mockito.when(userRepository.getUserByUserName(user.getUserName())).thenReturn(user);
 
         userId = emitterService.addMessageEmitterByToken(token, emitter);
         emitterService.deleteMessageEmitterByUserId(userId, emitter);

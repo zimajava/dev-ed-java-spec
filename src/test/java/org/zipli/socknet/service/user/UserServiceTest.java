@@ -243,7 +243,7 @@ public class UserServiceTest {
         User secondUser = new User("em@g.com", "pass", "Value", "Nick");
         List<User> list = Stream.of(user, secondUser).collect(Collectors.toList());
 
-        Mockito.when(userRepository.findUsersByUserNameOrNickNameOrEmail(searchParam))
+        Mockito.when(userRepository.getUsersBySearchParam(searchParam))
                 .thenReturn(List.of(user, secondUser));
 
         assertEquals(list, userService.getUsersBySearchParam(searchParam));
@@ -257,10 +257,17 @@ public class UserServiceTest {
     }
 
     @Test
+    void getUsersBySearchParam_Shorter_Three_Chars() {
+        assertThrows(SearchByParamsException.class, () -> {
+            userService.getUsersBySearchParam("nl");
+        });
+    }
+
+    @Test
     void getUsersBySearchParam_Users_Exist() {
         assertThrows(SearchByParamsException.class, () -> {
             userService.getUsersBySearchParam(searchParam);
-            Mockito.when(userRepository.findUsersByUserNameOrNickNameOrEmail(searchParam)).thenReturn(null);
+            Mockito.when(userRepository.getUsersBySearchParam(searchParam)).thenReturn(null);
         });
     }
 }

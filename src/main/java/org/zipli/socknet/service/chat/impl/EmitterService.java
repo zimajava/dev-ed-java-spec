@@ -42,7 +42,7 @@ public class EmitterService implements IEmitterService {
     public String addMessageEmitterByToken(String token, Sinks.Many<String> emitter) throws CreateSocketException {
         try {
             String username = jwtUtils.getUserNameFromJwtToken(token);
-            User user = userRepository.findUserByUserName(username);
+            User user = userRepository.getUserByUserName(username);
             String userId = user.getId();
             messageEmitterByUserId.computeIfAbsent(userId, e -> new CopyOnWriteArrayList<>()).add(emitter);
             return userId;
