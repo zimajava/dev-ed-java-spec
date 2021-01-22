@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.zipli.socknet.dto.response.ErrorResponse;
 import org.zipli.socknet.exception.chat.GetAllUsersException;
 import org.zipli.socknet.service.user.GetUsersService;
 
@@ -27,7 +28,7 @@ public class GetUsersController {
             log.error(e.getErrorStatusCode().getMessage(), "Failed get users");
             return ResponseEntity
                     .badRequest()
-                    .body(e.getErrorStatusCode().getValue());
+                    .body(new ErrorResponse(e.getErrorStatusCode().getValue()));
         }
     }
 }
