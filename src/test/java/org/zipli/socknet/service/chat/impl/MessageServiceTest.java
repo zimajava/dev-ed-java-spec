@@ -123,7 +123,7 @@ class MessageServiceTest {
         try {
             messageService.updateMessage(data);
         } catch (MessageUpdateException e) {
-            assertEquals(e.getMessage(), "Only the author can update message {}");
+            assertEquals(e.getNumberException().getMessage(), "Only the creator can execute");
         }
     }
 
@@ -166,7 +166,7 @@ class MessageServiceTest {
         try {
             messageService.deleteMessage(data);
         } catch (ChatNotFoundException e) {
-            assertEquals(e.getMessage(), "Chat {} doesn't exist");
+            assertEquals(e.getNumberException().getMessage(), "Chat doesn't exist");
         }
     }
 

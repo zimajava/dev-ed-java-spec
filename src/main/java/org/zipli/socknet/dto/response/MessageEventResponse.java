@@ -19,5 +19,4 @@ public class MessageEventResponse extends RoomEventResponse {
         super(signal, userName);
         this.textMessage = textMessage;
     }
-
 }

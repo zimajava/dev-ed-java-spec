@@ -1,17 +1,16 @@
 package org.zipli.socknet.exception.file;
 
-import org.zipli.socknet.exception.ErrorStatusCodeWs;
+import org.zipli.socknet.exception.ErrorStatusCode;
 
 public class FileDeleteException extends RuntimeException {
 
-    private final ErrorStatusCodeWs exceptionCode;
+    private final ErrorStatusCode exceptionCode;
 
-    public FileDeleteException(String message, ErrorStatusCodeWs exceptionCode) {
-        super(message);
+    public FileDeleteException(ErrorStatusCode exceptionCode) {
         this.exceptionCode = exceptionCode;
     }
 
-    public int getNumberException() {
-        return exceptionCode.getNumberException();
+    public ErrorStatusCode getNumberException() {
+        return exceptionCode;
     }
 }

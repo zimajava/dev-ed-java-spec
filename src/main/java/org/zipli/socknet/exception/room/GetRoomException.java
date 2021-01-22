@@ -1,16 +1,16 @@
 package org.zipli.socknet.exception.room;
 
-import org.zipli.socknet.exception.ErrorStatusCodeRoom;
+import org.zipli.socknet.exception.ErrorStatusCode;
 
 public class GetRoomException extends Throwable {
 
-    private final ErrorStatusCodeRoom errorStatusCodeRoom;
+    private final ErrorStatusCode errorStatusCodeRoom;
 
-    public GetRoomException(ErrorStatusCodeRoom errorStatusCodeRoom) {
+    public GetRoomException(ErrorStatusCode errorStatusCodeRoom) {
         this.errorStatusCodeRoom = errorStatusCodeRoom;
     }
 
-    public ErrorStatusCodeRoom getErrorStatusCodeRoom() {
+    public ErrorStatusCode getErrorStatusCodeRoom() {
         return errorStatusCodeRoom;
     }
 }

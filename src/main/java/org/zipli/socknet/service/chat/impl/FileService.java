@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.zipli.socknet.dto.Command;
 import org.zipli.socknet.dto.FileData;
 import org.zipli.socknet.dto.response.WsMessageResponse;
-import org.zipli.socknet.exception.ErrorStatusCodeWs;
+import org.zipli.socknet.exception.ErrorStatusCode;
 import org.zipli.socknet.exception.chat.UpdateChatException;
 import org.zipli.socknet.exception.file.FileDeleteException;
 import org.zipli.socknet.exception.file.FindFileException;
@@ -81,16 +81,16 @@ public class FileService implements IFileService {
                                     ))
                             );
                 } else {
-                    throw new UpdateChatException("Chat doesn't exist", ErrorStatusCodeWs.CHAT_NOT_EXISTS);
+                    throw new UpdateChatException(ErrorStatusCode.CHAT_NOT_EXISTS);
                 }
             } else {
-                throw new SaveFileException("GridFSFile is null!", ErrorStatusCodeWs.GRIDFSFILE_IS_NOT_FOUND);
+                throw new SaveFileException(ErrorStatusCode.GRID_FS_FILE_IS_NOT_FOUND);
             }
             chatRepository.save(chat);
             return finalFile;
         } catch (Exception e) {
             log.error("Error in loading file into DB");
-            throw new SendFileException("Error in loading file into DB", ErrorStatusCodeWs.FILE_WAS_NOT_LOADING_CORRECT);
+            throw new SendFileException(ErrorStatusCode.FILE_WAS_NOT_LOADING_CORRECT);
         }
     }
 
@@ -116,7 +116,7 @@ public class FileService implements IFileService {
                                     ))
                             );
                 } else {
-                    throw new FindFileException("This file does not exists", ErrorStatusCodeWs.FILE_IS_NOT_IN_A_DB);
+                    throw new FindFileException(ErrorStatusCode.FILE_IS_NOT_IN_A_DB);
                 }
                 gridFsTemplate.delete(new Query(Criteria.where("_id").is(data.getFileId())));
                 fileRepository.deleteById(file.getId());
@@ -124,7 +124,7 @@ public class FileService implements IFileService {
             }
         } catch (Exception e) {
             log.error("Error. The given data is invalid");
-            throw new FileDeleteException("The data was invalid", ErrorStatusCodeWs.FILE_ACCESS_ERROR);
+            throw new FileDeleteException(ErrorStatusCode.FILE_ACCESS_ERROR);
         }
     }
 }

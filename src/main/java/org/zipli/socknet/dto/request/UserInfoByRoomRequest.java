@@ -1,4 +1,4 @@
-package org.zipli.socknet.dto;
+package org.zipli.socknet.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserInfoByRoomResponse {
+public class UserInfoByRoomRequest {
 
     private String username;
 

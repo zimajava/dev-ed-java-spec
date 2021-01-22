@@ -1,17 +1,16 @@
 package org.zipli.socknet.exception.file;
 
-import org.zipli.socknet.exception.ErrorStatusCodeWs;
+import org.zipli.socknet.exception.ErrorStatusCode;
 
 public class SaveFileException extends RuntimeException {
 
-    private final ErrorStatusCodeWs exceptionCode;
+    private final ErrorStatusCode exceptionCode;
 
-    public SaveFileException(String message, ErrorStatusCodeWs exceptionCode) {
-        super(message);
+    public SaveFileException(ErrorStatusCode exceptionCode) {
         this.exceptionCode = exceptionCode;
     }
 
-    public int getNumberException() {
-        return exceptionCode.getNumberException();
+    public ErrorStatusCode getNumberException() {
+        return exceptionCode;
     }
 }

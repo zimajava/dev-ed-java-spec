@@ -1,14 +1,16 @@
 package org.zipli.socknet.exception.video;
 
-public class VideoCallException extends RuntimeException {
-    private final int numberException;
+import org.zipli.socknet.exception.ErrorStatusCode;
 
-    public VideoCallException(String message, int numberException) {
+public class VideoCallException extends RuntimeException {
+    private final ErrorStatusCode numberException;
+
+    public VideoCallException(String message, ErrorStatusCode numberException) {
         super(message);
         this.numberException = numberException;
     }
 
-    public long getNumberException() {
+    public ErrorStatusCode getNumberException() {
         return numberException;
     }
 }

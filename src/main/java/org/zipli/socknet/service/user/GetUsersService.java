@@ -6,8 +6,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.zipli.socknet.dto.response.UserResponse;
 import org.zipli.socknet.exception.ErrorStatusCode;
 import org.zipli.socknet.exception.chat.GetAllUsersException;
-import org.zipli.socknet.repository.model.User;
 import org.zipli.socknet.repository.UserRepository;
+import org.zipli.socknet.repository.model.User;
 
 import java.util.List;
 import java.util.stream.Collectors;

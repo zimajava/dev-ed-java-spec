@@ -2,8 +2,9 @@ package org.zipli.socknet.service.room;
 
 import org.springframework.http.codec.ServerSentEvent;
 import org.zipli.socknet.dto.MessageRoom;
-import org.zipli.socknet.dto.RoomsResponse;
-import org.zipli.socknet.dto.UserInfoByRoomResponse;
+import org.zipli.socknet.dto.request.MessageRoomRequest;
+import org.zipli.socknet.dto.response.RoomsResponse;
+import org.zipli.socknet.dto.request.UserInfoByRoomRequest;
 import org.zipli.socknet.dto.response.BaseEventResponse;
 import org.zipli.socknet.dto.response.MessageEventResponse;
 import org.zipli.socknet.exception.room.*;
@@ -17,15 +18,15 @@ public interface IRoomService {
 
     List<RoomsResponse> getRooms();
 
-    Room joinRoom(String idRoom, UserInfoByRoomResponse userInfoByRoomResponse) throws JoinRoomException;
+    Room joinRoom(String idRoom, UserInfoByRoomRequest userInfoByRoomRequest) throws JoinRoomException;
 
-    Room leaveRoom(String idRoom, UserInfoByRoomResponse userInfoByRoomResponse) throws LiveRoomException;
+    Room leaveRoom(String idRoom, UserInfoByRoomRequest userInfoByRoomRequest) throws LiveRoomException;
 
     void deleteRoom(String idRoom);
 
     Room createRoom(String userName, String chatName) throws CreateRoomException;
 
-    MessageRoom saveMessage(String idRoom, MessageEventResponse message) throws SendMessageToRoomException;
+    MessageRoom saveMessage(String idRoom, MessageRoomRequest message) throws SendMessageToRoomException;
 
     List<MessageRoom> getMessagesByRoom(String idRoom) throws GetMessagesByRoomException;
 

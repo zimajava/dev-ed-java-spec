@@ -8,10 +8,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
-import org.zipli.socknet.dto.UserInfoByRoomResponse;
+import org.zipli.socknet.dto.request.CreateRoomRequest;
+import org.zipli.socknet.dto.request.MessageRoomRequest;
+import org.zipli.socknet.dto.request.UserInfoByRoomRequest;
 import org.zipli.socknet.dto.response.BaseEventResponse;
 import org.zipli.socknet.dto.response.MessageEventResponse;
-import org.zipli.socknet.exception.ErrorStatusCodeRoom;
+import org.zipli.socknet.exception.ErrorStatusCode;
 import org.zipli.socknet.exception.room.*;
 import org.zipli.socknet.service.room.IRoomService;
 import reactor.core.publisher.Mono;
@@ -34,7 +36,7 @@ public class RoomHandler implements IRoomHandler {
             return serverResponseOk(roomService.getRoom(idRoom));
         } catch (GetRoomException e) {
             log.error("Get Room fail: Room {} not exit", idRoom);
-            return serverResponseBadRequest(e.getErrorStatusCodeRoom().getNumberException());
+            return serverResponseBadRequest(e.getErrorStatusCodeRoom().getValue());
         }
     }
 
@@ -45,35 +47,35 @@ public class RoomHandler implements IRoomHandler {
 
     public Mono<ServerResponse> joinRoom(ServerRequest request) {
         String idRoom = request.pathVariable("idRoom");
-        Optional<UserInfoByRoomResponse> userInfoByRoom = request.bodyToMono(UserInfoByRoomResponse.class).blockOptional();
+        Optional<UserInfoByRoomRequest> userInfoByRoom = request.bodyToMono(UserInfoByRoomRequest.class).blockOptional();
 
         if (userInfoByRoom.isPresent()) {
             try {
                 return serverResponseOk(roomService.joinRoom(idRoom, userInfoByRoom.get()));
             } catch (JoinRoomException e) {
                 log.error("Join Room fail: Room {} not exit", idRoom);
-                return serverResponseBadRequest(e.getErrorStatusCodeRoom().getNumberException());
+                return serverResponseBadRequest(e.getErrorStatusCodeRoom().getValue());
             }
         } else {
             log.error("Join Room {} fail: INCORRECT_REQUEST", idRoom);
-            return serverResponseBadRequest(ErrorStatusCodeRoom.INCORRECT_REQUEST.getNumberException());
+            return serverResponseBadRequest(ErrorStatusCode.INCORRECT_REQUEST.getValue());
         }
     }
 
     @Override
     public Mono<ServerResponse> leaveRoom(ServerRequest request) {
         String idRoom = request.pathVariable("idRoom");
-        Optional<UserInfoByRoomResponse> userInfoByRoom = request.bodyToMono(UserInfoByRoomResponse.class).blockOptional();
+        Optional<UserInfoByRoomRequest> userInfoByRoom = request.bodyToMono(UserInfoByRoomRequest.class).blockOptional();
         if (userInfoByRoom.isPresent()) {
             try {
                 return serverResponseOk(roomService.leaveRoom(idRoom, userInfoByRoom.get()));
             } catch (LiveRoomException e) {
                 log.error("Leave Room fail: Room {} not exit", idRoom);
-                return serverResponseBadRequest(e.getErrorStatusCodeRoom().getNumberException());
+                return serverResponseBadRequest(e.getErrorStatusCodeRoom().getValue());
             }
         } else {
             log.error("Leave Room {} fail: INCORRECT_REQUEST", idRoom);
-            return serverResponseBadRequest(ErrorStatusCodeRoom.INCORRECT_REQUEST.getNumberException());
+            return serverResponseBadRequest(ErrorStatusCode.INCORRECT_REQUEST.getValue());
         }
     }
 
@@ -85,7 +87,7 @@ public class RoomHandler implements IRoomHandler {
             return serverResponseOk("OK");
         } catch (Exception e) {
             log.error("Delete Room fail: Room {} not exit", idRoom);
-            return serverResponseBadRequest(ErrorStatusCodeRoom.ROOM_NOT_EXIT.getNumberException());
+            return serverResponseBadRequest(ErrorStatusCode.ROOM_NOT_EXIT.getValue());
         }
 
     }
@@ -105,39 +107,39 @@ public class RoomHandler implements IRoomHandler {
             return serverResponseOk(roomService.getMessagesByRoom(idRoom));
         } catch (GetMessagesByRoomException e) {
             log.error("Get Messages By Room fail: Room {} not exit", idRoom);
-            return serverResponseBadRequest(e.getErrorStatusCodeRoom().getNumberException());
+            return serverResponseBadRequest(e.getErrorStatusCodeRoom().getValue());
         }
     }
 
     public Mono<ServerResponse> createRoom(ServerRequest request) {
-        Optional<String> userName = request.queryParam("userName");
-        Optional<String> chatName = request.queryParam("chatName");
-        if (userName.isPresent() && chatName.isPresent()) {
+        Optional<CreateRoomRequest> createRoomRequestOptional = request.bodyToMono(CreateRoomRequest.class).blockOptional();
+        if (createRoomRequestOptional.isPresent()) {
+            CreateRoomRequest createRoomRequest = createRoomRequestOptional.get();
             try {
-                return serverResponseOk(roomService.createRoom(userName.get(), chatName.get()));
+                return serverResponseOk(roomService.createRoom(createRoomRequest.getUserName(), createRoomRequest.getChatName()));
             } catch (CreateRoomException e) {
-                log.error("Create Room fail. ROOM_ALREADY_EXISTS: Chat Name - {}", chatName.get());
-                return serverResponseBadRequest(e.getErrorStatusCodeRoom().getNumberException());
+                log.error("Create Room fail. ROOM_ALREADY_EXISTS: Chat Name - {}", createRoomRequest.getChatName());
+                return serverResponseBadRequest(e.getErrorStatusCodeRoom().getValue());
             }
         } else {
-            log.error("Create Room fail. INCORRECT_REQUEST: User Name - {}, Chat Name - {}", userName.get(), chatName.get());
-            return serverResponseBadRequest(ErrorStatusCodeRoom.INCORRECT_REQUEST.getNumberException());
+            log.error("Create Room fail. INCORRECT_REQUEST: CreateRoomRequest - null");
+            return serverResponseBadRequest(ErrorStatusCode.INCORRECT_REQUEST.getValue());
         }
     }
 
     public Mono<ServerResponse> saveMessage(ServerRequest request) {
         String idRoom = request.pathVariable("idRoom");
-        Optional<MessageEventResponse> message = request.bodyToMono(MessageEventResponse.class).blockOptional();
+        Optional<MessageRoomRequest> message = request.bodyToMono(MessageRoomRequest.class).blockOptional();
         if (message.isPresent()) {
             try {
                 return serverResponseOk(roomService.saveMessage(idRoom, message.get()));
             } catch (SendMessageToRoomException e) {
                 log.error("Save message fail: Room {} not exit", idRoom);
-                return serverResponseBadRequest(e.getErrorStatusCodeRoom().getNumberException());
+                return serverResponseBadRequest(e.getErrorStatusCodeRoom().getValue());
             }
         } else {
-            log.error("Create Room fail. INCORRECT_REQUEST: MessageEventResponse - {}", message.get());
-            return serverResponseBadRequest(ErrorStatusCodeRoom.INCORRECT_REQUEST.getNumberException());
+            log.error("Create Room fail. INCORRECT_REQUEST: MessageEventResponse - null");
+            return serverResponseBadRequest(ErrorStatusCode.INCORRECT_REQUEST.getValue());
         }
     }
 

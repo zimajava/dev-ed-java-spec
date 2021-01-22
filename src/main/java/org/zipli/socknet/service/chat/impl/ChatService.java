@@ -2,17 +2,19 @@ package org.zipli.socknet.service.chat.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.zipli.socknet.dto.*;
+import org.zipli.socknet.dto.BaseData;
+import org.zipli.socknet.dto.ChatData;
+import org.zipli.socknet.dto.Command;
+import org.zipli.socknet.dto.FullChatData;
 import org.zipli.socknet.dto.response.WsMessageResponse;
 import org.zipli.socknet.exception.ErrorStatusCode;
-import org.zipli.socknet.exception.ErrorStatusCodeWs;
 import org.zipli.socknet.exception.auth.UserNotFoundException;
 import org.zipli.socknet.exception.chat.*;
-import org.zipli.socknet.repository.model.Chat;
-import org.zipli.socknet.repository.model.User;
 import org.zipli.socknet.repository.ChatRepository;
 import org.zipli.socknet.repository.MessageRepository;
 import org.zipli.socknet.repository.UserRepository;
+import org.zipli.socknet.repository.model.Chat;
+import org.zipli.socknet.repository.model.User;
 import org.zipli.socknet.service.chat.IChatService;
 import org.zipli.socknet.service.chat.IEmitterService;
 
@@ -79,7 +81,7 @@ public class ChatService implements IChatService {
 
             return chat;
         } else {
-            throw new CreateChatException("Such a chat {} already exists");
+            throw new CreateChatException(ErrorStatusCode.CHAT_ALREADY_EXISTS);
         }
 
     }
@@ -108,14 +110,10 @@ public class ChatService implements IChatService {
 
                 return chat;
             } else {
-                throw new UpdateChatException("Only the author can update chat {}",
-                        ErrorStatusCodeWs.CHAT_ACCESS_ERROR
-                );
+                throw new UpdateChatException(ErrorStatusCode.CHAT_ACCESS_ERROR);
             }
         } else {
-            throw new UpdateChatException("Chat {} doesn't exist",
-                    ErrorStatusCodeWs.CHAT_NOT_EXISTS
-            );
+            throw new UpdateChatException(ErrorStatusCode.CHAT_NOT_EXISTS);
         }
     }
 
@@ -154,14 +152,10 @@ public class ChatService implements IChatService {
                                 ))
                         );
             } else {
-                throw new DeleteChatException("Only the author can delete chat {}",
-                        ErrorStatusCodeWs.CHAT_ACCESS_ERROR.getNumberException()
-                );
+                throw new DeleteChatException(ErrorStatusCode.CHAT_ACCESS_ERROR);
             }
         } else {
-            throw new DeleteChatException("Chat {} doesn't exist",
-                    ErrorStatusCodeWs.CHAT_NOT_EXISTS.getNumberException()
-            );
+            throw new DeleteChatException(ErrorStatusCode.CHAT_NOT_EXISTS);
         }
     }
 
@@ -193,7 +187,7 @@ public class ChatService implements IChatService {
 
             return chat;
         } else {
-            throw new LeaveChatException("Chat {} doesn't exist");
+            throw new LeaveChatException(ErrorStatusCode.CHAT_NOT_EXISTS);
         }
     }
 
@@ -227,14 +221,10 @@ public class ChatService implements IChatService {
                                 ))
                         );
             } else {
-                throw new JoinChatException("Can't access chat {}",
-                        ErrorStatusCodeWs.CHAT_ACCESS_ERROR.getNumberException()
-                );
+                throw new JoinChatException(ErrorStatusCode.CHAT_ACCESS_ERROR);
             }
         } else {
-            throw new JoinChatException("Chat {} doesn't exist",
-                    ErrorStatusCodeWs.CHAT_NOT_EXISTS.getNumberException()
-            );
+            throw new JoinChatException(ErrorStatusCode.CHAT_NOT_EXISTS);
         }
         return chat;
     }

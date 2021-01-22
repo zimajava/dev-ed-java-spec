@@ -1,17 +1,16 @@
 package org.zipli.socknet.exception.message;
 
-import org.zipli.socknet.exception.ErrorStatusCodeWs;
+import org.zipli.socknet.exception.ErrorStatusCode;
 
 public class MessageSendException extends RuntimeException {
 
-    private final ErrorStatusCodeWs exceptionCode;
+    private final ErrorStatusCode exceptionCode;
 
-    public MessageSendException(String message, ErrorStatusCodeWs exceptionCode) {
-        super(message);
+    public MessageSendException(ErrorStatusCode exceptionCode) {
         this.exceptionCode = exceptionCode;
     }
 
-    public int getNumberException() {
-        return exceptionCode.getNumberException();
+    public ErrorStatusCode getNumberException() {
+        return exceptionCode;
     }
 }
