@@ -6,7 +6,9 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.zipli.socknet.dto.response.ErrorResponse;
 import org.zipli.socknet.exception.ErrorStatusCode;
 import org.zipli.socknet.exception.chat.GetAllUsersException;
 import org.zipli.socknet.repository.model.User;
@@ -55,7 +57,8 @@ public class GetUsersControllerTest {
         Mockito.doThrow(e)
                 .when(getUsersService)
                 .getAllUsers();
-        assertEquals(ResponseEntity.badRequest().body(ErrorStatusCode.USERS_DOES_NOT_EXIST.getValue()),
-                getUsersController.getAllUsers());
+        assertEquals(ResponseEntity.badRequest().body(HttpStatus.BAD_REQUEST).getStatusCode(),
+                getUsersController.getAllUsers().getStatusCode());
+        assertEquals(new ErrorResponse(ErrorStatusCode.USERS_DOES_NOT_EXIST.getValue()),getUsersController.getAllUsers().getBody());
     }
 }
