@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.http.client.reactive.ClientHttpRequest;
+import org.springframework.web.reactive.function.BodyInserter;
 
 @Getter
 @Setter

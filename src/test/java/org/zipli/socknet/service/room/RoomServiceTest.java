@@ -26,12 +26,12 @@ import static org.junit.jupiter.api.Assertions.*;
 @DataMongoTest
 class RoomServiceTest {
 
-    RoomService roomService;
+    private RoomService roomService;
 
     @Autowired
-    RoomRepository roomRepository;
+    private RoomRepository roomRepository;
 
-    Room roomOne;
+    private Room roomOne;
 
     @BeforeEach
     void setUp() throws CreateRoomException {
