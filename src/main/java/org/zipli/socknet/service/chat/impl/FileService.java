@@ -115,13 +115,14 @@ public class FileService implements IFileService {
                                             )
                                     ))
                             );
-                } else {
-                    throw new FindFileException("This file does not exists", WsException.FILE_IS_NOT_IN_A_DB);
                 }
-                gridFsTemplate.delete(new Query(Criteria.where("_id").is(data.getFileId())));
-                fileRepository.deleteById(file.getId());
-                log.info("File is successfully deleted UserId {} ChatId {} FileId {}", data.getUserId(), data.getChatId(), data.getFileId());
+            } else {
+                throw new FindFileException("This file does not exists", WsException.FILE_IS_NOT_IN_A_DB);
             }
+            gridFsTemplate.delete(new Query(Criteria.where("_id").is(data.getFileId())));
+            fileRepository.deleteById(file.getId());
+            log.info("File is successfully deleted UserId {} ChatId {} FileId {}", data.getUserId(), data.getChatId(), data.getFileId());
+
         } catch (Exception e) {
             log.error("Error. The given data is invalid");
             throw new FileDeleteException("The data was invalid", WsException.FILE_ACCESS_ERROR);
