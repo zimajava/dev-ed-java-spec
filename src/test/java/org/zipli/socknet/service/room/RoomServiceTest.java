@@ -32,11 +32,13 @@ class RoomServiceTest {
     private RoomRepository roomRepository;
 
     private Room roomOne;
+    private Room roomTwo;
 
     @BeforeEach
     void setUp() throws CreateRoomException {
         roomService = new RoomService(roomRepository);
         roomOne = roomRepository.save(new Room("RoomOne", "UserOne"));
+        roomTwo = roomRepository.save(new Room("RoomTwo", "UserTwo"));
     }
 
     @Test
@@ -66,6 +68,8 @@ class RoomServiceTest {
         assertEquals(roomsResponse.size(), rooms.size());
         assertEquals(roomsResponse.get(0).getRoomId(), rooms.get(0).getId());
         assertEquals(roomsResponse.get(0).getNameRoom(), rooms.get(0).getRoomName());
+        assertEquals(roomsResponse.get(1).getRoomId(), rooms.get(1).getId());
+        assertEquals(roomsResponse.get(1).getNameRoom(), rooms.get(1).getRoomName());
     }
 
     @Test
@@ -99,7 +103,7 @@ class RoomServiceTest {
         Room roomLeave = roomService.leaveRoom(roomCreate.getId(),
                 new UserInfoByRoomRequest("Artemiy", "", "signal", false));
 
-        assertNotEquals(roomJoin.getUsers().size(), roomLeave.getUsers().size() - 1);
+        assertEquals(roomJoin.getUsers().size()-1, roomLeave.getUsers().size());
     }
 
     @Test
