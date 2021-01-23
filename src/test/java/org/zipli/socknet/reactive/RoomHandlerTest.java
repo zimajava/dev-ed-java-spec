@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.zipli.socknet.dto.MessageRoom;
@@ -104,7 +103,8 @@ class RoomHandlerTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(new ParameterizedTypeReference<List<RoomsResponse>>(){})
+                .expectBody(new ParameterizedTypeReference<List<RoomsResponse>>() {
+                })
                 .returnResult()
                 .getResponseBody();
 
@@ -114,20 +114,12 @@ class RoomHandlerTest {
 
     @Test
     void joinRoom_Pass() throws JoinRoomException {
+        Mockito.when(request.pathVariable("idRoom")).thenReturn(idRoom);
+        Mockito.when(request.bodyToMono(UserInfoByRoomRequest.class)).thenReturn(Mono.just(userInfoByRoomRequest));
         Mockito.when(roomService.joinRoom(idRoom, userInfoByRoomRequest)).thenReturn(room);
+        Mono<ServerResponse> serverResponseJoinRoom = roomHandler.joinRoom(request);
 
-        Room roomBody = webTestClient.post().uri("/zipli/room/joinRoom/1")
-                .accept(MediaType.APPLICATION_JSON)
-                .body(Mono.just(userInfoByRoomRequest), UserInfoByRoomRequest.class)
-//                .body(BodyInserters.fromObject(userInfoByRoomRequest))
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(Room.class)
-                .returnResult()
-                .getResponseBody();
-
-        assertEquals(roomBody.getCreatorUser(), room.getCreatorUser());
-        assertEquals(roomBody.getRoomName(), room.getRoomName());
+        assertEquals(Objects.requireNonNull(serverResponseJoinRoom.block()).statusCode(), HttpStatus.OK);
     }
 
     @Test
@@ -154,13 +146,6 @@ class RoomHandlerTest {
                 .thenThrow(new JoinRoomException(ErrorStatusCode.ROOM_NOT_EXIT));
         Mono<ServerResponse> serverResponseJoinRoom = roomHandler.joinRoom(request);
 
-        webTestClient.post().uri("/zipli/room/joinRoom/1")
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isBadRequest()
-                .expectBody(Integer.class)
-                .isEqualTo(ErrorStatusCode.ROOM_NOT_EXIT.getValue());
-
         assertEquals(Objects.requireNonNull(serverResponseJoinRoom.block()).statusCode(), HttpStatus.BAD_REQUEST);
     }
 
@@ -170,15 +155,6 @@ class RoomHandlerTest {
         Mockito.when(request.bodyToMono(UserInfoByRoomRequest.class)).thenReturn(Mono.just(userInfoByRoomRequest));
         Mockito.when(roomService.leaveRoom(idRoom, userInfoByRoomRequest)).thenReturn(room);
         Mono<ServerResponse> serverResponseLeaveRoom = roomHandler.leaveRoom(request);
-
-        Room roomBody = webTestClient.post().uri("/zipli/room/leaveRoom/1")
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isOk()
-                .expectBody(Room.class).returnResult().getResponseBody();
-
-        assertEquals(roomBody.getCreatorUser(), room.getCreatorUser());
-        assertEquals(roomBody.getRoomName(), room.getRoomName());
 
         assertEquals(Objects.requireNonNull(serverResponseLeaveRoom.block()).statusCode(), HttpStatus.OK);
     }
@@ -205,13 +181,6 @@ class RoomHandlerTest {
                 .thenThrow(new LiveRoomException(ErrorStatusCode.ROOM_NOT_EXIT));
         Mono<ServerResponse> serverResponseLeaveRoom = roomHandler.leaveRoom(request);
 
-        webTestClient.post().uri("/zipli/room/leaveRoom/1")
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isBadRequest()
-                .expectBody(Integer.class)
-                .isEqualTo(ErrorStatusCode.ROOM_NOT_EXIT.getValue());
-
         assertEquals(Objects.requireNonNull(serverResponseLeaveRoom.block()).statusCode(), HttpStatus.BAD_REQUEST);
     }
 
@@ -237,6 +206,15 @@ class RoomHandlerTest {
         Mockito.when(roomService.getMessagesByRoom(idRoom))
                 .thenReturn(Collections.singletonList(messageRoom));
 
+        List<MessageRoom> responseBody = webTestClient.get().uri("/zipli/room/getMessages/1")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody(new ParameterizedTypeReference<List<MessageRoom>>() {
+                })
+                .returnResult()
+                .getResponseBody();
+
         assertEquals(Objects.requireNonNull(serverResponseGetMessagesByRoom.block()).statusCode(), HttpStatus.OK);
     }
 
@@ -245,7 +223,6 @@ class RoomHandlerTest {
         Mockito.when(roomService.getMessagesByRoom(null))
                 .thenThrow(new GetMessagesByRoomException(ErrorStatusCode.ROOM_NOT_EXIT));
         Mono<ServerResponse> serverResponseGetMessagesByRoom = roomHandler.getMessagesByRoom(request);
-
 
         assertEquals(Objects.requireNonNull(serverResponseGetMessagesByRoom.block()).statusCode(), HttpStatus.BAD_REQUEST);
     }
@@ -264,6 +241,13 @@ class RoomHandlerTest {
     void createRoom_Fail_INCORRECT_REQUEST() {
         Mockito.when(request.bodyToMono(CreateRoomRequest.class)).thenReturn(Mono.empty());
         Mono<ServerResponse> serverResponseGetMessagesByRoom = roomHandler.createRoom(request);
+
+        webTestClient.post().uri("/zipli/room/createRoom")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isBadRequest()
+                .expectBody(Integer.class)
+                .isEqualTo(ErrorStatusCode.INCORRECT_REQUEST.getValue());
 
         assertEquals(Objects.requireNonNull(serverResponseGetMessagesByRoom.block()).statusCode(), HttpStatus.BAD_REQUEST);
     }
@@ -308,6 +292,13 @@ class RoomHandlerTest {
     void saveMessage_Fail_INCORRECT_REQUEST() {
         Mockito.when(request.bodyToMono(MessageRoomRequest.class)).thenReturn(Mono.empty());
         Mono<ServerResponse> serverResponseSaveMessage = roomHandler.saveMessage(request);
+
+        webTestClient.post().uri("/zipli/room/createRoom")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isBadRequest()
+                .expectBody(Integer.class)
+                .isEqualTo(ErrorStatusCode.INCORRECT_REQUEST.getValue());
 
         assertEquals(Objects.requireNonNull(serverResponseSaveMessage.block()).statusCode(), HttpStatus.BAD_REQUEST);
     }

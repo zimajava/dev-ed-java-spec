@@ -56,10 +56,11 @@ public class MessageService implements IMessageService {
     @Override
     public Message sendMessage(MessageData data) throws MessageSendException, ChatNotFoundException {
 
-        Message message = new Message(data.getUserId(), data.getChatId(), data.getTimestamp(), data.getTextMessage());
-        final Message finalMessage = messageRepository.save(message);
         Chat chat = chatRepository.findChatById(data.getChatId());
-        if (chat != null) {
+
+        if (chat != null && chat.getIdUsers().contains(data.getUserId())) {
+            Message message = new Message(data.getUserId(), data.getChatId(), data.getTimestamp(), data.getTextMessage());
+            final Message finalMessage = messageRepository.save(message);
             chat.getIdMessages().add(message.getId());
 
             chat.getIdUsers().parallelStream()
