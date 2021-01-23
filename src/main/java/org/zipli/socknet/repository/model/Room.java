@@ -1,4 +1,4 @@
-package org.zipli.socknet.model;
+package org.zipli.socknet.repository.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -6,7 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.zipli.socknet.dto.MessageRoom;
+import org.zipli.socknet.dto.RoomMessage;
 import org.zipli.socknet.dto.request.UserInfoByRoomRequest;
 
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ public class Room {
     private String roomName;
     private String creatorUser;
     private List<UserInfoByRoomRequest> users;
-    private List<MessageRoom> messages;
+    private List<RoomMessage> messages;
 
     public Room(String roomName, String creatorUser) {
         this.roomName = roomName;

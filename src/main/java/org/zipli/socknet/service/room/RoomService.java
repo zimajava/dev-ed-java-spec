@@ -3,7 +3,7 @@ package org.zipli.socknet.service.room;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Service;
 import org.zipli.socknet.dto.EventCommandSse;
-import org.zipli.socknet.dto.MessageRoom;
+import org.zipli.socknet.dto.RoomMessage;
 import org.zipli.socknet.dto.request.MessageRoomRequest;
 import org.zipli.socknet.dto.response.RoomsResponse;
 import org.zipli.socknet.dto.request.UserInfoByRoomRequest;
@@ -12,7 +12,7 @@ import org.zipli.socknet.dto.response.MessageEventResponse;
 import org.zipli.socknet.dto.response.RoomEventResponse;
 import org.zipli.socknet.exception.ErrorStatusCode;
 import org.zipli.socknet.exception.room.*;
-import org.zipli.socknet.model.Room;
+import org.zipli.socknet.repository.model.Room;
 import org.zipli.socknet.repository.RoomRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
@@ -32,7 +32,7 @@ public class RoomService implements IRoomService {
 
     private final Map<String, Sinks.Many<ServerSentEvent<BaseEventResponse>>> chatIdEmitterMap = new ConcurrentHashMap<>();
     private final Map<String, AtomicLong> eventIdGeneration = new ConcurrentHashMap<>();
-    private final AtomicLong messageIdEvent = new AtomicLong();
+    private final AtomicLong messageIdEventGenerator = new AtomicLong();
 
     public RoomService(RoomRepository roomRepository) {
         this.roomRepository = roomRepository;
@@ -121,28 +121,28 @@ public class RoomService implements IRoomService {
     }
 
     @Override
-    public MessageRoom saveMessage(String idRoom, MessageRoomRequest message) throws SendMessageToRoomException {
+    public RoomMessage saveMessage(String idRoom, MessageRoomRequest message) throws SendMessageToRoomException {
 
         Optional<Room> roomOptional = roomRepository.findById(idRoom);
 
         if (roomOptional.isPresent()) {
             Room room = roomOptional.get();
-            MessageRoom messageRoom = new MessageRoom(message.getUserName(), idRoom, message.getTextMessage(), new Date());
-            room.getMessages().add(new MessageRoom(message.getUserName(), idRoom, message.getTextMessage(), new Date()));
+            RoomMessage roomMessage = new RoomMessage(message.getUserName(), idRoom, message.getTextMessage(), new Date());
+            room.getMessages().add(new RoomMessage(message.getUserName(), idRoom, message.getTextMessage(), new Date()));
             roomRepository.save(room);
             chatIdEmitterMap.get(idRoom).tryEmitNext(ServerSentEvent.<BaseEventResponse>builder()
-                    .id(String.valueOf(messageIdEvent.getAndIncrement()))
+                    .id(String.valueOf(messageIdEventGenerator.getAndIncrement()))
                     .event(EventCommandSse.NEW_MESSAGE_EVENT.name())
                     .data(new MessageEventResponse())
                     .build());
-            return messageRoom;
+            return roomMessage;
         } else {
             throw new SendMessageToRoomException(ErrorStatusCode.INCORRECT_REQUEST);
         }
     }
 
     @Override
-    public List<MessageRoom> getMessagesByRoom(String idRoom) throws GetMessagesByRoomException {
+    public List<RoomMessage> getMessagesByRoom(String idRoom) throws GetMessagesByRoomException {
 
         Optional<Room> roomOptional = roomRepository.findById(idRoom);
         if (roomOptional.isPresent()) {
@@ -161,7 +161,7 @@ public class RoomService implements IRoomService {
     public void deleteRoom(String idRoom) {
         roomRepository.deleteById(idRoom);
         chatIdEmitterMap.get(idRoom).tryEmitNext(ServerSentEvent.<BaseEventResponse>builder()
-                .id(String.valueOf(messageIdEvent.getAndIncrement()))
+                .id(String.valueOf(messageIdEventGenerator.getAndIncrement()))
                 .event(EventCommandSse.DELETE_ROOM_EVENT.name())
                 .data(new BaseEventResponse(idRoom))
                 .build());

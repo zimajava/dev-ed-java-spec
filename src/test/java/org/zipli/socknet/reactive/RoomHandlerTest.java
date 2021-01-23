@@ -15,7 +15,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
-import org.zipli.socknet.dto.MessageRoom;
+import org.zipli.socknet.dto.RoomMessage;
 import org.zipli.socknet.dto.request.CreateRoomRequest;
 import org.zipli.socknet.dto.request.MessageRoomRequest;
 import org.zipli.socknet.dto.request.UserInfoByRoomRequest;
@@ -23,7 +23,7 @@ import org.zipli.socknet.dto.response.MessageEventResponse;
 import org.zipli.socknet.dto.response.RoomsResponse;
 import org.zipli.socknet.exception.ErrorStatusCode;
 import org.zipli.socknet.exception.room.*;
-import org.zipli.socknet.model.Room;
+import org.zipli.socknet.repository.model.Room;
 import org.zipli.socknet.service.room.RoomService;
 import reactor.core.publisher.Mono;
 
@@ -41,8 +41,8 @@ class RoomHandlerTest {
     private final UserInfoByRoomRequest userInfoByRoomRequest =
             new UserInfoByRoomRequest("", "", "", false);
     private final CreateRoomRequest createRoomRequest = new CreateRoomRequest("UserName", "ChatName");
-    private final MessageRoom messageRoom =
-            new MessageRoom("AuthorUser", "IdRoom", "Text", new Date());
+    private final RoomMessage roomMessage =
+            new RoomMessage("AuthorUser", "IdRoom", "Text", new Date());
     private final MessageEventResponse messageEventResponse =
             new MessageEventResponse();
     @Autowired
@@ -204,13 +204,13 @@ class RoomHandlerTest {
         Mockito.when(request.pathVariable("idRoom")).thenReturn(idRoom);
         Mono<ServerResponse> serverResponseGetMessagesByRoom = roomHandler.getMessagesByRoom(request);
         Mockito.when(roomService.getMessagesByRoom(idRoom))
-                .thenReturn(Collections.singletonList(messageRoom));
+                .thenReturn(Collections.singletonList(roomMessage));
 
-        List<MessageRoom> responseBody = webTestClient.get().uri("/zipli/room/getMessages/1")
+        List<RoomMessage> responseBody = webTestClient.get().uri("/zipli/room/getMessages/1")
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(new ParameterizedTypeReference<List<MessageRoom>>() {
+                .expectBody(new ParameterizedTypeReference<List<RoomMessage>>() {
                 })
                 .returnResult()
                 .getResponseBody();
@@ -270,7 +270,7 @@ class RoomHandlerTest {
         Mockito.when(request.pathVariable("idRoom")).thenReturn(idRoom);
         Mockito.when(request.bodyToMono(MessageRoomRequest.class)).thenReturn(Mono.just(messageRoomRequest));
         Mockito.when(roomService.saveMessage(idRoom, messageRoomRequest))
-                .thenReturn(messageRoom);
+                .thenReturn(roomMessage);
         Mono<ServerResponse> serverResponseSaveMessage = roomHandler.saveMessage(request);
 
         assertEquals(Objects.requireNonNull(serverResponseSaveMessage.block()).statusCode(), HttpStatus.OK);

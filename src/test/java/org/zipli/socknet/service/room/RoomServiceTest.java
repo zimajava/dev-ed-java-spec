@@ -6,15 +6,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.http.codec.ServerSentEvent;
-import org.zipli.socknet.dto.MessageRoom;
+import org.zipli.socknet.dto.RoomMessage;
 import org.zipli.socknet.dto.request.MessageRoomRequest;
 import org.zipli.socknet.dto.response.RoomsResponse;
 import org.zipli.socknet.dto.request.UserInfoByRoomRequest;
 import org.zipli.socknet.dto.response.BaseEventResponse;
-import org.zipli.socknet.dto.response.MessageEventResponse;
 import org.zipli.socknet.exception.ErrorStatusCode;
 import org.zipli.socknet.exception.room.*;
-import org.zipli.socknet.model.Room;
+import org.zipli.socknet.repository.model.Room;
 import org.zipli.socknet.repository.RoomRepository;
 import reactor.core.publisher.Flux;
 
@@ -129,12 +128,12 @@ class RoomServiceTest {
     @Test
     void saveMessage_Pass() throws CreateRoomException, SendMessageToRoomException {
         Room roomCreate = roomService.createRoom("User_SaveMessage_Pass", "Room_SaveMessage_Pass");
-        MessageRoom messageRoomSave = roomService.saveMessage(roomCreate.getId(), new MessageRoomRequest());
+        RoomMessage roomMessageSave = roomService.saveMessage(roomCreate.getId(), new MessageRoomRequest());
         Room room = roomRepository.getRoomById(roomCreate.getId());
 
-        assertEquals(messageRoomSave.getRoomId(), room.getId());
-        assertEquals(messageRoomSave.getTextMessage(), room.getMessages().get(0).getTextMessage());
-        assertEquals(messageRoomSave.getAuthorUserName(), room.getMessages().get(0).getAuthorUserName());
+        assertEquals(roomMessageSave.getRoomId(), room.getId());
+        assertEquals(roomMessageSave.getTextMessage(), room.getMessages().get(0).getTextMessage());
+        assertEquals(roomMessageSave.getAuthorUserName(), room.getMessages().get(0).getAuthorUserName());
     }
 
     @Test
@@ -150,7 +149,7 @@ class RoomServiceTest {
     void getMessagesByRoom_Pass() throws CreateRoomException, GetMessagesByRoomException, SendMessageToRoomException {
         Room roomCreate = roomService.createRoom("User_getMessagesByRoom_Pass", "Room_getMessagesByRoom_Pass");
         roomService.saveMessage(roomCreate.getId(), new MessageRoomRequest());
-        List<MessageRoom> messagesByRoom = roomService.getMessagesByRoom(roomCreate.getId());
+        List<RoomMessage> messagesByRoom = roomService.getMessagesByRoom(roomCreate.getId());
         Room room = roomRepository.getRoomById(roomCreate.getId());
 
         assertEquals(messagesByRoom.get(0).getRoomId(), room.getId());

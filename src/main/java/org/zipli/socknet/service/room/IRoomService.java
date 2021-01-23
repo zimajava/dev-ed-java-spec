@@ -1,14 +1,13 @@
 package org.zipli.socknet.service.room;
 
 import org.springframework.http.codec.ServerSentEvent;
-import org.zipli.socknet.dto.MessageRoom;
+import org.zipli.socknet.dto.RoomMessage;
 import org.zipli.socknet.dto.request.MessageRoomRequest;
 import org.zipli.socknet.dto.response.RoomsResponse;
 import org.zipli.socknet.dto.request.UserInfoByRoomRequest;
 import org.zipli.socknet.dto.response.BaseEventResponse;
-import org.zipli.socknet.dto.response.MessageEventResponse;
 import org.zipli.socknet.exception.room.*;
-import org.zipli.socknet.model.Room;
+import org.zipli.socknet.repository.model.Room;
 import reactor.core.publisher.Flux;
 
 import java.util.List;
@@ -26,9 +25,9 @@ public interface IRoomService {
 
     Room createRoom(String userName, String chatName) throws CreateRoomException;
 
-    MessageRoom saveMessage(String idRoom, MessageRoomRequest message) throws SendMessageToRoomException;
+    RoomMessage saveMessage(String idRoom, MessageRoomRequest message) throws SendMessageToRoomException;
 
-    List<MessageRoom> getMessagesByRoom(String idRoom) throws GetMessagesByRoomException;
+    List<RoomMessage> getMessagesByRoom(String idRoom) throws GetMessagesByRoomException;
 
     Flux<ServerSentEvent<BaseEventResponse>> subscribeMessage(String idRoom);
 
