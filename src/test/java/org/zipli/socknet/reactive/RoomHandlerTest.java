@@ -12,7 +12,6 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -20,10 +19,11 @@ import org.zipli.socknet.dto.RoomMessage;
 import org.zipli.socknet.dto.request.CreateRoomRequest;
 import org.zipli.socknet.dto.request.MessageRoomRequest;
 import org.zipli.socknet.dto.request.UserInfoByRoomRequest;
+import org.zipli.socknet.dto.response.DeleteRoomResponse;
 import org.zipli.socknet.dto.response.ErrorResponse;
-import org.zipli.socknet.dto.response.roomEvent.MessageEventResponse;
 import org.zipli.socknet.dto.response.RoomResponse;
 import org.zipli.socknet.dto.response.RoomsResponse;
+import org.zipli.socknet.dto.response.roomEvent.MessageEventResponse;
 import org.zipli.socknet.exception.ErrorStatusCode;
 import org.zipli.socknet.exception.room.*;
 import org.zipli.socknet.repository.model.Room;
@@ -97,7 +97,7 @@ class RoomHandlerTest {
                 .returnResult()
                 .getResponseBody();
 
-        assertEquals(errorResponse.getCode(),ErrorStatusCode.ROOM_NOT_EXIT.getValue());
+        assertEquals(errorResponse.getCode(), ErrorStatusCode.ROOM_NOT_EXIT.getValue());
         assertEquals(Objects.requireNonNull(serverResponseGetRoom.block()).statusCode(), HttpStatus.BAD_REQUEST);
     }
 
@@ -143,7 +143,7 @@ class RoomHandlerTest {
                 .returnResult()
                 .getResponseBody();
 
-        assertEquals(errorResponse.getCode(),ErrorStatusCode.INCORRECT_REQUEST.getValue());
+        assertEquals(errorResponse.getCode(), ErrorStatusCode.INCORRECT_REQUEST.getValue());
         assertEquals(Objects.requireNonNull(serverResponseJoinRoom.block()).statusCode(), HttpStatus.BAD_REQUEST);
     }
 
@@ -181,7 +181,7 @@ class RoomHandlerTest {
                 .returnResult()
                 .getResponseBody();
 
-        assertEquals(errorResponse.getCode(),ErrorStatusCode.INCORRECT_REQUEST.getValue());
+        assertEquals(errorResponse.getCode(), ErrorStatusCode.INCORRECT_REQUEST.getValue());
         assertEquals(Objects.requireNonNull(serverResponseLeaveRoom.block()).statusCode(), HttpStatus.BAD_REQUEST);
     }
 
@@ -201,12 +201,15 @@ class RoomHandlerTest {
         Mockito.when(request.pathVariable("roomId")).thenReturn(idRoom);
         Mono<ServerResponse> serverResponseDeleteRoom = roomHandler.deleteRoom(request);
 
-        webTestClient.post().uri("/zipli/room/deleteRoom/1")
+        DeleteRoomResponse responseBody = webTestClient.post().uri("/zipli/room/deleteRoom/1")
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(String.class).isEqualTo("OK");
+                .expectBody(DeleteRoomResponse.class)
+                .returnResult()
+                .getResponseBody();
 
+        assertEquals(responseBody.getReport(),"Ok");
         assertEquals(Objects.requireNonNull(serverResponseDeleteRoom.block()).statusCode(), HttpStatus.OK);
     }
 
@@ -261,7 +264,7 @@ class RoomHandlerTest {
                 .returnResult()
                 .getResponseBody();
 
-        assertEquals(errorResponse.getCode(),ErrorStatusCode.INCORRECT_REQUEST.getValue());
+        assertEquals(errorResponse.getCode(), ErrorStatusCode.INCORRECT_REQUEST.getValue());
         assertEquals(Objects.requireNonNull(serverResponseGetMessagesByRoom.block()).statusCode(), HttpStatus.BAD_REQUEST);
     }
 
@@ -314,7 +317,7 @@ class RoomHandlerTest {
                 .returnResult()
                 .getResponseBody();
 
-        assertEquals(errorResponse.getCode(),ErrorStatusCode.INCORRECT_REQUEST.getValue());
+        assertEquals(errorResponse.getCode(), ErrorStatusCode.INCORRECT_REQUEST.getValue());
 
         assertEquals(Objects.requireNonNull(serverResponseSaveMessage.block()).statusCode(), HttpStatus.BAD_REQUEST);
     }
