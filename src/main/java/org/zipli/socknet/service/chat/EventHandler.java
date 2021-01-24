@@ -47,10 +47,10 @@ public class EventHandler {
                 try {
                     chatService.createChat(chatData);
                 } catch (CreateChatException e) {
-                    log.error(commandFail, eventCommand, chatData, e.getNumberException().getMessage());
+                    log.error(commandFail, eventCommand, chatData, e.getErrorStatusCode().getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    e.getNumberException().getValue()))
+                                    e.getErrorStatusCode().getValue()))
                     );
                 } catch (UserNotFoundException e) {
                     log.error(commandFail, eventCommand, chatData, e.getErrorStatusCode().getMessage());
