@@ -36,7 +36,7 @@ public class VideoService implements IVideoService {
 
     public VideoData startVideoCall(VideoData videoData) {
         VideoCallState videoCallState = new VideoCallState(videoData.getUserId(), new CopyOnWriteArrayList<>(), new CopyOnWriteArrayList<>());
-        videoCallState.getIdUsersInCall().add(videoData.getUserId());
+        videoCallState.getUsersInCallId().add(videoData.getUserId());
         videoCallStorage.put(videoData.getChatId(), videoCallState);
 
         Chat chat = chatRepository.findChatById(videoData.getChatId());
@@ -44,12 +44,12 @@ public class VideoService implements IVideoService {
             throw new ChatNotFoundException("Chat {} doesn't exist",
                     WsException.CHAT_NOT_FOUND_EXCEPTION.getNumberException());
         }
-        chat.getIdUsers().parallelStream()
+        chat.getUsersId().parallelStream()
                 .forEach(userId -> emitterService.sendMessageToUser(userId,
                         new WsMessageResponse(Command.VIDEO_CALL_START, videoData)));
 
-        List<String> usersWhoIsNotOnline = videoCallStorage.get(videoData.getChatId()).getIdUsersWhoIsNotOnline();
-        usersWhoIsNotOnline.addAll(chat.getIdUsers());
+        List<String> usersWhoIsNotOnline = videoCallStorage.get(videoData.getChatId()).getUsersWhoIsNotOnlineId();
+        usersWhoIsNotOnline.addAll(chat.getUsersId());
         usersWhoIsNotOnline.removeAll(emitterService.getMessageEmitter().keySet());
 
         log.info("Start VideoCall in Chat {} by user {}.", videoData.getChatName(), videoData.getUserName());
@@ -64,16 +64,16 @@ public class VideoService implements IVideoService {
             throw new VideoCallException("VideoCall {} doesn't exist",
                     WsException.VIDEO_CALL_EXCEPTION.getNumberException());
         }
-        videoCallState.getIdUsersInCall()
+        videoCallState.getUsersInCallId()
                 .add(videoData.getUserId());
-        videoCallState.getIdUsersWhoIsNotOnline().remove(videoData.getUserId());
+        videoCallState.getUsersWhoIsNotOnlineId().remove(videoData.getUserId());
         Chat chat = chatRepository.findChatById(videoData.getChatId());
         if (chat == null) {
             throw new ChatNotFoundException("Chat {} doesn't exist",
                     WsException.CHAT_NOT_FOUND_EXCEPTION.getNumberException());
         }
 
-        chat.getIdUsers().parallelStream()
+        chat.getUsersId().parallelStream()
                 .forEach(userId -> emitterService.sendMessageToUser(userId,
                         new WsMessageResponse(Command.VIDEO_CALL_JOIN, videoData)));
 
@@ -89,14 +89,14 @@ public class VideoService implements IVideoService {
             throw new VideoCallException("VideoCall {} doesn't exist",
                     WsException.VIDEO_CALL_EXCEPTION.getNumberException());
         }
-        videoCallState.getIdUsersInCall()
+        videoCallState.getUsersInCallId()
                 .remove(chatData.getUserId());
         log.debug(videoCallState.toString());
         log.info("User {} leaved from videoCall in chat {}", chatData.getUserId(), chatData.getChatId());
 
         if (videoCallStorage
                 .get(chatData.getChatId())
-                .getIdUsersInCall()
+                .getUsersInCallId()
                 .size() < 2) {
             videoCallStorage.remove(chatData.getChatId());
             log.info("VideoCall in chat {} is over", chatData.getChatId());
@@ -107,7 +107,7 @@ public class VideoService implements IVideoService {
                     WsException.CHAT_NOT_FOUND_EXCEPTION.getNumberException());
         }
 
-        chat.getIdUsers().parallelStream()
+        chat.getUsersId().parallelStream()
                 .forEach(userId -> emitterService.sendMessageToUser(userId,
                         new WsMessageResponse(Command.VIDEO_CALL_EXIT, chatData)));
         return chatData;

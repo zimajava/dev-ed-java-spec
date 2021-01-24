@@ -10,20 +10,20 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class VideoCallState {
-    private String idUserCreator;
-    private List<String> idUsersInCall;
-    private List<String> idUsersWhoIsNotOnline;
+    private String userCreatorId;
+    private List<String> usersInCallId;
+    private List<String> usersWhoIsNotOnlineId;
 
-    public VideoCallState(String idUserCreator, List<String> idUsersInCall, List<String> idUsersWhoNotAnswered) {
-        this.idUserCreator = idUserCreator;
-        this.idUsersInCall = idUsersInCall;
-        this.idUsersWhoIsNotOnline = idUsersWhoNotAnswered;
+    public VideoCallState(String userCreatorId, List<String> usersInCallId, List<String> idUsersWhoNotAnswered) {
+        this.userCreatorId = userCreatorId;
+        this.usersInCallId = usersInCallId;
+        this.usersWhoIsNotOnlineId = idUsersWhoNotAnswered;
     }
 
     @Override
     public String toString() {
-        return "VideoCallState is: idUserCreator='" + idUserCreator + '\'' +
-                ", idUsersInCall=" + idUsersInCall +
-                ", idUsersWhoIsNotOnline=" + idUsersWhoIsNotOnline + '\'';
+        return "VideoCallState is: idUserCreator='" + userCreatorId + '\'' +
+                ", idUsersInCall=" + usersInCallId +
+                ", idUsersWhoIsNotOnline=" + usersWhoIsNotOnlineId + '\'';
     }
 }

@@ -83,9 +83,9 @@ class MessageServiceTest {
         messageTwo = messageRepository.save(messageTwo);
         messageTree = messageRepository.save(messageTree);
 
-        chat.getIdMessages().add(messageOne.getId());
-        chat.getIdMessages().add(messageTwo.getId());
-        chat.getIdMessages().add(messageTree.getId());
+        chat.getMessagesId().add(messageOne.getId());
+        chat.getMessagesId().add(messageTwo.getId());
+        chat.getMessagesId().add(messageTree.getId());
 
         chat = chatRepository.save(chat);
 
@@ -138,7 +138,7 @@ class MessageServiceTest {
         assertFalse(messageRepository.existsById(messageDelete.getId()));
         assertFalse(chatRepository
                 .findChatById(data.getChatId())
-                .getIdMessages()
+                .getMessagesId()
                 .contains(messageDelete.getId()));
     }
 

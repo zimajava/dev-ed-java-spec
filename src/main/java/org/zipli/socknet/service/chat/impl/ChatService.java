@@ -47,7 +47,7 @@ public class ChatService implements IChatService {
             Chat chat = new Chat(data.getChatName(), data.isPrivate(),
                     data.getChatParticipants(),
                     data.getUserId());
-            chat.getIdUsers().add(data.getUserId());
+            chat.getUsersId().add(data.getUserId());
             chatRepository.save(chat);
 
             userCreator.getChatsId().add(chat.getId());
@@ -65,13 +65,13 @@ public class ChatService implements IChatService {
 
             log.info("Chat {} successfully created id {} user {} ", data.getChatName(), chat.getId(), data.getUserId());
 
-            chat.getIdUsers().parallelStream()
-                    .forEach(userId -> emitterService.sendMessageToUser(userId,
+            chat.getUsersId().parallelStream()
+                .forEach(userId -> emitterService.sendMessageToUser(userId,
                             new WsMessageResponse(Command.CHAT_USER_ADD,
                                     new FullChatData(data.getUserId(),
                                             chat.getId(),
                                             chat.getChatName(),
-                                            chat.getIdUsers(),
+                                            chat.getUsersId(),
                                             chat.isPrivate()
                                     )
                             ))
@@ -93,13 +93,13 @@ public class ChatService implements IChatService {
                 chat.setChatName(data.getChatName());
                 final Chat finalChat = chatRepository.save(chat);
 
-                finalChat.getIdUsers().parallelStream()
-                        .forEach(userId -> emitterService.sendMessageToUser(userId,
+                finalChat.getUsersId().parallelStream()
+                         .forEach(userId -> emitterService.sendMessageToUser(userId,
                                 new WsMessageResponse(Command.CHAT_UPDATE,
                                         new FullChatData(data.getUserId(),
                                                 finalChat.getId(),
                                                 finalChat.getChatName(),
-                                                finalChat.getIdUsers(),
+                                                finalChat.getUsersId(),
                                                 finalChat.isPrivate()
                                         )
                                 ))
@@ -128,7 +128,7 @@ public class ChatService implements IChatService {
 
                 userRepository.saveAll(
                         userRepository.findUsersByIdIn(
-                                chat.getIdUsers()).stream()
+                                chat.getUsersId()).stream()
                                 .map(user -> {
                                     user.getChatsId().remove(data.getChatId());
                                     return user;
@@ -142,13 +142,13 @@ public class ChatService implements IChatService {
 
                 log.info("Chat {} name {} delete by user {} ", data.getChatId(), data.getUserId(), chat.getChatName());
 
-                chat.getIdUsers().parallelStream()
-                        .forEach(userId -> emitterService.sendMessageToUser(userId,
+                chat.getUsersId().parallelStream()
+                    .forEach(userId -> emitterService.sendMessageToUser(userId,
                                 new WsMessageResponse(Command.CHAT_DELETE,
                                         new FullChatData(data.getUserId(),
                                                 chat.getId(),
                                                 chat.getChatName(),
-                                                chat.getIdUsers(),
+                                                chat.getUsersId(),
                                                 chat.isPrivate()
                                         )
                                 ))
@@ -170,7 +170,7 @@ public class ChatService implements IChatService {
 
         Chat chat = chatRepository.findChatById(data.getChatId());
         if (chat != null) {
-            chat.getIdUsers().remove(data.getUserId());
+            chat.getUsersId().remove(data.getUserId());
             final Chat finalChat = chatRepository.save(chat);
 
             User user = userRepository.getUserById(data.getUserId());
@@ -179,13 +179,13 @@ public class ChatService implements IChatService {
 
             log.info("Leave chat {} user {}", data.getChatId(), data.getUserId());
 
-            finalChat.getIdUsers().parallelStream()
-                    .forEach(userId -> emitterService.sendMessageToUser(userId,
+            finalChat.getUsersId().parallelStream()
+                     .forEach(userId -> emitterService.sendMessageToUser(userId,
                             new WsMessageResponse(Command.CHAT_LEAVE,
                                     new FullChatData(data.getUserId(),
                                             finalChat.getId(),
                                             finalChat.getChatName(),
-                                            finalChat.getIdUsers(),
+                                            finalChat.getUsersId(),
                                             finalChat.isPrivate()
                                     )
                             ))
@@ -203,7 +203,7 @@ public class ChatService implements IChatService {
         Chat chat = chatRepository.findChatById(data.getChatId());
 
         if (chat != null) {
-            List<String> chatUsers = chat.getIdUsers();
+            List<String> chatUsers = chat.getUsersId();
             if (!chat.isPrivate() && !chatUsers.contains(data.getUserId())) {
 
                 User user = userRepository.getUserById(data.getUserId());
@@ -215,13 +215,13 @@ public class ChatService implements IChatService {
 
                 log.info("Join Chat user {} to chat {}", data.getUserId(), finalChat.getId());
 
-                finalChat.getIdUsers().parallelStream()
+                finalChat.getUsersId().parallelStream()
                         .forEach(userId -> emitterService.sendMessageToUser(userId,
                                 new WsMessageResponse(Command.CHAT_USER_ADD,
                                         new FullChatData(data.getUserId(),
                                                 finalChat.getId(),
                                                 finalChat.getChatName(),
-                                                finalChat.getIdUsers(),
+                                                finalChat.getUsersId(),
                                                 finalChat.isPrivate()
                                         )
                                 ))
