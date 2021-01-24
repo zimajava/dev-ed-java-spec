@@ -285,7 +285,7 @@ public class EventHandler {
                     log.error(commandFail, eventCommand, videoData, e.getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    e.getNumberException().getValue()))
+                                    e.getErrorStatusCode().getValue()))
                     );
                 } catch (ChatNotFoundException e) {
                     log.error(commandFail, eventCommand, videoData, e.getErrorStatusCode().getMessage());
@@ -308,10 +308,10 @@ public class EventHandler {
                     videoService.joinVideoCall(videoCallJoin);
 
                 } catch (VideoCallException e) {
-                    log.error(commandFail, eventCommand, videoCallJoin, e.getNumberException().getMessage());
+                    log.error(commandFail, eventCommand, videoCallJoin, e.getErrorStatusCode().getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    e.getNumberException().getValue())
+                                    e.getErrorStatusCode().getValue())
                     ));
                 } catch (ChatNotFoundException e) {
                     log.error(commandFail, eventCommand, videoCallJoin, e.getErrorStatusCode().getMessage());
@@ -333,10 +333,10 @@ public class EventHandler {
                 try {
                     videoService.exitFromVideoCall(videoCallExit);
                 } catch (VideoCallException e) {
-                    log.error(commandFail, eventCommand, videoCallExit, e.getNumberException().getMessage());
+                    log.error(commandFail, eventCommand, videoCallExit, e.getErrorStatusCode().getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    e.getNumberException().getValue())
+                                    e.getErrorStatusCode().getValue())
                     ));
                 } catch (ChatNotFoundException e) {
                     log.error(commandFail, eventCommand, videoCallExit, e.getErrorStatusCode().getMessage());

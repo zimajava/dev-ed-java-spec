@@ -4,13 +4,13 @@ import org.zipli.socknet.exception.ErrorStatusCode;
 
 public class FileDeleteException extends RuntimeException {
 
-    private final ErrorStatusCode exceptionCode;
+    private final ErrorStatusCode errorStatusCode;
 
-    public FileDeleteException(ErrorStatusCode exceptionCode) {
-        this.exceptionCode = exceptionCode;
+    public FileDeleteException(ErrorStatusCode errorStatusCode) {
+        this.errorStatusCode = errorStatusCode;
     }
 
     public ErrorStatusCode getNumberException() {
-        return exceptionCode;
+        return errorStatusCode;
     }
 }

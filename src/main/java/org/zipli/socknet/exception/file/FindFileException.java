@@ -4,13 +4,13 @@ import org.zipli.socknet.exception.ErrorStatusCode;
 
 public class FindFileException extends RuntimeException {
 
-    private final ErrorStatusCode exceptionCode;
+    private final ErrorStatusCode errorStatusCode;
 
-    public FindFileException(ErrorStatusCode exceptionCode) {
-        this.exceptionCode = exceptionCode;
+    public FindFileException(ErrorStatusCode errorStatusCode) {
+        this.errorStatusCode = errorStatusCode;
     }
 
     public ErrorStatusCode getNumberException() {
-        return exceptionCode;
+        return errorStatusCode;
     }
 }
