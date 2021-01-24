@@ -10,12 +10,14 @@ import org.zipli.socknet.dto.response.roomEvent.RoomEventResponse;
 @NoArgsConstructor
 public class MessageEventResponse extends BaseEventResponse {
 
-    private String userName;
     private String textMessage;
-
-    public MessageEventResponse(String roomId, String userName, String textMessage) {
-        super(roomId);
-        this.userName = userName;
+    public MessageEventResponse(String textMessage) {
         this.textMessage = textMessage;
     }
+
+    public MessageEventResponse(String userName, String textMessage) {
+        super(userName);
+        this.textMessage = textMessage;
+    }
+
 }

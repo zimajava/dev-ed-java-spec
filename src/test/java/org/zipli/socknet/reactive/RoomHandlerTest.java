@@ -46,7 +46,7 @@ class RoomHandlerTest {
             new UserInfoByRoomRequest("", "", "");
     private final CreateRoomRequest createRoomRequest = new CreateRoomRequest("UserName", "ChatName");
     private final RoomMessage roomMessage =
-            new RoomMessage("AuthorUser", "IdRoom", "Text", new Date());
+            new RoomMessage("AuthorUser", "IdRoom", "Text", new Date().getTime());
     private final MessageEventResponse messageEventResponse =
             new MessageEventResponse();
     @Autowired

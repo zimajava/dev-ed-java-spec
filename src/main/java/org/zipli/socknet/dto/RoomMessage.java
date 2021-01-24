@@ -16,9 +16,9 @@ public class RoomMessage {
     private String authorUserName;
     private String roomId;
     private String textMessage;
-    private Date date;
+    private long date;
 
-    public RoomMessage(String authorUserName, String roomId, String textMessage, Date date) {
+    public RoomMessage(String authorUserName, String roomId, String textMessage, long date) {
         this.authorUserName = authorUserName;
         this.roomId = roomId;
         this.textMessage = textMessage;

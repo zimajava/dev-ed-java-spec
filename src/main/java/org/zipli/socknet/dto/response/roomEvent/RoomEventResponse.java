@@ -11,16 +11,12 @@ public class RoomEventResponse extends BaseEventResponse {
 
     private String signal;
 
-    private String userName;
-
-    public RoomEventResponse(String roomId, String signal, String userName) {
-        super(roomId);
+    public RoomEventResponse(String signal) {
         this.signal = signal;
-        this.userName = userName;
     }
 
-    public RoomEventResponse(String signal, String userName) {
+    public RoomEventResponse(String userName, String signal) {
+        super(userName);
         this.signal = signal;
-        this.userName = userName;
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import org.zipli.socknet.dto.request.CreateRoomRequest;
 import org.zipli.socknet.dto.request.MessageRoomRequest;
 import org.zipli.socknet.dto.request.UserInfoByRoomRequest;
+import org.zipli.socknet.dto.response.DeleteRoomResponse;
 import org.zipli.socknet.dto.response.ErrorResponse;
 import org.zipli.socknet.dto.response.roomEvent.BaseEventResponse;
 import org.zipli.socknet.exception.ErrorStatusCode;
@@ -94,7 +95,7 @@ public class RoomHandler implements IRoomHandler {
         if (roomId != null) {
             try {
                 roomService.deleteRoom(roomId);
-                return serverResponseOk("OK");
+                return serverResponseOk(new DeleteRoomResponse("Ok"));
             } catch (Exception e) {
                 log.error("Delete Room fail: Room {} not exit", roomId);
                 return serverResponseBadRequest(ErrorStatusCode.ROOM_NOT_EXIT.getValue());

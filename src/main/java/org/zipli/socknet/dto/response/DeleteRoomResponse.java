@@ -1,4 +1,4 @@
-package org.zipli.socknet.dto.response.roomEvent;
+package org.zipli.socknet.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,10 +7,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class BaseEventResponse {
-
-    private String userName;
-
+@AllArgsConstructor
+public class DeleteRoomResponse {
+    private String report;
 }

@@ -32,7 +32,7 @@ public class RoomService implements IRoomService{
 
     private final RoomRepository roomRepository;
 
-    private final Map<String, Sinks.Many<ServerSentEvent<BaseEventResponse>>> chatIdEmitterMap = new ConcurrentHashMap<>();
+    private final Map<String, Sinks.Many<ServerSentEvent<BaseEventResponse>>> messageEmitterByRoomId = new ConcurrentHashMap<>();
     private final Map<String, AtomicLong> eventIdGeneration = new ConcurrentHashMap<>();
 
     public RoomService(RoomRepository roomRepository) {
@@ -73,13 +73,11 @@ public class RoomService implements IRoomService{
             room.getUsersInfo().add(userInfoByRoomRequest);
             room = roomRepository.save(room);
 
-            chatIdEmitterMap.get(roomId).tryEmitNext(ServerSentEvent.<BaseEventResponse>builder()
+            messageEmitterByRoomId.get(roomId).tryEmitNext(ServerSentEvent.<BaseEventResponse>builder()
                     .id(String.valueOf(eventIdGeneration.get(room.getId()).getAndIncrement()))
                     .event(EventCommandRoom.JOIN_ROOM_EVENT.name())
-                    .data(new RoomEventResponse(
-                            roomId,
-                            userInfoByRoomRequest.getSignal(),
-                            userInfoByRoomRequest.getUserName()))
+                    .data(new RoomEventResponse(userInfoByRoomRequest.getUserName(),
+                            userInfoByRoomRequest.getSignal()))
                     .build());
             log.info("Join Room successful: Room - {}, user - {}, users - {}",
                     room.getId(),
@@ -101,14 +99,11 @@ public class RoomService implements IRoomService{
             room.getUsersInfo().removeIf(userInfo -> userInfo.getUserName().equals(userInfoByRoomRequest.getUserName()));
             room = roomRepository.save(room);
 
-            chatIdEmitterMap.get(roomId).tryEmitNext(ServerSentEvent.<BaseEventResponse>builder()
+            messageEmitterByRoomId.get(roomId).tryEmitNext(ServerSentEvent.<BaseEventResponse>builder()
                     .id(String.valueOf(eventIdGeneration.get(room.getId()).getAndIncrement()))
-                    .id("12212")
                     .event(EventCommandRoom.LEAVE_ROOM_EVENT.name())
-                    .data(new RoomEventResponse(
-                            roomId,
-                            userInfoByRoomRequest.getSignal(),
-                            userInfoByRoomRequest.getUserName()))
+                    .data(new RoomEventResponse(userInfoByRoomRequest.getUserName(),
+                            userInfoByRoomRequest.getSignal()))
                     .build());
             log.info("Leave Room successful: Room - {}, user - {}, users - {}",
                     room.getId(),
@@ -128,7 +123,7 @@ public class RoomService implements IRoomService{
             Room room = new Room(chatName, userName);
             room = roomRepository.save(room);
             Sinks.Many<ServerSentEvent<BaseEventResponse>> emitter = Sinks.many().multicast().directAllOrNothing();
-            chatIdEmitterMap.put(room.getId(), emitter);
+            messageEmitterByRoomId.put(room.getId(), emitter);
             eventIdGeneration.put(room.getId(),
                     new AtomicLong(System.currentTimeMillis()));
             log.info("Create Room successful: RoomId - {}, RoomName - {}, users - {}",
@@ -149,13 +144,13 @@ public class RoomService implements IRoomService{
 
         if (roomOptional.isPresent()) {
             Room room = roomOptional.get();
-            RoomMessage roomMessage = new RoomMessage(message.getUserName(), roomId, message.getTextMessage(), new Date());
-            room.getMessages().add(new RoomMessage(message.getUserName(), roomId, message.getTextMessage(), new Date()));
+            RoomMessage roomMessage = new RoomMessage(message.getUserName(), roomId, message.getTextMessage(), new Date().getTime());
+            room.getMessages().add(new RoomMessage(message.getUserName(), roomId, message.getTextMessage(), new Date().getTime()));
             roomRepository.save(room);
-            chatIdEmitterMap.get(roomId).tryEmitNext(ServerSentEvent.<BaseEventResponse>builder()
+            messageEmitterByRoomId.get(roomId).tryEmitNext(ServerSentEvent.<BaseEventResponse>builder()
                     .id(String.valueOf(eventIdGeneration.get(room.getId()).getAndIncrement()))
                     .event(EventCommandRoom.NEW_MESSAGE_EVENT.name())
-                    .data(new MessageEventResponse(roomMessage.getRoomId(),
+                    .data(new MessageEventResponse(
                             roomMessage.getAuthorUserName(),
                             roomMessage.getTextMessage()))
                     .build());
@@ -187,18 +182,17 @@ public class RoomService implements IRoomService{
 
     @Override
     public Flux<ServerSentEvent<BaseEventResponse>> subscribeMessage(String idRoom) {
-        return chatIdEmitterMap.get(idRoom).asFlux();
+        return messageEmitterByRoomId.get(idRoom).asFlux();
     }
 
     @Override
     public void deleteRoom(String roomId) {
         roomRepository.deleteById(roomId);
-        chatIdEmitterMap.get(roomId).tryEmitNext(ServerSentEvent.<BaseEventResponse>builder()
+        messageEmitterByRoomId.get(roomId).tryEmitNext(ServerSentEvent.<BaseEventResponse>builder()
                 .id(String.valueOf(eventIdGeneration.get(roomId).getAndIncrement()))
                 .event(EventCommandRoom.DELETE_ROOM_EVENT.name())
-                .data(new BaseEventResponse(roomId))
                 .build());
-        chatIdEmitterMap.remove(roomId);
+        messageEmitterByRoomId.remove(roomId);
         log.info("Delete Room successful: RoomId - {}", roomId);
     }
 }
