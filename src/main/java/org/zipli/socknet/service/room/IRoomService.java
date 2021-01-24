@@ -3,9 +3,10 @@ package org.zipli.socknet.service.room;
 import org.springframework.http.codec.ServerSentEvent;
 import org.zipli.socknet.dto.RoomMessage;
 import org.zipli.socknet.dto.request.MessageRoomRequest;
+import org.zipli.socknet.dto.response.RoomResponse;
 import org.zipli.socknet.dto.response.RoomsResponse;
 import org.zipli.socknet.dto.request.UserInfoByRoomRequest;
-import org.zipli.socknet.dto.response.BaseEventResponse;
+import org.zipli.socknet.dto.response.roomEvent.BaseEventResponse;
 import org.zipli.socknet.exception.room.*;
 import org.zipli.socknet.repository.model.Room;
 import reactor.core.publisher.Flux;
@@ -17,9 +18,9 @@ public interface IRoomService {
 
     List<RoomsResponse> getRooms();
 
-    Room joinRoom(String idRoom, UserInfoByRoomRequest userInfoByRoomRequest) throws JoinRoomException;
+    RoomResponse joinRoom(String idRoom, UserInfoByRoomRequest userInfoByRoomRequest) throws JoinRoomException;
 
-    Room leaveRoom(String idRoom, UserInfoByRoomRequest userInfoByRoomRequest) throws LiveRoomException;
+    RoomResponse leaveRoom(String idRoom, UserInfoByRoomRequest userInfoByRoomRequest) throws LiveRoomException;
 
     void deleteRoom(String idRoom);
 

@@ -3,14 +3,14 @@ package org.zipli.socknet.service.room;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Service;
-import org.zipli.socknet.dto.EventCommandSse;
+import org.zipli.socknet.dto.EventCommand;
 import org.zipli.socknet.dto.RoomMessage;
 import org.zipli.socknet.dto.request.MessageRoomRequest;
 import org.zipli.socknet.dto.request.UserInfoByRoomRequest;
-import org.zipli.socknet.dto.response.BaseEventResponse;
-import org.zipli.socknet.dto.response.MessageEventResponse;
-import org.zipli.socknet.dto.response.RoomEventResponse;
-import org.zipli.socknet.dto.response.RoomsResponse;
+import org.zipli.socknet.dto.response.*;
+import org.zipli.socknet.dto.response.roomEvent.BaseEventResponse;
+import org.zipli.socknet.dto.response.roomEvent.MessageEventResponse;
+import org.zipli.socknet.dto.response.roomEvent.RoomEventResponse;
 import org.zipli.socknet.exception.ErrorStatusCode;
 import org.zipli.socknet.exception.room.*;
 import org.zipli.socknet.repository.RoomRepository;
@@ -28,25 +28,29 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class RoomService implements IRoomService {
+public class RoomService implements IRoomService{
 
     private final RoomRepository roomRepository;
 
     private final Map<String, Sinks.Many<ServerSentEvent<BaseEventResponse>>> chatIdEmitterMap = new ConcurrentHashMap<>();
     private final Map<String, AtomicLong> eventIdGeneration = new ConcurrentHashMap<>();
-    private final AtomicLong messageIdEventGenerator = new AtomicLong();
 
     public RoomService(RoomRepository roomRepository) {
         this.roomRepository = roomRepository;
     }
 
     @Override
-    public Room getRoom(String idRoom) throws GetRoomException {
-        Optional<Room> room = roomRepository.findById(idRoom);
+    public Room getRoom(String roomId) throws GetRoomException {
+        Optional<Room> roomOptional = roomRepository.findById(roomId);
 
-        if (room.isPresent()) {
-            log.info("Get Room successful: Room - {}", room);
-            return room.get();
+        if (roomOptional.isPresent()) {
+            Room room = roomOptional.get();
+            log.info("Get Room successful: RoomId - {}, RoomName - {}, Users - {}",
+                    room.getId(),
+                    room.getRoomName(),
+                    room.getUsersInfo()
+            );
+            return room;
         } else {
             throw new GetRoomException(ErrorStatusCode.ROOM_NOT_EXIT);
         }
@@ -61,55 +65,57 @@ public class RoomService implements IRoomService {
     }
 
     @Override
-    public Room joinRoom(String idRoom, UserInfoByRoomRequest userInfoByRoomRequest) throws JoinRoomException {
-        Optional<Room> roomOptional = roomRepository.findById(idRoom);
+    public RoomResponse joinRoom(String roomId, UserInfoByRoomRequest userInfoByRoomRequest) throws JoinRoomException {
+        Optional<Room> roomOptional = roomRepository.findById(roomId);
 
         if (roomOptional.isPresent()) {
             Room room = roomOptional.get();
-            room.getUsers().add(userInfoByRoomRequest);
+            room.getUsersInfo().add(userInfoByRoomRequest);
             room = roomRepository.save(room);
 
-            chatIdEmitterMap.get(idRoom).tryEmitNext(ServerSentEvent.<BaseEventResponse>builder()
+            chatIdEmitterMap.get(roomId).tryEmitNext(ServerSentEvent.<BaseEventResponse>builder()
                     .id(String.valueOf(eventIdGeneration.get(room.getId()).getAndIncrement()))
-                    .event(EventCommandSse.JOIN_ROOM_EVENT.name())
+                    .event(EventCommand.JOIN_ROOM_EVENT.name())
                     .data(new RoomEventResponse(
-                            idRoom,
-                            userInfoByRoomRequest.getSignals(),
-                            userInfoByRoomRequest.getUsername()))
+                            roomId,
+                            userInfoByRoomRequest.getSignal(),
+                            userInfoByRoomRequest.getUserName()))
                     .build());
             log.info("Join Room successful: Room - {}, user - {}, users - {}",
                     room.getId(),
-                    userInfoByRoomRequest.getUsername(),
-                    room.getUsers());
-            return room;
+                    userInfoByRoomRequest.getUserName(),
+                    room.getUsersInfo()
+            );
+            return new RoomResponse(room.getId(),room.getRoomName(),room.getCreatorUserName(),room.getUsersInfo());
         } else {
             throw new JoinRoomException(ErrorStatusCode.ROOM_NOT_EXIT);
         }
     }
 
     @Override
-    public Room leaveRoom(String idRoom, UserInfoByRoomRequest userInfoByRoomRequest) throws LiveRoomException {
-        Optional<Room> roomOptional = roomRepository.findById(idRoom);
+    public RoomResponse leaveRoom(String roomId, UserInfoByRoomRequest userInfoByRoomRequest) throws LiveRoomException {
+        Optional<Room> roomOptional = roomRepository.findById(roomId);
 
         if (roomOptional.isPresent()) {
             Room room = roomOptional.get();
-            room.getUsers().removeIf(userInfo -> userInfo.getUsername().equals(userInfoByRoomRequest.getUsername()));
+            room.getUsersInfo().removeIf(userInfo -> userInfo.getUserName().equals(userInfoByRoomRequest.getUserName()));
             room = roomRepository.save(room);
 
-            chatIdEmitterMap.get(idRoom).tryEmitNext(ServerSentEvent.<BaseEventResponse>builder()
+            chatIdEmitterMap.get(roomId).tryEmitNext(ServerSentEvent.<BaseEventResponse>builder()
                     .id(String.valueOf(eventIdGeneration.get(room.getId()).getAndIncrement()))
                     .id("12212")
-                    .event(EventCommandSse.LEAVE_ROOM_EVENT.name())
+                    .event(EventCommand.LEAVE_ROOM_EVENT.name())
                     .data(new RoomEventResponse(
-                            idRoom,
-                            userInfoByRoomRequest.getSignals(),
-                            userInfoByRoomRequest.getUsername()))
+                            roomId,
+                            userInfoByRoomRequest.getSignal(),
+                            userInfoByRoomRequest.getUserName()))
                     .build());
             log.info("Leave Room successful: Room - {}, user - {}, users - {}",
                     room.getId(),
-                    userInfoByRoomRequest.getUsername(),
-                    room.getUsers());
-            return room;
+                    userInfoByRoomRequest.getUserName(),
+                    room.getUsersInfo()
+            );
+            return new RoomResponse(room.getId(),room.getRoomName(),room.getCreatorUserName(),room.getUsersInfo());
         } else {
             throw new LiveRoomException(ErrorStatusCode.ROOM_NOT_EXIT);
         }
@@ -128,7 +134,7 @@ public class RoomService implements IRoomService {
             log.info("Create Room successful: RoomId - {}, RoomName - {}, users - {}",
                     room.getId(),
                     room.getRoomName(),
-                    room.getCreatorUser()
+                    room.getCreatorUserName()
             );
             return room;
         } else {
@@ -137,18 +143,18 @@ public class RoomService implements IRoomService {
     }
 
     @Override
-    public RoomMessage saveMessage(String idRoom, MessageRoomRequest message) throws SendMessageToRoomException {
+    public RoomMessage saveMessage(String roomId, MessageRoomRequest message) throws SendMessageToRoomException {
 
-        Optional<Room> roomOptional = roomRepository.findById(idRoom);
+        Optional<Room> roomOptional = roomRepository.findById(roomId);
 
         if (roomOptional.isPresent()) {
             Room room = roomOptional.get();
-            RoomMessage roomMessage = new RoomMessage(message.getUserName(), idRoom, message.getTextMessage(), new Date());
-            room.getMessages().add(new RoomMessage(message.getUserName(), idRoom, message.getTextMessage(), new Date()));
+            RoomMessage roomMessage = new RoomMessage(message.getUserName(), roomId, message.getTextMessage(), new Date());
+            room.getMessages().add(new RoomMessage(message.getUserName(), roomId, message.getTextMessage(), new Date()));
             roomRepository.save(room);
-            chatIdEmitterMap.get(idRoom).tryEmitNext(ServerSentEvent.<BaseEventResponse>builder()
-                    .id(String.valueOf(messageIdEventGenerator.getAndIncrement()))
-                    .event(EventCommandSse.NEW_MESSAGE_EVENT.name())
+            chatIdEmitterMap.get(roomId).tryEmitNext(ServerSentEvent.<BaseEventResponse>builder()
+                    .id(String.valueOf(eventIdGeneration.get(room.getId()).getAndIncrement()))
+                    .event(EventCommand.NEW_MESSAGE_EVENT.name())
                     .data(new MessageEventResponse(roomMessage.getRoomId(),
                             roomMessage.getAuthorUserName(),
                             roomMessage.getTextMessage()))
@@ -164,9 +170,9 @@ public class RoomService implements IRoomService {
     }
 
     @Override
-    public List<RoomMessage> getMessagesByRoom(String idRoom) throws GetMessagesByRoomException {
+    public List<RoomMessage> getMessagesByRoom(String roomId) throws GetMessagesByRoomException {
 
-        Optional<Room> roomOptional = roomRepository.findById(idRoom);
+        Optional<Room> roomOptional = roomRepository.findById(roomId);
         if (roomOptional.isPresent()) {
             Room room = roomOptional.get();
             log.info("Get Messages by Room successful: RoomId - {}, amount of messages - {}",
@@ -185,14 +191,14 @@ public class RoomService implements IRoomService {
     }
 
     @Override
-    public void deleteRoom(String idRoom) {
-        roomRepository.deleteById(idRoom);
-        chatIdEmitterMap.get(idRoom).tryEmitNext(ServerSentEvent.<BaseEventResponse>builder()
-                .id(String.valueOf(messageIdEventGenerator.getAndIncrement()))
-                .event(EventCommandSse.DELETE_ROOM_EVENT.name())
-                .data(new BaseEventResponse(idRoom))
+    public void deleteRoom(String roomId) {
+        roomRepository.deleteById(roomId);
+        chatIdEmitterMap.get(roomId).tryEmitNext(ServerSentEvent.<BaseEventResponse>builder()
+                .id(String.valueOf(eventIdGeneration.get(roomId).getAndIncrement()))
+                .event(EventCommand.DELETE_ROOM_EVENT.name())
+                .data(new BaseEventResponse(roomId))
                 .build());
-        chatIdEmitterMap.remove(idRoom);
-        log.info("Delete Room successful: RoomId - {}", idRoom);
+        chatIdEmitterMap.remove(roomId);
+        log.info("Delete Room successful: RoomId - {}", roomId);
     }
 }

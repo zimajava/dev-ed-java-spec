@@ -166,7 +166,7 @@ class MessageServiceTest {
         try {
             messageService.deleteMessage(data);
         } catch (ChatNotFoundException e) {
-            assertEquals(e.getNumberException().getMessage(), "Chat doesn't exist");
+            assertEquals(e.getErrorStatusCode().getMessage(), "Chat doesn't exist");
         }
     }
 

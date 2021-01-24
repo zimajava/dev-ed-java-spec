@@ -5,8 +5,7 @@ import org.zipli.socknet.exception.ErrorStatusCode;
 public class VideoCallException extends RuntimeException {
     private final ErrorStatusCode numberException;
 
-    public VideoCallException(String message, ErrorStatusCode numberException) {
-        super(message);
+    public VideoCallException( ErrorStatusCode numberException) {
         this.numberException = numberException;
     }
 

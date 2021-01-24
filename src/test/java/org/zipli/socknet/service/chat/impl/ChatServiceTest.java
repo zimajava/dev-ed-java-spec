@@ -106,7 +106,7 @@ class ChatServiceTest {
         try {
             chatService.deleteChat(dataTree);
         } catch (DeleteChatException e) {
-            assertEquals(e.getNumberException().getMessage(), "Only the creator can execute");
+            assertEquals(e.getErrorStatusCode().getMessage(), "Only the creator can execute");
         }
     }
 

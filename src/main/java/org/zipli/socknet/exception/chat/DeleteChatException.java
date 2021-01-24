@@ -4,13 +4,13 @@ import org.zipli.socknet.exception.ErrorStatusCode;
 
 public class DeleteChatException extends RuntimeException {
 
-    private final ErrorStatusCode numberException;
+    private final ErrorStatusCode errorStatusCode;
 
-    public DeleteChatException(ErrorStatusCode numberException) {
-        this.numberException = numberException;
+    public DeleteChatException(ErrorStatusCode errorStatusCode) {
+        this.errorStatusCode = errorStatusCode;
     }
 
-    public ErrorStatusCode getNumberException() {
-        return numberException;
+    public ErrorStatusCode getErrorStatusCode() {
+        return errorStatusCode;
     }
 }

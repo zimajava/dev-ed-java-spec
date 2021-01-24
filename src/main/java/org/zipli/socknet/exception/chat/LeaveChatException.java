@@ -4,13 +4,13 @@ import org.zipli.socknet.exception.ErrorStatusCode;
 
 public class LeaveChatException extends RuntimeException {
 
-    private final ErrorStatusCode numberException;
+    private final ErrorStatusCode errorStatusCode;
 
-    public LeaveChatException(ErrorStatusCode numberException) {
-        this.numberException = numberException;
+    public LeaveChatException(ErrorStatusCode errorStatusCode) {
+        this.errorStatusCode = errorStatusCode;
     }
 
-    public ErrorStatusCode getNumberException() {
-        return numberException;
+    public ErrorStatusCode getErrorStatusCode() {
+        return errorStatusCode;
     }
 }

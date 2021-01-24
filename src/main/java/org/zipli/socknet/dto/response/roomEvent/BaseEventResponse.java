@@ -1,4 +1,4 @@
-package org.zipli.socknet.dto.response;
+package org.zipli.socknet.dto.response.roomEvent;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

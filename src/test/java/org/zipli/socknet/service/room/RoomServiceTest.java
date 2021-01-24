@@ -8,9 +8,10 @@ import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.http.codec.ServerSentEvent;
 import org.zipli.socknet.dto.RoomMessage;
 import org.zipli.socknet.dto.request.MessageRoomRequest;
+import org.zipli.socknet.dto.response.RoomResponse;
 import org.zipli.socknet.dto.response.RoomsResponse;
 import org.zipli.socknet.dto.request.UserInfoByRoomRequest;
-import org.zipli.socknet.dto.response.BaseEventResponse;
+import org.zipli.socknet.dto.response.roomEvent.BaseEventResponse;
 import org.zipli.socknet.exception.ErrorStatusCode;
 import org.zipli.socknet.exception.room.*;
 import org.zipli.socknet.repository.model.Room;
@@ -45,7 +46,7 @@ class RoomServiceTest {
         Room room = roomService.getRoom(roomOne.getId());
 
         assertEquals(room.getId(), roomOne.getId());
-        assertEquals(room.getCreatorUser(), roomOne.getCreatorUser());
+        assertEquals(room.getCreatorUserName(), roomOne.getCreatorUserName());
         assertEquals(room.getRoomName(), roomOne.getRoomName());
     }
 
@@ -74,20 +75,19 @@ class RoomServiceTest {
     @Test
     void joinRoom_Pass() throws JoinRoomException, CreateRoomException {
         Room roomCreate = roomService.createRoom("User_Join_Pass", "Room_Join_Pass");
-        Room roomJoin = roomService.joinRoom(roomCreate.getId(),
-                new UserInfoByRoomRequest("Artemiy", "", "signal", false));
+        RoomResponse roomJoin = roomService.joinRoom(roomCreate.getId(),
+                new UserInfoByRoomRequest("Artemiy", "", "signal"));
         Room room = roomRepository.getRoomById(roomCreate.getId());
 
-        assertEquals(roomJoin.getUsers().get(0).getIdUser(), room.getUsers().get(0).getIdUser());
-        assertEquals(roomJoin.getUsers().get(0).getUsername(), room.getUsers().get(0).getUsername());
-        assertEquals(roomJoin.getUsers().get(0).getSignals(), room.getUsers().get(0).getSignals());
+        assertEquals(roomJoin.getUsers().get(0).getUserId(), room.getUsersInfo().get(0).getUserId());
+        assertEquals(roomJoin.getUsers().get(0).getUserName(), room.getUsersInfo().get(0).getUserName());
     }
 
     @Test
     void joinRoom_Fail() {
         try {
             roomService.joinRoom("NoValidRoom",
-                    new UserInfoByRoomRequest("Artemiy", "", "signal", false));
+                    new UserInfoByRoomRequest("Artemiy", "", "signal"));
         } catch (JoinRoomException e) {
             assertEquals(e.getErrorStatusCodeRoom(), ErrorStatusCode.ROOM_NOT_EXIT);
         }
@@ -96,11 +96,11 @@ class RoomServiceTest {
     @Test
     void leaveRoom_Pass() throws CreateRoomException, JoinRoomException, LiveRoomException {
         Room roomCreate = roomService.createRoom("User_Leave_Pass", "Room_Leave_Pass");
-        Room roomJoin = roomService.joinRoom(roomCreate.getId(),
-                new UserInfoByRoomRequest("Artemiy", "", "signal", false));
-        log.info("sdaaaaaaa     " + roomJoin.getUsers().get(0).getUsername());
-        Room roomLeave = roomService.leaveRoom(roomCreate.getId(),
-                new UserInfoByRoomRequest("Artemiy", "", "signal", false));
+        RoomResponse roomJoin = roomService.joinRoom(roomCreate.getId(),
+                new UserInfoByRoomRequest("Artemiy", "", "signal"));
+        log.info("sdaaaaaaa     " + roomJoin.getUsers().get(0).getUserName());
+        RoomResponse roomLeave = roomService.leaveRoom(roomCreate.getId(),
+                new UserInfoByRoomRequest("Artemiy", "", "signal"));
 
         assertEquals(roomJoin.getUsers().size()-1, roomLeave.getUsers().size());
     }
@@ -111,7 +111,7 @@ class RoomServiceTest {
         Room room = roomRepository.getRoomById(roomCreate.getId());
 
         assertEquals(room.getId(), roomCreate.getId());
-        assertEquals(room.getCreatorUser(), roomCreate.getCreatorUser());
+        assertEquals(room.getCreatorUserName(), roomCreate.getCreatorUserName());
         assertEquals(room.getRoomName(), roomCreate.getRoomName());
     }
 

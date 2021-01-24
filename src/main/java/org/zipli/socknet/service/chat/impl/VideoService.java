@@ -60,8 +60,7 @@ public class VideoService implements IVideoService {
     public VideoData joinVideoCall(VideoData videoData) {
         VideoCallState videoCallState = videoCallStorage.get(videoData.getChatId());
         if (videoCallState == null) {
-            throw new VideoCallException("VideoCall {} doesn't exist",
-                    ErrorStatusCode.VIDEO_CALL_EXCEPTION);
+            throw new VideoCallException(ErrorStatusCode.VIDEO_CALL_EXCEPTION);
         }
         videoCallState.getIdUsersInCall()
                 .add(videoData.getUserId());
@@ -84,8 +83,7 @@ public class VideoService implements IVideoService {
     public ChatData exitFromVideoCall(ChatData chatData) {
         VideoCallState videoCallState = videoCallStorage.get(chatData.getChatId());
         if (videoCallState == null) {
-            throw new VideoCallException("VideoCall {} doesn't exist",
-                    ErrorStatusCode.CHAT_NOT_EXISTS);
+            throw new VideoCallException(ErrorStatusCode.CHAT_NOT_EXISTS);
         }
         videoCallState.getIdUsersInCall()
                 .remove(chatData.getUserId());

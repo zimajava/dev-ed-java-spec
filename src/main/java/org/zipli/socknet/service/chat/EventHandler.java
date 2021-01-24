@@ -94,10 +94,10 @@ public class EventHandler {
                     chatService.deleteChat(baseData);
 
                 } catch (DeleteChatException e) {
-                    log.error(commandFail, eventCommand, baseData, e.getNumberException().getMessage());
+                    log.error(commandFail, eventCommand, baseData, e.getErrorStatusCode().getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    e.getNumberException().getValue())
+                                    e.getErrorStatusCode().getValue())
                             )
                     );
                 } catch (Exception e) {
@@ -117,10 +117,10 @@ public class EventHandler {
                             new WsMessageResponse(eventCommand, chatLeave)));
 
                 } catch (LeaveChatException e) {
-                    log.error(commandFail, eventCommand, chatLeave, e.getNumberException().getMessage());
+                    log.error(commandFail, eventCommand, chatLeave, e.getErrorStatusCode().getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    e.getNumberException().getValue())
+                                    e.getErrorStatusCode().getValue())
                             )
                     );
                 } catch (Exception e) {
@@ -138,10 +138,10 @@ public class EventHandler {
                     chatService.joinChat(chatJoin);
 
                 } catch (JoinChatException e) {
-                    log.error(commandFail, eventCommand, chatJoin, e.getNumberException().getMessage());
+                    log.error(commandFail, eventCommand, chatJoin, e.getErrorStatusCode().getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    e.getNumberException().getValue())
+                                    e.getErrorStatusCode().getValue())
                             )
                     );
                 } catch (Exception e) {
@@ -204,10 +204,10 @@ public class EventHandler {
                     messageService.updateMessage(messageUpdate);
 
                 } catch (ChatNotFoundException e) {
-                    log.error(commandFail, eventCommand, messageUpdate, e.getNumberException().getMessage());
+                    log.error(commandFail, eventCommand, messageUpdate, e.getErrorStatusCode().getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    e.getNumberException().getValue()))
+                                    e.getErrorStatusCode().getValue()))
                     );
                 } catch (MessageUpdateException e) {
                     log.error(commandFail, eventCommand, messageUpdate, e.getNumberException().getMessage());
@@ -236,10 +236,10 @@ public class EventHandler {
                                     e.getNumberException().getValue()))
                     );
                 } catch (ChatNotFoundException e) {
-                    log.error(commandFail, eventCommand, messageDelete, e.getNumberException().getMessage());
+                    log.error(commandFail, eventCommand, messageDelete, e.getErrorStatusCode().getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    e.getNumberException().getValue()))
+                                    e.getErrorStatusCode().getValue()))
                     );
                 } catch (Exception e) {
                     log.error(commandFail, eventCommand, messageDelete, e.getMessage());
@@ -282,16 +282,16 @@ public class EventHandler {
                     videoService.startVideoCall(videoData);
 
                 } catch (VideoCallException e) {
-                    log.error(commandFail, eventCommand, videoData, e.getNumberException().getMessage());
+                    log.error(commandFail, eventCommand, videoData, e.getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
                                     e.getNumberException().getValue()))
                     );
                 } catch (ChatNotFoundException e) {
-                    log.error(commandFail, eventCommand, videoData, e.getNumberException().getMessage());
+                    log.error(commandFail, eventCommand, videoData, e.getErrorStatusCode().getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    e.getNumberException().getValue()))
+                                    e.getErrorStatusCode().getValue()))
                     );
                 } catch (Exception e) {
                     log.error(commandFail, eventCommand, videoData, e.getMessage());
@@ -314,10 +314,10 @@ public class EventHandler {
                                     e.getNumberException().getValue())
                     ));
                 } catch (ChatNotFoundException e) {
-                    log.error(commandFail, eventCommand, videoCallJoin, e.getNumberException().getMessage());
+                    log.error(commandFail, eventCommand, videoCallJoin, e.getErrorStatusCode().getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    e.getNumberException().getValue()))
+                                    e.getErrorStatusCode().getValue()))
                     );
                 } catch (Exception e) {
                     log.error(commandFail, eventCommand, videoCallJoin, e.getMessage());
@@ -339,10 +339,10 @@ public class EventHandler {
                                     e.getNumberException().getValue())
                     ));
                 } catch (ChatNotFoundException e) {
-                    log.error(commandFail, eventCommand, videoCallExit, e.getNumberException().getMessage());
+                    log.error(commandFail, eventCommand, videoCallExit, e.getErrorStatusCode().getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    e.getNumberException().getValue()))
+                                    e.getErrorStatusCode().getValue()))
                     );
                 } catch (Exception e) {
                     log.error(commandFail, eventCommand, videoCallExit, e.getMessage());

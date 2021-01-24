@@ -3,12 +3,14 @@ package org.zipli.socknet.dto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.Date;
 
-@NoArgsConstructor
 @Getter
 @Setter
+@ToString
+@NoArgsConstructor
 public class RoomMessage {
 
     private String authorUserName;

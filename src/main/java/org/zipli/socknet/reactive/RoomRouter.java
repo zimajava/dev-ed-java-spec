@@ -18,11 +18,11 @@ public class RoomRouter {
 
         return RouterFunctions
                 .route(RequestPredicates
-                                .GET(PATH + "/getRoom/{idRoom}")
+                                .GET(PATH + "/getRoom/{roomId}")
                                 .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
                         roomHandler::getRoom)
                 .andRoute(RequestPredicates
-                                .POST(PATH + "/leaveRoom/{idRoom}")
+                                .POST(PATH + "/leaveRoom/{roomId}")
                                 .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
                         roomHandler::leaveRoom)
                 .andRoute(RequestPredicates
@@ -30,7 +30,7 @@ public class RoomRouter {
                                 .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
                         roomHandler::createRoom)
                 .andRoute(RequestPredicates
-                                .POST(PATH + "/joinRoom/{idRoom}")
+                                .POST(PATH + "/joinRoom/{roomId}")
                                 .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
                         roomHandler::joinRoom)
                 .andRoute(RequestPredicates
@@ -38,19 +38,19 @@ public class RoomRouter {
                                 .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
                         roomHandler::getRooms)
                 .andRoute(RequestPredicates
-                                .POST(PATH + "/deleteRoom/{idRoom}")
+                                .POST(PATH + "/deleteRoom/{roomId}")
                                 .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
                         roomHandler::deleteRoom)
                 .andRoute(RequestPredicates
-                                .POST(PATH + "/newMessage/{idRoom}")
+                                .POST(PATH + "/newMessage/{roomId}")
                                 .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
                         roomHandler::saveMessage)
                 .andRoute(RequestPredicates
-                                .GET(PATH + "/subscribeMessage/{idRoom}")
+                                .GET(PATH + "/subscribeMessage/{roomId}")
                                 .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
                         roomHandler::subscribeMessage)
                 .andRoute(RequestPredicates
-                                .GET(PATH + "/getMessages/{idRoom}")
+                                .GET(PATH + "/getMessages/{roomId}")
                                 .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
                         roomHandler::getMessagesByRoom)
                 ;
