@@ -3,7 +3,7 @@ package org.zipli.socknet.service.room;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Service;
-import org.zipli.socknet.dto.EventCommand;
+import org.zipli.socknet.dto.EventCommandRoom;
 import org.zipli.socknet.dto.RoomMessage;
 import org.zipli.socknet.dto.request.MessageRoomRequest;
 import org.zipli.socknet.dto.request.UserInfoByRoomRequest;
@@ -75,7 +75,7 @@ public class RoomService implements IRoomService{
 
             chatIdEmitterMap.get(roomId).tryEmitNext(ServerSentEvent.<BaseEventResponse>builder()
                     .id(String.valueOf(eventIdGeneration.get(room.getId()).getAndIncrement()))
-                    .event(EventCommand.JOIN_ROOM_EVENT.name())
+                    .event(EventCommandRoom.JOIN_ROOM_EVENT.name())
                     .data(new RoomEventResponse(
                             roomId,
                             userInfoByRoomRequest.getSignal(),
@@ -104,7 +104,7 @@ public class RoomService implements IRoomService{
             chatIdEmitterMap.get(roomId).tryEmitNext(ServerSentEvent.<BaseEventResponse>builder()
                     .id(String.valueOf(eventIdGeneration.get(room.getId()).getAndIncrement()))
                     .id("12212")
-                    .event(EventCommand.LEAVE_ROOM_EVENT.name())
+                    .event(EventCommandRoom.LEAVE_ROOM_EVENT.name())
                     .data(new RoomEventResponse(
                             roomId,
                             userInfoByRoomRequest.getSignal(),
@@ -154,7 +154,7 @@ public class RoomService implements IRoomService{
             roomRepository.save(room);
             chatIdEmitterMap.get(roomId).tryEmitNext(ServerSentEvent.<BaseEventResponse>builder()
                     .id(String.valueOf(eventIdGeneration.get(room.getId()).getAndIncrement()))
-                    .event(EventCommand.NEW_MESSAGE_EVENT.name())
+                    .event(EventCommandRoom.NEW_MESSAGE_EVENT.name())
                     .data(new MessageEventResponse(roomMessage.getRoomId(),
                             roomMessage.getAuthorUserName(),
                             roomMessage.getTextMessage()))
@@ -195,7 +195,7 @@ public class RoomService implements IRoomService{
         roomRepository.deleteById(roomId);
         chatIdEmitterMap.get(roomId).tryEmitNext(ServerSentEvent.<BaseEventResponse>builder()
                 .id(String.valueOf(eventIdGeneration.get(roomId).getAndIncrement()))
-                .event(EventCommand.DELETE_ROOM_EVENT.name())
+                .event(EventCommandRoom.DELETE_ROOM_EVENT.name())
                 .data(new BaseEventResponse(roomId))
                 .build());
         chatIdEmitterMap.remove(roomId);
