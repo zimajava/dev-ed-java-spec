@@ -58,11 +58,11 @@ public class RoomHandler implements IRoomHandler {
                     return serverResponseBadRequest(e.getErrorStatusCodeRoom().getValue());
                 }
             } else {
-                log.error("Join Room {} fail: INCORRECT_REQUEST, UserInfoByRoomRequest - null", roomId);
+                log.error("Join Room {} fail: INCORRECT_REQUEST, Body(UserInfoByRoomRequest) not exist.", roomId);
                 return serverResponseBadRequest(ErrorStatusCode.INCORRECT_REQUEST.getValue());
             }
         } else {
-            log.error("Join Room fail: INCORRECT_REQUEST, roomId - null");
+            log.error("Join Room fail: INCORRECT_REQUEST, pathVariable roomId not exist.");
             return serverResponseBadRequest(ErrorStatusCode.INCORRECT_REQUEST.getValue());
         }
     }
@@ -80,11 +80,11 @@ public class RoomHandler implements IRoomHandler {
                     return serverResponseBadRequest(e.getErrorStatusCodeRoom().getValue());
                 }
             } else {
-                log.error("Leave Room {} fail: INCORRECT_REQUEST, UserInfoByRoomRequest - null", roomId);
+                log.error("Leave Room {} fail: INCORRECT_REQUEST, Body(UserInfoByRoomRequest) not exist.", roomId);
                 return serverResponseBadRequest(ErrorStatusCode.INCORRECT_REQUEST.getValue());
             }
         } else {
-            log.error("Join Room fail: INCORRECT_REQUEST, roomId - null");
+            log.error("Join Room fail: INCORRECT_REQUEST, pathVariable roomId not exist.");
             return serverResponseBadRequest(ErrorStatusCode.INCORRECT_REQUEST.getValue());
         }
     }
@@ -101,7 +101,7 @@ public class RoomHandler implements IRoomHandler {
                 return serverResponseBadRequest(ErrorStatusCode.ROOM_NOT_EXIT.getValue());
             }
         } else {
-            log.error("Join Room fail: INCORRECT_REQUEST, roomId - null");
+            log.error("Join Room fail: INCORRECT_REQUEST, pathVariable roomId not exist.");
             return serverResponseBadRequest(ErrorStatusCode.INCORRECT_REQUEST.getValue());
         }
     }
@@ -125,7 +125,7 @@ public class RoomHandler implements IRoomHandler {
                 return serverResponseBadRequest(e.getErrorStatusCodeRoom().getValue());
             }
         } else {
-            log.error("Join Room fail: INCORRECT_REQUEST, roomId - null");
+            log.error("Join Room fail. INCORRECT_REQUEST: pathVariable roomId not exist.");
             return serverResponseBadRequest(ErrorStatusCode.INCORRECT_REQUEST.getValue());
         }
     }
@@ -141,7 +141,7 @@ public class RoomHandler implements IRoomHandler {
                 return serverResponseBadRequest(e.getErrorStatusCodeRoom().getValue());
             }
         } else {
-            log.error("Create Room fail. INCORRECT_REQUEST: CreateRoomRequest - null");
+            log.error("Create Room fail. INCORRECT_REQUEST: Body(CreateRoomRequest) not exist.");
             return serverResponseBadRequest(ErrorStatusCode.INCORRECT_REQUEST.getValue());
         }
     }
@@ -158,11 +158,11 @@ public class RoomHandler implements IRoomHandler {
                     return serverResponseBadRequest(e.getErrorStatusCodeRoom().getValue());
                 }
             } else {
-                log.error("Create Room fail. INCORRECT_REQUEST: MessageEventResponse - null");
+                log.error("Create Room fail. INCORRECT_REQUEST: Body(MessageEventResponse) not exist.");
                 return serverResponseBadRequest(ErrorStatusCode.INCORRECT_REQUEST.getValue());
             }
         } else {
-            log.error("Join Room fail: INCORRECT_REQUEST, roomId - null");
+            log.error("Join Room fail: INCORRECT_REQUEST, pathVariable roomId not exist.");
             return serverResponseBadRequest(ErrorStatusCode.INCORRECT_REQUEST.getValue());
         }
     }
