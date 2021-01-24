@@ -10,7 +10,7 @@ public class SaveFileException extends RuntimeException {
         this.errorStatusCode = errorStatusCode;
     }
 
-    public ErrorStatusCode getNumberException() {
+    public ErrorStatusCode getErrorStatusCode() {
         return errorStatusCode;
     }
 }

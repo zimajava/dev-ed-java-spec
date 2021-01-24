@@ -10,7 +10,7 @@ public class FindFileException extends RuntimeException {
         this.errorStatusCode = errorStatusCode;
     }
 
-    public ErrorStatusCode getNumberException() {
+    public ErrorStatusCode getErrorStatusCode() {
         return errorStatusCode;
     }
 }

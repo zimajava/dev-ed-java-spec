@@ -47,10 +47,10 @@ public class EventHandler {
                 try {
                     chatService.createChat(chatData);
                 } catch (CreateChatException e) {
-                    log.error(commandFail, eventCommand, chatData, e.getNumberException().getMessage());
+                    log.error(commandFail, eventCommand, chatData, e.getErrorStatusCode().getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    e.getNumberException().getValue()))
+                                    e.getErrorStatusCode().getValue()))
                     );
                 } catch (UserNotFoundException e) {
                     log.error(commandFail, eventCommand, chatData, e.getErrorStatusCode().getMessage());
@@ -72,10 +72,10 @@ public class EventHandler {
                 try {
                     chatService.updateChat(chatUpdate);
                 } catch (UpdateChatException e) {
-                    log.error(commandFail, eventCommand, chatUpdate, e.getNumberException().getMessage());
+                    log.error(commandFail, eventCommand, chatUpdate, e.getErrorStatusCode().getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    e.getNumberException().getValue())
+                                    e.getErrorStatusCode().getValue())
                             )
                     );
                 } catch (Exception e) {
@@ -184,10 +184,10 @@ public class EventHandler {
                     messageService.sendMessage(messageData);
 
                 } catch (MessageSendException e) {
-                    log.error(commandFail, eventCommand, messageData, e.getNumberException().getMessage());
+                    log.error(commandFail, eventCommand, messageData, e.getErrorStatusCode().getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    e.getNumberException().getValue()))
+                                    e.getErrorStatusCode().getValue()))
                     );
                 } catch (Exception e) {
                     log.error(commandFail, eventCommand, messageData, e.getMessage());
@@ -210,10 +210,10 @@ public class EventHandler {
                                     e.getErrorStatusCode().getValue()))
                     );
                 } catch (MessageUpdateException e) {
-                    log.error(commandFail, eventCommand, messageUpdate, e.getNumberException().getMessage());
+                    log.error(commandFail, eventCommand, messageUpdate, e.getErrorStatusCode().getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    e.getNumberException().getValue()))
+                                    e.getErrorStatusCode().getValue()))
                     );
                 } catch (Exception e) {
                     log.error(commandFail, eventCommand, messageUpdate, e.getMessage());
@@ -230,10 +230,10 @@ public class EventHandler {
                     messageService.deleteMessage(messageDelete);
 
                 } catch (MessageDeleteException e) {
-                    log.error(commandFail, eventCommand, messageDelete, e.getNumberException().getMessage());
+                    log.error(commandFail, eventCommand, messageDelete, e.getErrorStatusCode().getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    e.getNumberException().getValue()))
+                                    e.getErrorStatusCode().getValue()))
                     );
                 } catch (ChatNotFoundException e) {
                     log.error(commandFail, eventCommand, messageDelete, e.getErrorStatusCode().getMessage());
@@ -362,10 +362,10 @@ public class EventHandler {
 
                 } catch (SendFileException e) {
                     log.error("Failed to load file in a GridFs {} reason {}", fileData.getFileId(),
-                            e.getNumberException().getMessage());
+                            e.getErrorStatusCode().getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    e.getNumberException().getValue()))
+                                    e.getErrorStatusCode().getValue()))
                     );
                 } catch (Exception e) {
                     log.error(commandFail, eventCommand, fileData, e.getMessage());
@@ -384,10 +384,10 @@ public class EventHandler {
                             new WsMessageResponse(eventCommand, "File is successfully deleted")));
                 } catch (FileDeleteException e) {
                     log.error("Failed to find the file to delete or the creator of the file is wrong {} reason {}",
-                            fileDelete.getUserId(), e.getNumberException().getMessage());
+                            fileDelete.getUserId(), e.getErrorStatusCode().getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    e.getNumberException().getValue()))
+                                    e.getErrorStatusCode().getValue()))
                     );
                     break;
                 } catch (Exception e) {

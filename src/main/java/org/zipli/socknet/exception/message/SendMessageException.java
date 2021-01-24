@@ -9,7 +9,7 @@ public class SendMessageException extends Throwable {
         this.errorStatusCode = errorStatusCode;
     }
 
-    public ErrorStatusCode getNumberException() {
+    public ErrorStatusCode getErrorStatusCode() {
         return errorStatusCode;
     }
 }
