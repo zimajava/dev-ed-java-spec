@@ -1,19 +1,20 @@
 package org.zipli.socknet.service.room;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Service;
 import org.zipli.socknet.dto.EventCommandSse;
 import org.zipli.socknet.dto.RoomMessage;
 import org.zipli.socknet.dto.request.MessageRoomRequest;
-import org.zipli.socknet.dto.response.RoomsResponse;
 import org.zipli.socknet.dto.request.UserInfoByRoomRequest;
 import org.zipli.socknet.dto.response.BaseEventResponse;
 import org.zipli.socknet.dto.response.MessageEventResponse;
 import org.zipli.socknet.dto.response.RoomEventResponse;
+import org.zipli.socknet.dto.response.RoomsResponse;
 import org.zipli.socknet.exception.ErrorStatusCode;
 import org.zipli.socknet.exception.room.*;
-import org.zipli.socknet.repository.model.Room;
 import org.zipli.socknet.repository.RoomRepository;
+import org.zipli.socknet.repository.model.Room;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
 
@@ -25,6 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class RoomService implements IRoomService {
 
@@ -43,6 +45,7 @@ public class RoomService implements IRoomService {
         Optional<Room> room = roomRepository.findById(idRoom);
 
         if (room.isPresent()) {
+            log.info("Get Room successful: Room - {}", room);
             return room.get();
         } else {
             throw new GetRoomException(ErrorStatusCode.ROOM_NOT_EXIT);
@@ -74,6 +77,10 @@ public class RoomService implements IRoomService {
                             userInfoByRoomRequest.getSignals(),
                             userInfoByRoomRequest.getUsername()))
                     .build());
+            log.info("Join Room successful: Room - {}, user - {}, users - {}",
+                    room.getId(),
+                    userInfoByRoomRequest.getUsername(),
+                    room.getUsers());
             return room;
         } else {
             throw new JoinRoomException(ErrorStatusCode.ROOM_NOT_EXIT);
@@ -98,6 +105,10 @@ public class RoomService implements IRoomService {
                             userInfoByRoomRequest.getSignals(),
                             userInfoByRoomRequest.getUsername()))
                     .build());
+            log.info("Leave Room successful: Room - {}, user - {}, users - {}",
+                    room.getId(),
+                    userInfoByRoomRequest.getUsername(),
+                    room.getUsers());
             return room;
         } else {
             throw new LiveRoomException(ErrorStatusCode.ROOM_NOT_EXIT);
@@ -114,6 +125,11 @@ public class RoomService implements IRoomService {
             chatIdEmitterMap.put(room.getId(), emitter);
             eventIdGeneration.put(room.getId(),
                     new AtomicLong(System.currentTimeMillis()));
+            log.info("Create Room successful: RoomId - {}, RoomName - {}, users - {}",
+                    room.getId(),
+                    room.getRoomName(),
+                    room.getCreatorUser()
+            );
             return room;
         } else {
             throw new CreateRoomException(ErrorStatusCode.ROOM_ALREADY_EXISTS);
@@ -133,8 +149,14 @@ public class RoomService implements IRoomService {
             chatIdEmitterMap.get(idRoom).tryEmitNext(ServerSentEvent.<BaseEventResponse>builder()
                     .id(String.valueOf(messageIdEventGenerator.getAndIncrement()))
                     .event(EventCommandSse.NEW_MESSAGE_EVENT.name())
-                    .data(new MessageEventResponse())
+                    .data(new MessageEventResponse(roomMessage.getRoomId(),
+                            roomMessage.getAuthorUserName(),
+                            roomMessage.getTextMessage()))
                     .build());
+            log.info("Save Message successful: RoomId - {}, roomMessage - {}",
+                    room.getId(),
+                    roomMessage
+            );
             return roomMessage;
         } else {
             throw new SendMessageToRoomException(ErrorStatusCode.INCORRECT_REQUEST);
@@ -146,7 +168,12 @@ public class RoomService implements IRoomService {
 
         Optional<Room> roomOptional = roomRepository.findById(idRoom);
         if (roomOptional.isPresent()) {
-            return roomOptional.get().getMessages();
+            Room room = roomOptional.get();
+            log.info("Get Messages by Room successful: RoomId - {}, amount of messages - {}",
+                    room.getId(),
+                    room.getMessages().size()
+            );
+            return room.getMessages();
         } else {
             throw new GetMessagesByRoomException(ErrorStatusCode.ROOM_NOT_EXIT);
         }
@@ -166,5 +193,6 @@ public class RoomService implements IRoomService {
                 .data(new BaseEventResponse(idRoom))
                 .build());
         chatIdEmitterMap.remove(idRoom);
+        log.info("Delete Room successful: RoomId - {}", idRoom);
     }
 }
