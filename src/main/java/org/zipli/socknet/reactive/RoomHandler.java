@@ -167,9 +167,9 @@ public class RoomHandler implements IRoomHandler {
         }
     }
 
-    private Mono<ServerResponse> serverResponseBadRequest(Integer integer) {
+    private Mono<ServerResponse> serverResponseBadRequest(Object object) {
         return ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(new ErrorResponse(integer)));
+                .body(BodyInserters.fromValue(new ErrorResponse(object)));
     }
 
     private Mono<ServerResponse> serverResponseOk(Object object) {
