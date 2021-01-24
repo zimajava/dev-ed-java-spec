@@ -68,7 +68,7 @@ class ChatServiceTest {
             Chat chatOne = chatService.createChat(dataChat);
             Chat chatTwo = chatService.createChat(dataChat);
         } catch (CreateChatException e) {
-            assertEquals(e.getErrorStatusCode().getMessage(), "Chat already exists");
+            assertEquals(e.getNumberException().getMessage(), "Chat already exists");
         }
         chatRepository.deleteAll();
     }

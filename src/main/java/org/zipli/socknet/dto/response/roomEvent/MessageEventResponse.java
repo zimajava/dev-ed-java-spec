@@ -11,9 +11,6 @@ import org.zipli.socknet.dto.response.roomEvent.RoomEventResponse;
 public class MessageEventResponse extends BaseEventResponse {
 
     private String textMessage;
-    public MessageEventResponse(String textMessage) {
-        this.textMessage = textMessage;
-    }
 
     public MessageEventResponse(String userName, String textMessage) {
         super(userName);

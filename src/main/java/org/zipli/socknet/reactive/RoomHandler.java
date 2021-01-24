@@ -37,7 +37,7 @@ public class RoomHandler implements IRoomHandler {
             return serverResponseOk(roomService.getRoom(roomId));
         } catch (GetRoomException e) {
             log.error("Get Room fail: Room {} not exit", roomId);
-            return serverResponseBadRequest(e.getErrorStatusCodeRoom().getValue());
+            return serverResponseBadRequest(e.getErrorStatusCodeRoom());
         }
     }
 
@@ -55,15 +55,15 @@ public class RoomHandler implements IRoomHandler {
                     return serverResponseOk(roomService.joinRoom(roomId, userInfoByRoom.get()));
                 } catch (JoinRoomException e) {
                     log.error("Join Room fail: Room {} not exit", roomId);
-                    return serverResponseBadRequest(e.getErrorStatusCodeRoom().getValue());
+                    return serverResponseBadRequest(e.getErrorStatusCodeRoom());
                 }
             } else {
                 log.error("Join Room {} fail: INCORRECT_REQUEST, Body(UserInfoByRoomRequest) not exist.", roomId);
-                return serverResponseBadRequest(ErrorStatusCode.INCORRECT_REQUEST.getValue());
+                return serverResponseBadRequest(ErrorStatusCode.INCORRECT_REQUEST);
             }
         } else {
             log.error("Join Room fail: INCORRECT_REQUEST, pathVariable roomId not exist.");
-            return serverResponseBadRequest(ErrorStatusCode.INCORRECT_REQUEST.getValue());
+            return serverResponseBadRequest(ErrorStatusCode.INCORRECT_REQUEST);
         }
     }
 
@@ -77,15 +77,15 @@ public class RoomHandler implements IRoomHandler {
                     return serverResponseOk(roomService.leaveRoom(roomId, userInfoByRoom.get()));
                 } catch (LiveRoomException e) {
                     log.error("Leave Room fail: Room {} not exit", roomId);
-                    return serverResponseBadRequest(e.getErrorStatusCodeRoom().getValue());
+                    return serverResponseBadRequest(e.getErrorStatusCodeRoom());
                 }
             } else {
                 log.error("Leave Room {} fail: INCORRECT_REQUEST, Body(UserInfoByRoomRequest) not exist.", roomId);
-                return serverResponseBadRequest(ErrorStatusCode.INCORRECT_REQUEST.getValue());
+                return serverResponseBadRequest(ErrorStatusCode.INCORRECT_REQUEST);
             }
         } else {
             log.error("Join Room fail: INCORRECT_REQUEST, pathVariable roomId not exist.");
-            return serverResponseBadRequest(ErrorStatusCode.INCORRECT_REQUEST.getValue());
+            return serverResponseBadRequest(ErrorStatusCode.INCORRECT_REQUEST);
         }
     }
 
@@ -98,11 +98,11 @@ public class RoomHandler implements IRoomHandler {
                 return serverResponseOk(new DeleteRoomResponse("Ok"));
             } catch (Exception e) {
                 log.error("Delete Room fail: Room {} not exit", roomId);
-                return serverResponseBadRequest(ErrorStatusCode.ROOM_NOT_EXIT.getValue());
+                return serverResponseBadRequest(ErrorStatusCode.ROOM_NOT_EXIT);
             }
         } else {
             log.error("Join Room fail: INCORRECT_REQUEST, pathVariable roomId not exist.");
-            return serverResponseBadRequest(ErrorStatusCode.INCORRECT_REQUEST.getValue());
+            return serverResponseBadRequest(ErrorStatusCode.INCORRECT_REQUEST);
         }
     }
 
@@ -122,11 +122,11 @@ public class RoomHandler implements IRoomHandler {
                 return serverResponseOk(roomService.getMessagesByRoom(roomId));
             } catch (GetMessagesByRoomException e) {
                 log.error("Get Messages By Room fail: Room {} not exit", roomId);
-                return serverResponseBadRequest(e.getErrorStatusCodeRoom().getValue());
+                return serverResponseBadRequest(e.getErrorStatusCodeRoom());
             }
         } else {
             log.error("Join Room fail. INCORRECT_REQUEST: pathVariable roomId not exist.");
-            return serverResponseBadRequest(ErrorStatusCode.INCORRECT_REQUEST.getValue());
+            return serverResponseBadRequest(ErrorStatusCode.INCORRECT_REQUEST);
         }
     }
 
@@ -138,11 +138,11 @@ public class RoomHandler implements IRoomHandler {
                 return serverResponseOk(roomService.createRoom(createRoomRequest.getUserName(), createRoomRequest.getChatName()));
             } catch (CreateRoomException e) {
                 log.error("Create Room fail. ROOM_ALREADY_EXISTS: Chat Name - {}", createRoomRequest.getChatName());
-                return serverResponseBadRequest(e.getErrorStatusCodeRoom().getValue());
+                return serverResponseBadRequest(e.getErrorStatusCodeRoom());
             }
         } else {
             log.error("Create Room fail. INCORRECT_REQUEST: Body(CreateRoomRequest) not exist.");
-            return serverResponseBadRequest(ErrorStatusCode.INCORRECT_REQUEST.getValue());
+            return serverResponseBadRequest(ErrorStatusCode.INCORRECT_REQUEST);
         }
     }
 
@@ -155,21 +155,21 @@ public class RoomHandler implements IRoomHandler {
                     return serverResponseOk(roomService.saveMessage(roomId, message.get()));
                 } catch (SendMessageToRoomException e) {
                     log.error("Save message fail: Room {} not exit", roomId);
-                    return serverResponseBadRequest(e.getErrorStatusCodeRoom().getValue());
+                    return serverResponseBadRequest(e.getErrorStatusCodeRoom());
                 }
             } else {
                 log.error("Create Room fail. INCORRECT_REQUEST: Body(MessageEventResponse) not exist.");
-                return serverResponseBadRequest(ErrorStatusCode.INCORRECT_REQUEST.getValue());
+                return serverResponseBadRequest(ErrorStatusCode.INCORRECT_REQUEST);
             }
         } else {
             log.error("Join Room fail: INCORRECT_REQUEST, pathVariable roomId not exist.");
-            return serverResponseBadRequest(ErrorStatusCode.INCORRECT_REQUEST.getValue());
+            return serverResponseBadRequest(ErrorStatusCode.INCORRECT_REQUEST);
         }
     }
 
-    private Mono<ServerResponse> serverResponseBadRequest(Object object) {
+    private Mono<ServerResponse> serverResponseBadRequest(ErrorStatusCode errorStatusCode) {
         return ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(new ErrorResponse(object)));
+                .body(BodyInserters.fromValue(new ErrorResponse(errorStatusCode)));
     }
 
     private Mono<ServerResponse> serverResponseOk(Object object) {

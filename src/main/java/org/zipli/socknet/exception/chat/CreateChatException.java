@@ -10,7 +10,7 @@ public class CreateChatException extends RuntimeException {
         this.errorStatusCode = errorStatusCode;
     }
 
-    public ErrorStatusCode getErrorStatusCode() {
+    public ErrorStatusCode getNumberException() {
         return errorStatusCode;
     }
 }

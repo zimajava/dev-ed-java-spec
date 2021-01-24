@@ -1,9 +1,6 @@
 package org.zipli.socknet.dto;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.Date;
 
@@ -11,6 +8,7 @@ import java.util.Date;
 @Setter
 @ToString
 @NoArgsConstructor
+@AllArgsConstructor
 public class RoomMessage {
 
     private String authorUserName;
@@ -18,10 +16,4 @@ public class RoomMessage {
     private String textMessage;
     private long date;
 
-    public RoomMessage(String authorUserName, String roomId, String textMessage, long date) {
-        this.authorUserName = authorUserName;
-        this.roomId = roomId;
-        this.textMessage = textMessage;
-        this.date = date;
-    }
 }

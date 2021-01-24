@@ -4,17 +4,11 @@ import lombok.*;
 
 @Getter
 @Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 public class RoomsResponse {
     private String roomId;
     private String nameRoom;
 
-    @Override
-    public String toString() {
-        return "{" +
-                "roomId=" + roomId +
-                ", nameRoom=" + nameRoom +
-                '}';
-    }
 }
