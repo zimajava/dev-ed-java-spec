@@ -6,7 +6,7 @@ import org.zipli.socknet.dto.ChatData;
 import org.zipli.socknet.dto.Command;
 import org.zipli.socknet.dto.MessageData;
 import org.zipli.socknet.dto.response.WsMessageResponse;
-import org.zipli.socknet.exception.WsException;
+import org.zipli.socknet.exception.ErrorStatusCode;
 import org.zipli.socknet.exception.chat.ChatNotFoundException;
 import org.zipli.socknet.exception.chat.GetMessageException;
 import org.zipli.socknet.exception.chat.UpdateChatException;
@@ -49,7 +49,7 @@ public class MessageService implements IMessageService {
             log.info("Get messages {} In chat:{} ", data.getUserId(), data.getChatId());
             return messages;
         } else {
-            throw new GetMessageException("Chat{} doesn't exist");
+            throw new GetMessageException(ErrorStatusCode.CHAT_NOT_EXISTS);
         }
     }
 
@@ -63,7 +63,7 @@ public class MessageService implements IMessageService {
             chat.getMessagesId().add(message.getId());
 
             chat.getUsersId().parallelStream()
-                .forEach(userId -> emitterService.sendMessageToUser(userId,
+                    .forEach(userId -> emitterService.sendMessageToUser(userId,
                             new WsMessageResponse(Command.MESSAGE_SEND,
                                     new MessageData(data.getUserId(),
                                             chat.getId(),
@@ -79,8 +79,7 @@ public class MessageService implements IMessageService {
 
             return message;
         } else {
-            throw new ChatNotFoundException("Chat {} doesn't exist",
-                    WsException.CHAT_NOT_FOUND_EXCEPTION.getNumberException());
+            throw new ChatNotFoundException(ErrorStatusCode.CHAT_NOT_EXISTS);
         }
     }
 
@@ -110,15 +109,11 @@ public class MessageService implements IMessageService {
                                 ))
                         );
             } else {
-                throw new ChatNotFoundException("Chat {} doesn't exist",
-                        WsException.CHAT_NOT_FOUND_EXCEPTION.getNumberException()
-                );
+                throw new ChatNotFoundException(ErrorStatusCode.CHAT_NOT_EXISTS);
             }
             return message;
         } else {
-            throw new MessageUpdateException("Only the author can update message {}",
-                    WsException.CHAT_ACCESS_ERROR
-            );
+            throw new MessageUpdateException(ErrorStatusCode.CHAT_ACCESS_ERROR);
         }
     }
 
@@ -147,13 +142,11 @@ public class MessageService implements IMessageService {
                                 ))
                         );
             } else {
-                throw new ChatNotFoundException("Chat {} doesn't exist",
-                        WsException.CHAT_NOT_FOUND_EXCEPTION.getNumberException()
-                );
+                throw new ChatNotFoundException(ErrorStatusCode.CHAT_NOT_EXISTS);
             }
             messageRepository.delete(message);
         } else {
-            throw new MessageDeleteException("Only the author can delete message");
+            throw new MessageDeleteException(ErrorStatusCode.MESSAGE_ACCESS_ERROR);
         }
     }
 
