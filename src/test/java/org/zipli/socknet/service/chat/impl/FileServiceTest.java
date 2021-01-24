@@ -144,7 +144,7 @@ class FileServiceTest {
                 .when(chatRepository)
                 .findChatById(chat.getId());
 
-        chat.getIdFiles().add(fileDelete.getId());
+        chat.getFilesId().add(fileDelete.getId());
 
         Chat finalChat = new Chat("chatName", false,
                 Collections.singletonList(user.getId()), "userId");
