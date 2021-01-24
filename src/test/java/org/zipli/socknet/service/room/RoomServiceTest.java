@@ -98,7 +98,6 @@ class RoomServiceTest {
         Room roomCreate = roomService.createRoom("User_Leave_Pass", "Room_Leave_Pass");
         RoomResponse roomJoin = roomService.joinRoom(roomCreate.getId(),
                 new UserInfoByRoomRequest("Artemiy", "", "signal"));
-        log.info("sdaaaaaaa     " + roomJoin.getUsers().get(0).getUserName());
         RoomResponse roomLeave = roomService.leaveRoom(roomCreate.getId(),
                 new UserInfoByRoomRequest("Artemiy", "", "signal"));
 

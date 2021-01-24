@@ -43,7 +43,7 @@ class RoomHandlerTest {
     private final RoomResponse roomResponse = new RoomResponse(room.getId(), room.getRoomName(), room.getCreatorUserName(), room.getUsersInfo());
     private final String idRoom = "1";
     private final UserInfoByRoomRequest userInfoByRoomRequest =
-            new UserInfoByRoomRequest("", "", "");
+            new UserInfoByRoomRequest("UserName", "UserId", "Signal");
     private final CreateRoomRequest createRoomRequest = new CreateRoomRequest("UserName", "ChatName");
     private final RoomMessage roomMessage =
             new RoomMessage("AuthorUser", "IdRoom", "Text", new Date().getTime());

@@ -7,7 +7,8 @@ import org.zipli.socknet.dto.EventCommandRoom;
 import org.zipli.socknet.dto.RoomMessage;
 import org.zipli.socknet.dto.request.MessageRoomRequest;
 import org.zipli.socknet.dto.request.UserInfoByRoomRequest;
-import org.zipli.socknet.dto.response.*;
+import org.zipli.socknet.dto.response.RoomResponse;
+import org.zipli.socknet.dto.response.RoomsResponse;
 import org.zipli.socknet.dto.response.roomEvent.BaseEventResponse;
 import org.zipli.socknet.dto.response.roomEvent.MessageEventResponse;
 import org.zipli.socknet.dto.response.roomEvent.RoomEventResponse;
@@ -28,7 +29,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class RoomService implements IRoomService{
+public class RoomService implements IRoomService {
 
     private final RoomRepository roomRepository;
 
@@ -45,10 +46,10 @@ public class RoomService implements IRoomService{
 
         if (roomOptional.isPresent()) {
             Room room = roomOptional.get();
-            log.info("Get Room successful: RoomId - {}, RoomName - {}, Users - {}",
+            log.info("Get Room successful: RoomId - {}, RoomName - {}, number of users - {}",
                     room.getId(),
                     room.getRoomName(),
-                    room.getUsersInfo()
+                    room.getUsersInfo().size()
             );
             return room;
         } else {
@@ -79,12 +80,12 @@ public class RoomService implements IRoomService{
                     .data(new RoomEventResponse(userInfoByRoomRequest.getUserName(),
                             userInfoByRoomRequest.getSignal()))
                     .build());
-            log.info("Join Room successful: Room - {}, user - {}, users - {}",
+            log.info("Join Room successful: Room - {}, user - {}, number of users - {}",
                     room.getId(),
                     userInfoByRoomRequest.getUserName(),
-                    room.getUsersInfo()
+                    room.getUsersInfo().size()
             );
-            return new RoomResponse(room.getId(),room.getRoomName(),room.getCreatorUserName(),room.getUsersInfo());
+            return new RoomResponse(room.getId(), room.getRoomName(), room.getCreatorUserName(), room.getUsersInfo());
         } else {
             throw new JoinRoomException(ErrorStatusCode.ROOM_NOT_EXIT);
         }
@@ -105,12 +106,14 @@ public class RoomService implements IRoomService{
                     .data(new RoomEventResponse(userInfoByRoomRequest.getUserName(),
                             userInfoByRoomRequest.getSignal()))
                     .build());
-            log.info("Leave Room successful: Room - {}, user - {}, users - {}",
+
+            log.info("Leave Room successful: Room - {}, user - {}, number of users - {}",
                     room.getId(),
                     userInfoByRoomRequest.getUserName(),
-                    room.getUsersInfo()
+                    room.getUsersInfo().size()
             );
-            return new RoomResponse(room.getId(),room.getRoomName(),room.getCreatorUserName(),room.getUsersInfo());
+
+            return new RoomResponse(room.getId(), room.getRoomName(), room.getCreatorUserName(), room.getUsersInfo());
         } else {
             throw new LiveRoomException(ErrorStatusCode.ROOM_NOT_EXIT);
         }
@@ -145,7 +148,7 @@ public class RoomService implements IRoomService{
         if (roomOptional.isPresent()) {
             Room room = roomOptional.get();
             RoomMessage roomMessage = new RoomMessage(message.getUserName(), roomId, message.getTextMessage(), new Date().getTime());
-            room.getMessages().add(new RoomMessage(message.getUserName(), roomId, message.getTextMessage(), new Date().getTime()));
+            room.getMessages().add(roomMessage);
             roomRepository.save(room);
             messageEmitterByRoomId.get(roomId).tryEmitNext(ServerSentEvent.<BaseEventResponse>builder()
                     .id(String.valueOf(eventIdGeneration.get(room.getId()).getAndIncrement()))
@@ -154,10 +157,7 @@ public class RoomService implements IRoomService{
                             roomMessage.getAuthorUserName(),
                             roomMessage.getTextMessage()))
                     .build());
-            log.info("Save Message successful: RoomId - {}, roomMessage - {}",
-                    room.getId(),
-                    roomMessage
-            );
+
             return roomMessage;
         } else {
             throw new SendMessageToRoomException(ErrorStatusCode.INCORRECT_REQUEST);

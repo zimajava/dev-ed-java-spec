@@ -1,9 +1,6 @@
 package org.zipli.socknet.repository.model;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.zipli.socknet.dto.RoomMessage;
@@ -17,6 +14,7 @@ import java.util.List;
 @ToString
 @Document
 @NoArgsConstructor
+@AllArgsConstructor
 public class Room {
 
     @Id
@@ -28,8 +26,8 @@ public class Room {
 
     public Room(String roomName, String creatorUserName) {
         this.roomName = roomName;
-        this.usersInfo = new ArrayList<>();
         this.creatorUserName = creatorUserName;
+        this.usersInfo = new ArrayList<>();
         this.messages = new ArrayList<>();
     }
 }
