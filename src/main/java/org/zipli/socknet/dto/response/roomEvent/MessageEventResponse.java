@@ -3,7 +3,6 @@ package org.zipli.socknet.dto.response.roomEvent;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.zipli.socknet.dto.response.roomEvent.RoomEventResponse;
 
 @Getter
 @Setter

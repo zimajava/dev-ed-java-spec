@@ -49,6 +49,8 @@ class RoomHandlerTest {
             new RoomMessage("AuthorUser", "IdRoom", "Text", new Date().getTime());
     private final MessageEventResponse messageEventResponse =
             new MessageEventResponse();
+    private final MessageRoomRequest messageRoomRequest
+            = new MessageRoomRequest("UserName", "Text");
     @Autowired
     private RoomHandler roomHandler;
     @MockBean
@@ -56,7 +58,6 @@ class RoomHandlerTest {
     @MockBean
     private ServerRequest request;
     private List<RoomsResponse> roomsResponses;
-
     @Autowired
     private WebTestClient webTestClient;
 
@@ -97,7 +98,8 @@ class RoomHandlerTest {
                 .returnResult()
                 .getResponseBody();
 
-        assertEquals(errorResponse.getErrorStatusCode().getValue(), ErrorStatusCode.ROOM_NOT_EXIT.getValue());
+        assertEquals(errorResponse.getCode(), ErrorStatusCode.ROOM_NOT_EXIT.getValue());
+        assertEquals(errorResponse.getReason(), ErrorStatusCode.ROOM_NOT_EXIT.getMessage());
         assertEquals(Objects.requireNonNull(serverResponseGetRoom.block()).statusCode(), HttpStatus.BAD_REQUEST);
     }
 
@@ -143,7 +145,8 @@ class RoomHandlerTest {
                 .returnResult()
                 .getResponseBody();
 
-        assertEquals(errorResponse.getErrorStatusCode().getValue(), ErrorStatusCode.INCORRECT_REQUEST.getValue());
+        assertEquals(errorResponse.getCode(), ErrorStatusCode.INCORRECT_REQUEST.getValue());
+        assertEquals(errorResponse.getReason(), ErrorStatusCode.INCORRECT_REQUEST.getMessage());
         assertEquals(Objects.requireNonNull(serverResponseJoinRoom.block()).statusCode(), HttpStatus.BAD_REQUEST);
     }
 
@@ -181,7 +184,8 @@ class RoomHandlerTest {
                 .returnResult()
                 .getResponseBody();
 
-        assertEquals(errorResponse.getErrorStatusCode().getValue(), ErrorStatusCode.INCORRECT_REQUEST.getValue());
+        assertEquals(errorResponse.getCode(), ErrorStatusCode.INCORRECT_REQUEST.getValue());
+        assertEquals(errorResponse.getReason(), ErrorStatusCode.INCORRECT_REQUEST.getMessage());
         assertEquals(Objects.requireNonNull(serverResponseLeaveRoom.block()).statusCode(), HttpStatus.BAD_REQUEST);
     }
 
@@ -194,7 +198,6 @@ class RoomHandlerTest {
 
         assertEquals(Objects.requireNonNull(serverResponseLeaveRoom.block()).statusCode(), HttpStatus.BAD_REQUEST);
     }
-
 
     @Test
     void deleteRoom_Pass() {
@@ -209,7 +212,7 @@ class RoomHandlerTest {
                 .returnResult()
                 .getResponseBody();
 
-        assertEquals(responseBody.getReport(),"Ok");
+        assertEquals(responseBody.getReport(), "Ok");
         assertEquals(Objects.requireNonNull(serverResponseDeleteRoom.block()).statusCode(), HttpStatus.OK);
     }
 
@@ -264,7 +267,8 @@ class RoomHandlerTest {
                 .returnResult()
                 .getResponseBody();
 
-        assertEquals(errorResponse.getErrorStatusCode().getValue(), ErrorStatusCode.INCORRECT_REQUEST.getValue());
+        assertEquals(errorResponse.getCode(), ErrorStatusCode.INCORRECT_REQUEST.getValue());
+        assertEquals(errorResponse.getReason(), ErrorStatusCode.INCORRECT_REQUEST.getMessage());
         assertEquals(Objects.requireNonNull(serverResponseGetMessagesByRoom.block()).statusCode(), HttpStatus.BAD_REQUEST);
     }
 
@@ -277,9 +281,6 @@ class RoomHandlerTest {
 
         assertEquals(Objects.requireNonNull(serverResponseGetMessagesByRoom.block()).statusCode(), HttpStatus.BAD_REQUEST);
     }
-
-    private final MessageRoomRequest messageRoomRequest
-            = new MessageRoomRequest("UserName", "Text");
 
     @Test
     void saveMessage_Pass() throws SendMessageToRoomException {
@@ -317,8 +318,8 @@ class RoomHandlerTest {
                 .returnResult()
                 .getResponseBody();
 
-        assertEquals(errorResponse.getErrorStatusCode().getValue(), ErrorStatusCode.INCORRECT_REQUEST.getValue());
-
+        assertEquals(errorResponse.getCode(), ErrorStatusCode.INCORRECT_REQUEST.getValue());
+        assertEquals(errorResponse.getReason(), ErrorStatusCode.INCORRECT_REQUEST.getMessage());
         assertEquals(Objects.requireNonNull(serverResponseSaveMessage.block()).statusCode(), HttpStatus.BAD_REQUEST);
     }
 

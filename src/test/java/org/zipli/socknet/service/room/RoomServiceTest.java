@@ -8,14 +8,14 @@ import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.http.codec.ServerSentEvent;
 import org.zipli.socknet.dto.RoomMessage;
 import org.zipli.socknet.dto.request.MessageRoomRequest;
+import org.zipli.socknet.dto.request.UserInfoByRoomRequest;
 import org.zipli.socknet.dto.response.RoomResponse;
 import org.zipli.socknet.dto.response.RoomsResponse;
-import org.zipli.socknet.dto.request.UserInfoByRoomRequest;
 import org.zipli.socknet.dto.response.roomEvent.BaseEventResponse;
 import org.zipli.socknet.exception.ErrorStatusCode;
 import org.zipli.socknet.exception.room.*;
-import org.zipli.socknet.repository.model.Room;
 import org.zipli.socknet.repository.RoomRepository;
+import org.zipli.socknet.repository.model.Room;
 import reactor.core.publisher.Flux;
 
 import java.util.List;
@@ -26,16 +26,13 @@ import static org.junit.jupiter.api.Assertions.*;
 @DataMongoTest
 class RoomServiceTest {
 
-    private RoomService roomService;
-
-    @Autowired
-    private RoomRepository roomRepository;
-
-    private Room roomOne;
-    private Room roomTwo;
     private final UserInfoByRoomRequest userInfoByRoomRequest =
             new UserInfoByRoomRequest("UserName", "UserId", "signal");
-
+    private RoomService roomService;
+    @Autowired
+    private RoomRepository roomRepository;
+    private Room roomOne;
+    private Room roomTwo;
 
     @BeforeEach
     void setUp() throws CreateRoomException {
@@ -103,7 +100,7 @@ class RoomServiceTest {
         assertEquals(roomJoin.getUsers().get(0).getUserId(), userInfoByRoomRequest.getUserId());
         assertEquals(roomJoin.getUsers().get(0).getSignal(), userInfoByRoomRequest.getSignal());
         assertEquals(roomJoin.getUsers().get(0).getUserName(), userInfoByRoomRequest.getUserName());
-        assertEquals(roomJoin.getUsers().size()-1, roomLeave.getUsers().size());
+        assertEquals(roomJoin.getUsers().size() - 1, roomLeave.getUsers().size());
     }
 
     @Test

@@ -52,7 +52,6 @@ public class RoomRouter {
                 .andRoute(RequestPredicates
                                 .GET(PATH + "/getMessages/{roomId}")
                                 .and(RequestPredicates.accept(MediaType.APPLICATION_JSON)),
-                        roomHandler::getMessagesByRoom)
-                ;
+                        roomHandler::getMessagesByRoom);
     }
 }

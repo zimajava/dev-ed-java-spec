@@ -13,10 +13,10 @@ import org.zipli.socknet.exception.chat.UpdateChatException;
 import org.zipli.socknet.exception.message.MessageDeleteException;
 import org.zipli.socknet.exception.message.MessageSendException;
 import org.zipli.socknet.exception.message.MessageUpdateException;
-import org.zipli.socknet.repository.model.Chat;
-import org.zipli.socknet.repository.model.Message;
 import org.zipli.socknet.repository.ChatRepository;
 import org.zipli.socknet.repository.MessageRepository;
+import org.zipli.socknet.repository.model.Chat;
+import org.zipli.socknet.repository.model.Message;
 import org.zipli.socknet.service.chat.IEmitterService;
 import org.zipli.socknet.service.chat.IMessageService;
 

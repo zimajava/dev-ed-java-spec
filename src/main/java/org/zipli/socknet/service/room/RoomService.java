@@ -97,7 +97,7 @@ public class RoomService implements IRoomService {
 
         if (roomOptional.isPresent()) {
             Room room = roomOptional.get();
-            if (room.getUsersInfo() !=null && userInfoByRoomRequest.getUserName()!=null) {
+            if (room.getUsersInfo() != null && userInfoByRoomRequest.getUserName() != null) {
                 room.getUsersInfo().removeIf(userInfo -> userInfo.getUserName().equals(userInfoByRoomRequest.getUserName()));
                 room = roomRepository.save(room);
 
@@ -113,7 +113,7 @@ public class RoomService implements IRoomService {
                         userInfoByRoomRequest.getUserName(),
                         room.getUsersInfo().size()
                 );
-            }else{
+            } else {
                 throw new LiveRoomException(ErrorStatusCode.INCORRECT_REQUEST);
             }
             return new RoomResponse(room.getId(), room.getRoomName(), room.getCreatorUserName(), room.getUsersInfo());

@@ -1,7 +1,6 @@
 package org.zipli.socknet.dto.response;
 
 import lombok.*;
-import org.springframework.data.annotation.Id;
 import org.zipli.socknet.dto.request.UserInfoByRoomRequest;
 
 import java.util.List;
