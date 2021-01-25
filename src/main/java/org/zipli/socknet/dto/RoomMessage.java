@@ -10,7 +10,6 @@ import lombok.*;
 public class RoomMessage {
 
     private String authorUserName;
-    private String roomId;
     private String textMessage;
     private long date;
 

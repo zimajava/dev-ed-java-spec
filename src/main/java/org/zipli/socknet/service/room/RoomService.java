@@ -147,7 +147,7 @@ public class RoomService implements IRoomService {
 
         if (roomOptional.isPresent()) {
             Room room = roomOptional.get();
-            RoomMessage roomMessage = new RoomMessage(message.getUserName(), roomId, message.getTextMessage(), new Date().getTime());
+            RoomMessage roomMessage = new RoomMessage(message.getUserName(), message.getTextMessage(), new Date().getTime());
             room.getMessages().add(roomMessage);
             roomRepository.save(room);
             messageEmitterByRoomId.get(roomId).tryEmitNext(ServerSentEvent.<BaseEventResponse>builder()

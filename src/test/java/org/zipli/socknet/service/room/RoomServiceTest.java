@@ -129,7 +129,6 @@ class RoomServiceTest {
         RoomMessage roomMessageSave = roomService.saveMessage(roomCreate.getId(), new MessageRoomRequest());
         Room room = roomRepository.getRoomById(roomCreate.getId());
 
-        assertEquals(roomMessageSave.getRoomId(), room.getId());
         assertEquals(roomMessageSave.getTextMessage(), room.getMessages().get(0).getTextMessage());
         assertEquals(roomMessageSave.getAuthorUserName(), room.getMessages().get(0).getAuthorUserName());
     }
@@ -150,7 +149,6 @@ class RoomServiceTest {
         List<RoomMessage> messagesByRoom = roomService.getMessagesByRoom(roomCreate.getId());
         Room room = roomRepository.getRoomById(roomCreate.getId());
 
-        assertEquals(messagesByRoom.get(0).getRoomId(), room.getId());
         assertEquals(messagesByRoom.get(0).getTextMessage(), room.getMessages().get(0).getTextMessage());
         assertEquals(messagesByRoom.get(0).getAuthorUserName(), room.getMessages().get(0).getAuthorUserName());
     }
