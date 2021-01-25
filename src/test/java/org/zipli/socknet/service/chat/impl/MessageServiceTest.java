@@ -46,8 +46,6 @@ class MessageServiceTest {
 
     @BeforeEach
     void setUp() {
-
-
         user = new User("Email@com", "password", "Username", "MoiNik");
         user = userRepository.save(user);
 

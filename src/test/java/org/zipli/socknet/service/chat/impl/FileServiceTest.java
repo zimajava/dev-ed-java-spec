@@ -129,7 +129,7 @@ class FileServiceTest {
         Chat chat = new Chat("chatName", false, idUsers, "userId", fileIds);
         chat.setId("2");
 
-        Mockito.doReturn(true)
+        Mockito.doReturn(chat)
                 .when(chatRepository)
                 .save(chat);
 
