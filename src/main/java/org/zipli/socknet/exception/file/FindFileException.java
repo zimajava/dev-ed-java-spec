@@ -1,17 +1,16 @@
 package org.zipli.socknet.exception.file;
 
-import org.zipli.socknet.exception.WsException;
+import org.zipli.socknet.exception.ErrorStatusCode;
 
 public class FindFileException extends RuntimeException {
 
-    private final WsException exceptionCode;
+    private final ErrorStatusCode errorStatusCode;
 
-    public FindFileException(String message, WsException exceptionCode) {
-        super(message);
-        this.exceptionCode = exceptionCode;
+    public FindFileException(ErrorStatusCode errorStatusCode) {
+        this.errorStatusCode = errorStatusCode;
     }
 
-    public int getNumberException() {
-        return exceptionCode.getNumberException();
+    public ErrorStatusCode getErrorStatusCode() {
+        return errorStatusCode;
     }
 }

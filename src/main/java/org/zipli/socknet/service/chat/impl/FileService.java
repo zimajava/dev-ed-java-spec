@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.zipli.socknet.dto.Command;
 import org.zipli.socknet.dto.FileData;
 import org.zipli.socknet.dto.response.WsMessageResponse;
-import org.zipli.socknet.exception.WsException;
+import org.zipli.socknet.exception.ErrorStatusCode;
 import org.zipli.socknet.exception.chat.UpdateChatException;
 import org.zipli.socknet.exception.file.FileDeleteException;
 import org.zipli.socknet.exception.file.FindFileException;
@@ -66,10 +66,10 @@ public class FileService implements IFileService {
                 chat = chatRepository.findChatById(data.getChatId());
 
                 if (chat != null) {
-                    chat.getIdFiles().add(file.getId());
+                    chat.getFilesId().add(file.getId());
                     log.info("Send file to db userId {} chatId {}", data.getUserId(), data.getChatId());
 
-                    chat.getIdUsers().parallelStream()
+                    chat.getUsersId().parallelStream()
                             .filter(e -> !e.equals(data.getUserId()))
                             .forEach(userId -> emitterService.sendMessageToUser(userId,
                                     new WsMessageResponse(Command.FILE_SEND,
@@ -81,16 +81,16 @@ public class FileService implements IFileService {
                                     ))
                             );
                 } else {
-                    throw new UpdateChatException("Chat doesn't exist", WsException.CHAT_NOT_EXISTS);
+                    throw new UpdateChatException(ErrorStatusCode.CHAT_NOT_EXISTS);
                 }
             } else {
-                throw new SaveFileException("GridFSFile is null!", WsException.GRIDFSFILE_IS_NOT_FOUND);
+                throw new SaveFileException(ErrorStatusCode.GRID_FS_FILE_IS_NOT_FOUND);
             }
             chatRepository.save(chat);
             return finalFile;
         } catch (Exception e) {
             log.error("Error in loading file into DB");
-            throw new SendFileException("Error in loading file into DB", WsException.FILE_WAS_NOT_LOADING_CORRECT);
+            throw new SendFileException(ErrorStatusCode.FILE_WAS_NOT_LOADING_CORRECT);
         }
     }
 
@@ -100,10 +100,10 @@ public class FileService implements IFileService {
         Chat chat = chatRepository.findChatById(data.getChatId());
         try {
             if (file != null && file.getAuthorId().equals(data.getUserId()) && chat != null) {
-                if (chat.getIdFiles().remove(file.getId())) {
+                if (chat.getFilesId().remove(file.getId())) {
                     final Chat finalChat = chatRepository.save(chat);
 
-                    finalChat.getIdUsers().parallelStream()
+                    finalChat.getUsersId().parallelStream()
                             .filter(e -> !e.equals(data.getUserId()))
                             .forEach(userId -> emitterService.sendMessageToUser(userId,
                                     new WsMessageResponse(Command.FILE_DELETE,
@@ -117,7 +117,7 @@ public class FileService implements IFileService {
                             );
                 }
             } else {
-                throw new FindFileException("This file does not exists", WsException.FILE_IS_NOT_IN_A_DB);
+                throw new FindFileException(ErrorStatusCode.FILE_IS_NOT_IN_A_DB);
             }
             gridFsTemplate.delete(new Query(Criteria.where("_id").is(data.getFileId())));
             fileRepository.deleteById(file.getId());
@@ -125,7 +125,7 @@ public class FileService implements IFileService {
 
         } catch (Exception e) {
             log.error("Error. The given data is invalid");
-            throw new FileDeleteException("The data was invalid", WsException.FILE_ACCESS_ERROR);
+            throw new FileDeleteException(ErrorStatusCode.FILE_ACCESS_ERROR);
         }
     }
 }

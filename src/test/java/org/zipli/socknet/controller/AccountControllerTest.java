@@ -12,14 +12,8 @@ import org.zipli.socknet.dto.request.EmailRequest;
 import org.zipli.socknet.dto.request.NickNameRequest;
 import org.zipli.socknet.dto.request.PasswordRequest;
 import org.zipli.socknet.dto.response.UserResponse;
-import org.zipli.socknet.exception.DeleteAccountException;
 import org.zipli.socknet.exception.ErrorStatusCode;
-import org.zipli.socknet.exception.GetUserException;
-import org.zipli.socknet.exception.UpdatePasswordException;
-import org.zipli.socknet.exception.account.DeleteAvatarException;
-import org.zipli.socknet.exception.account.UpdateAvatarException;
-import org.zipli.socknet.exception.account.UpdateEmailException;
-import org.zipli.socknet.exception.account.UpdateNickNameException;
+import org.zipli.socknet.exception.account.*;
 import org.zipli.socknet.repository.model.User;
 import org.zipli.socknet.service.user.UserService;
 

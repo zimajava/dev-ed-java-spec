@@ -81,9 +81,9 @@ class MessageServiceTest {
         messageTwo = messageRepository.save(messageTwo);
         messageTree = messageRepository.save(messageTree);
 
-        chat.getIdMessages().add(messageOne.getId());
-        chat.getIdMessages().add(messageTwo.getId());
-        chat.getIdMessages().add(messageTree.getId());
+        chat.getMessagesId().add(messageOne.getId());
+        chat.getMessagesId().add(messageTwo.getId());
+        chat.getMessagesId().add(messageTree.getId());
 
         chat = chatRepository.save(chat);
 
@@ -92,9 +92,9 @@ class MessageServiceTest {
 
         assertEquals(messages.size(), 3);
 
-        assertEquals(messages.get(0).getMessage(), messageOne.getMessage());
-        assertEquals(messages.get(1).getMessage(), messageTwo.getMessage());
-        assertEquals(messages.get(2).getMessage(), messageTree.getMessage());
+        assertEquals(messages.get(0).getTextMessage(), messageOne.getTextMessage());
+        assertEquals(messages.get(1).getTextMessage(), messageTwo.getTextMessage());
+        assertEquals(messages.get(2).getTextMessage(), messageTree.getTextMessage());
 
     }
 
@@ -121,7 +121,7 @@ class MessageServiceTest {
         try {
             messageService.updateMessage(data);
         } catch (MessageUpdateException e) {
-            assertEquals(e.getMessage(), "Only the author can update message {}");
+            assertEquals(e.getErrorStatusCode().getMessage(), "Only the creator can execute");
         }
     }
 
@@ -136,7 +136,7 @@ class MessageServiceTest {
         assertFalse(messageRepository.existsById(messageDelete.getId()));
         assertFalse(chatRepository
                 .findChatById(data.getChatId())
-                .getIdMessages()
+                .getMessagesId()
                 .contains(messageDelete.getId()));
     }
 
@@ -164,7 +164,7 @@ class MessageServiceTest {
         try {
             messageService.deleteMessage(data);
         } catch (ChatNotFoundException e) {
-            assertEquals(e.getMessage(), "Chat {} doesn't exist");
+            assertEquals(e.getErrorStatusCode().getMessage(), "Chat doesn't exist");
         }
     }
 

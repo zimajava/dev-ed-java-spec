@@ -1,4 +1,6 @@
-package org.zipli.socknet.exception;
+package org.zipli.socknet.exception.account;
+
+import org.zipli.socknet.exception.ErrorStatusCode;
 
 public class GetUserException extends RuntimeException {
 
