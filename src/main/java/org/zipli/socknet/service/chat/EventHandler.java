@@ -6,6 +6,7 @@ import org.zipli.socknet.dto.*;
 import org.zipli.socknet.dto.response.UserInfo;
 import org.zipli.socknet.dto.response.WsMessageResponse;
 import org.zipli.socknet.dto.video.VideoData;
+import org.zipli.socknet.exception.ErrorStatusCode;
 import org.zipli.socknet.exception.SearchByParamsException;
 import org.zipli.socknet.exception.WsException;
 import org.zipli.socknet.exception.auth.UserNotFoundException;
@@ -53,22 +54,22 @@ public class EventHandler {
                 try {
                     chatService.createChat(chatData);
                 } catch (CreateChatException e) {
-                    log.error(commandFail, eventCommand, chatData, e.getMessage());
+                    log.error(commandFail, eventCommand, chatData, e.getErrorStatusCode().getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    WsException.ALREADY_EXISTS.getNumberException()))
+                                    e.getErrorStatusCode().getValue()))
                     );
                 } catch (UserNotFoundException e) {
-                    log.error(commandFail, eventCommand, chatData, e.getMessage());
+                    log.error(commandFail, eventCommand, chatData, e.getErrorStatusCode().getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    WsException.USER_NOT_FOUND_EXCEPTION.getNumberException()))
+                                    e.getErrorStatusCode().getValue()))
                     );
                 } catch (Exception e) {
                     log.error(commandFail, eventCommand, chatData, e.getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    WsException.UNEXPECTED_EXCEPTION.getNumberException()))
+                                    ErrorStatusCode.UNEXPECTED_EXCEPTION.getValue()))
                     );
                 }
                 break;
@@ -77,19 +78,18 @@ public class EventHandler {
                 FullChatData chatUpdate = (FullChatData) message.getData();
                 try {
                     chatService.updateChat(chatUpdate);
-
                 } catch (UpdateChatException e) {
-                    log.error(commandFail, eventCommand, chatUpdate, e.getMessage());
+                    log.error(commandFail, eventCommand, chatUpdate, e.getErrorStatusCode().getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    e.getNumberException())
+                                    e.getErrorStatusCode().getValue())
                             )
                     );
                 } catch (Exception e) {
                     log.error(commandFail, eventCommand, chatUpdate, e.getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    WsException.UNEXPECTED_EXCEPTION.getNumberException())
+                                    ErrorStatusCode.UNEXPECTED_EXCEPTION.getValue())
                             )
                     );
                 }
@@ -101,18 +101,17 @@ public class EventHandler {
                     chatService.deleteChat(baseData);
 
                 } catch (DeleteChatException e) {
-                    log.error(commandFail, eventCommand, baseData, e.getMessage());
-
+                    log.error(commandFail, eventCommand, baseData, e.getErrorStatusCode().getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    e.getMessage())
+                                    e.getErrorStatusCode().getValue())
                             )
                     );
                 } catch (Exception e) {
                     log.error(commandFail, eventCommand, baseData, e.getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    WsException.UNEXPECTED_EXCEPTION.getNumberException()))
+                                    ErrorStatusCode.UNEXPECTED_EXCEPTION.getValue()))
                     );
                 }
                 break;
@@ -125,17 +124,17 @@ public class EventHandler {
                             new WsMessageResponse(eventCommand, chatLeave)));
 
                 } catch (LeaveChatException e) {
-                    log.error(commandFail, eventCommand, chatLeave, e.getMessage());
+                    log.error(commandFail, eventCommand, chatLeave, e.getErrorStatusCode().getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    WsException.CHAT_NOT_EXISTS.getNumberException())
+                                    e.getErrorStatusCode().getValue())
                             )
                     );
                 } catch (Exception e) {
                     log.error(commandFail, eventCommand, chatLeave, e.getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    WsException.UNEXPECTED_EXCEPTION.getNumberException()))
+                                    ErrorStatusCode.UNEXPECTED_EXCEPTION.getValue()))
                     );
                 }
                 break;
@@ -146,17 +145,17 @@ public class EventHandler {
                     chatService.joinChat(chatJoin);
 
                 } catch (JoinChatException e) {
-                    log.error(commandFail, eventCommand, chatJoin, e.getMessage());
+                    log.error(commandFail, eventCommand, chatJoin, e.getErrorStatusCode().getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    WsException.CHAT_ACCESS_ERROR.getNumberException())
+                                    e.getErrorStatusCode().getValue())
                             )
                     );
                 } catch (Exception e) {
                     log.error(commandFail, eventCommand, chatJoin, e.getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    WsException.UNEXPECTED_EXCEPTION.getNumberException())
+                                    ErrorStatusCode.UNEXPECTED_EXCEPTION.getValue())
                             )
                     );
                 }
@@ -170,17 +169,17 @@ public class EventHandler {
                             chatsByUserId)));
 
                 } catch (UserNotFoundException e) {
-                    log.error(commandFail, eventCommand, userData, e.getMessage());
+                    log.error(commandFail, eventCommand, userData, e.getErrorStatusCode().getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    WsException.USER_NOT_FOUND_EXCEPTION.getNumberException())
+                                    e.getErrorStatusCode().getValue())
                             )
                     );
                 } catch (Exception e) {
                     log.error(commandFail, eventCommand, userData, e.getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    WsException.UNEXPECTED_EXCEPTION.getNumberException())
+                                    ErrorStatusCode.UNEXPECTED_EXCEPTION.getValue())
                             )
                     );
                 }
@@ -192,16 +191,16 @@ public class EventHandler {
                     messageService.sendMessage(messageData);
 
                 } catch (MessageSendException e) {
-                    log.error(commandFail, eventCommand, messageData, e.getMessage());
+                    log.error(commandFail, eventCommand, messageData, e.getErrorStatusCode().getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    WsException.CHAT_NOT_EXISTS.getNumberException()))
+                                    e.getErrorStatusCode().getValue()))
                     );
                 } catch (Exception e) {
                     log.error(commandFail, eventCommand, messageData, e.getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    WsException.UNEXPECTED_EXCEPTION.getNumberException()))
+                                    ErrorStatusCode.UNEXPECTED_EXCEPTION.getValue()))
                     );
                 }
                 break;
@@ -212,22 +211,22 @@ public class EventHandler {
                     messageService.updateMessage(messageUpdate);
 
                 } catch (ChatNotFoundException e) {
-                    log.error(commandFail, eventCommand, messageUpdate, e.getMessage());
+                    log.error(commandFail, eventCommand, messageUpdate, e.getErrorStatusCode().getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    WsException.CHAT_NOT_EXISTS.getNumberException()))
+                                    e.getErrorStatusCode().getValue()))
                     );
                 } catch (MessageUpdateException e) {
-                    log.error(commandFail, eventCommand, messageUpdate, e.getMessage());
+                    log.error(commandFail, eventCommand, messageUpdate, e.getErrorStatusCode().getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    e.getNumberException()))
+                                    e.getErrorStatusCode().getValue()))
                     );
                 } catch (Exception e) {
                     log.error(commandFail, eventCommand, messageUpdate, e.getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    WsException.UNEXPECTED_EXCEPTION.getNumberException()))
+                                    ErrorStatusCode.UNEXPECTED_EXCEPTION.getValue()))
                     );
                 }
                 break;
@@ -238,22 +237,22 @@ public class EventHandler {
                     messageService.deleteMessage(messageDelete);
 
                 } catch (MessageDeleteException e) {
-                    log.error(commandFail, eventCommand, messageDelete, e.getMessage());
+                    log.error(commandFail, eventCommand, messageDelete, e.getErrorStatusCode().getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    WsException.MESSAGE_ACCESS_ERROR.getNumberException()))
+                                    e.getErrorStatusCode().getValue()))
                     );
                 } catch (ChatNotFoundException e) {
-                    log.error(commandFail, eventCommand, messageDelete, e.getMessage());
+                    log.error(commandFail, eventCommand, messageDelete, e.getErrorStatusCode().getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    WsException.CHAT_NOT_EXISTS.getNumberException()))
+                                    e.getErrorStatusCode().getValue()))
                     );
                 } catch (Exception e) {
                     log.error(commandFail, eventCommand, messageDelete, e.getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    WsException.UNEXPECTED_EXCEPTION.getNumberException()))
+                                    ErrorStatusCode.UNEXPECTED_EXCEPTION.getValue()))
                     );
                 }
                 break;
@@ -270,15 +269,16 @@ public class EventHandler {
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(new WsMessageResponse(eventCommand, messages)));
 
                 } catch (GetMessageException e) {
-                    log.error(commandFail, eventCommand, messagesByChat, e.getMessage());
+                    log.error(commandFail, eventCommand, messagesByChat, e.getErrorStatusCode().getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    WsException.CHAT_NOT_EXISTS.getNumberException()))
+                                    e.getErrorStatusCode().getValue()))
                     );
                 } catch (Exception e) {
                     log.error(commandFail, eventCommand, messagesByChat, e.getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
-                            new WsMessageResponse(eventCommand, e.getMessage()))
+                            new WsMessageResponse(eventCommand,
+                                    ErrorStatusCode.UNEXPECTED_EXCEPTION.getValue()))
                     );
                 }
                 break;
@@ -291,17 +291,20 @@ public class EventHandler {
                 } catch (VideoCallException e) {
                     log.error(commandFail, eventCommand, videoData, e.getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
-                            new WsMessageResponse(eventCommand, WsException.VIDEO_CALL_EXCEPTION.getNumberException()))
+                            new WsMessageResponse(eventCommand,
+                                    e.getErrorStatusCode().getValue()))
                     );
                 } catch (ChatNotFoundException e) {
-                    log.error(commandFail, eventCommand, videoData, e.getMessage());
+                    log.error(commandFail, eventCommand, videoData, e.getErrorStatusCode().getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
-                            new WsMessageResponse(eventCommand, WsException.CHAT_NOT_FOUND_EXCEPTION.getNumberException()))
+                            new WsMessageResponse(eventCommand,
+                                    e.getErrorStatusCode().getValue()))
                     );
                 } catch (Exception e) {
                     log.error(commandFail, eventCommand, videoData, e.getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
-                            new WsMessageResponse(eventCommand, e.getMessage()))
+                            new WsMessageResponse(eventCommand,
+                                    ErrorStatusCode.UNEXPECTED_EXCEPTION.getValue()))
                     );
                 }
                 break;
@@ -312,19 +315,22 @@ public class EventHandler {
                     videoService.joinVideoCall(videoCallJoin);
 
                 } catch (VideoCallException e) {
-                    log.error(commandFail, eventCommand, videoCallJoin, e.getMessage());
+                    log.error(commandFail, eventCommand, videoCallJoin, e.getErrorStatusCode().getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
-                            new WsMessageResponse(eventCommand, WsException.VIDEO_CALL_EXCEPTION.getNumberException())
+                            new WsMessageResponse(eventCommand,
+                                    e.getErrorStatusCode().getValue())
                     ));
                 } catch (ChatNotFoundException e) {
-                    log.error(commandFail, eventCommand, videoCallJoin, e.getMessage());
+                    log.error(commandFail, eventCommand, videoCallJoin, e.getErrorStatusCode().getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
-                            new WsMessageResponse(eventCommand, WsException.CHAT_NOT_FOUND_EXCEPTION.getNumberException()))
+                            new WsMessageResponse(eventCommand,
+                                    e.getErrorStatusCode().getValue()))
                     );
                 } catch (Exception e) {
                     log.error(commandFail, eventCommand, videoCallJoin, e.getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
-                            new WsMessageResponse(eventCommand, e.getMessage()))
+                            new WsMessageResponse(eventCommand,
+                                    ErrorStatusCode.UNEXPECTED_EXCEPTION.getValue()))
                     );
                 }
                 break;
@@ -334,19 +340,22 @@ public class EventHandler {
                 try {
                     videoService.exitFromVideoCall(videoCallExit);
                 } catch (VideoCallException e) {
-                    log.error(commandFail, eventCommand, videoCallExit, e.getMessage());
+                    log.error(commandFail, eventCommand, videoCallExit, e.getErrorStatusCode().getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
-                            new WsMessageResponse(eventCommand, WsException.VIDEO_CALL_EXCEPTION.getNumberException())
+                            new WsMessageResponse(eventCommand,
+                                    e.getErrorStatusCode().getValue())
                     ));
                 } catch (ChatNotFoundException e) {
-                    log.error(commandFail, eventCommand, videoCallExit, e.getMessage());
+                    log.error(commandFail, eventCommand, videoCallExit, e.getErrorStatusCode().getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
-                            new WsMessageResponse(eventCommand, WsException.CHAT_NOT_FOUND_EXCEPTION.getNumberException()))
+                            new WsMessageResponse(eventCommand,
+                                    e.getErrorStatusCode().getValue()))
                     );
                 } catch (Exception e) {
                     log.error(commandFail, eventCommand, videoCallExit, e.getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
-                            new WsMessageResponse(eventCommand, e.getMessage()))
+                            new WsMessageResponse(eventCommand,
+                                    ErrorStatusCode.UNEXPECTED_EXCEPTION.getValue()))
                     );
                 }
                 break;
@@ -359,10 +368,17 @@ public class EventHandler {
                             new WsMessageResponse(eventCommand, "File is successfully sent")));
 
                 } catch (SendFileException e) {
-                    log.error("Failed to load file in a GridFs {} reason {}", fileData.getFileId(), e.getMessage());
+                    log.error("Failed to load file in a GridFs {} reason {}", fileData.getFileId(),
+                            e.getErrorStatusCode().getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    WsException.FILE_WAS_NOT_LOADING_CORRECT.getNumberException()))
+                                    e.getErrorStatusCode().getValue()))
+                    );
+                } catch (Exception e) {
+                    log.error(commandFail, eventCommand, fileData, e.getMessage());
+                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
+                            new WsMessageResponse(eventCommand,
+                                    ErrorStatusCode.UNEXPECTED_EXCEPTION.getValue()))
                     );
                 }
                 break;
@@ -374,10 +390,18 @@ public class EventHandler {
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand, "File is successfully deleted")));
                 } catch (FileDeleteException e) {
-                    log.error("Failed to find the file to delete or the creator of the file is wrong {} reason {}", fileDelete.getUserId(), e.getMessage());
+                    log.error("Failed to find the file to delete or the creator of the file is wrong {} reason {}",
+                            fileDelete.getUserId(), e.getErrorStatusCode().getMessage());
+                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
+                            new WsMessageResponse(eventCommand,
+                                    e.getErrorStatusCode().getValue()))
+                    );
+                } catch (Exception e) {
+                    log.error(commandFail, eventCommand, fileDelete, e.getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
                                     WsException.FILE_ACCESS_ERROR.getNumberException()))
+                                    ErrorStatusCode.UNEXPECTED_EXCEPTION.getValue()))
                     );
                 }
                 break;

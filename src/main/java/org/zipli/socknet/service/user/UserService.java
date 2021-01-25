@@ -4,20 +4,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.zipli.socknet.exception.DeleteAccountException;
-import org.zipli.socknet.exception.ErrorStatusCode;
-import org.zipli.socknet.exception.GetUserException;
-import org.zipli.socknet.exception.UpdatePasswordException;
-import org.zipli.socknet.exception.account.DeleteAvatarException;
-import org.zipli.socknet.exception.account.UpdateAvatarException;
-import org.zipli.socknet.exception.account.UpdateEmailException;
-import org.zipli.socknet.exception.account.UpdateNickNameException;
-import org.zipli.socknet.repository.model.User;
 import org.zipli.socknet.dto.request.AvatarRequest;
 import org.zipli.socknet.dto.request.EmailRequest;
 import org.zipli.socknet.dto.request.NickNameRequest;
 import org.zipli.socknet.dto.request.PasswordRequest;
+import org.zipli.socknet.exception.ErrorStatusCode;
+import org.zipli.socknet.exception.account.*;
 import org.zipli.socknet.repository.UserRepository;
+import org.zipli.socknet.repository.model.User;
 import org.zipli.socknet.security.jwt.JwtUtils;
 import org.zipli.socknet.security.services.UserDetailsImpl;
 import org.zipli.socknet.exception.SearchByParamsException;
@@ -148,13 +142,7 @@ public class UserService implements IUserService {
         if (user == null) {
             throw new DeleteAccountException(ErrorStatusCode.USER_ID_DOES_NOT_CORRECT);
         }
-        user.setEmail(null);
-        user.setUserName(userId);
-        user.setNickName("deleted user");
-        user.setConfirm(false);
-        user.setPassword(null);
-        user.setAvatar(null);
-        userRepository.save(user);
+        userRepository.deleteById(userId);
         return userId;
     }
 
