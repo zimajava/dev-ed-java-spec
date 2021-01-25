@@ -78,10 +78,12 @@ public class UserRepository {
 
     public List<User> findUsersBySearchParam(String param) {//i
         Criteria criteria = new Criteria();
-        criteria.orOperator(Criteria.where("userName").regex(param, "m"),
-                Criteria.where("nickName").regex(param, "m"),
-                Criteria.where("email").regex(param, "m"));
         Query query = new Query(criteria);
+
+        criteria.orOperator(
+                Criteria.where("userName").regex("^" + param),
+                Criteria.where("nickName").regex("^" + param),
+                Criteria.where("email").regex("^" + param));
 
         return mongoTemplate.find(query, User.class);
     }

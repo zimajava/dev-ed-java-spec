@@ -3,6 +3,7 @@ package org.zipli.socknet.service.chat;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.zipli.socknet.dto.*;
+import org.zipli.socknet.dto.response.ErrorResponse;
 import org.zipli.socknet.dto.response.UserInfo;
 import org.zipli.socknet.dto.response.WsMessageResponse;
 import org.zipli.socknet.dto.video.VideoData;
