@@ -13,7 +13,6 @@ import java.util.List;
 @NoArgsConstructor
 public class RoomResponse {
 
-    @Id
     private String id;
     private String roomName;
     private String creatorUser;
