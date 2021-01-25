@@ -134,7 +134,6 @@ public class ChatService implements IChatService {
                                     return user;
                                 })
                                 .collect(Collectors.toList())
-
                 );
 
                 messageRepository.deleteAllByChatId(data.getChatId());

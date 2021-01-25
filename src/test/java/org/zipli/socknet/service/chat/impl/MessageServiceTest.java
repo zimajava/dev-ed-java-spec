@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.zipli.socknet.dto.MessageData;
 import org.zipli.socknet.exception.chat.ChatNotFoundException;
 import org.zipli.socknet.exception.message.MessageDeleteException;
@@ -25,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @Slf4j
-@DataMongoTest
+@SpringBootTest
 class MessageServiceTest {
 
     @Autowired
@@ -34,17 +35,19 @@ class MessageServiceTest {
     MessageRepository messageRepository;
     @Autowired
     ChatRepository chatRepository;
-    EmitterService emitterService = new EmitterService(userRepository, new JwtUtils());
+    @Autowired
+    EmitterService emitterService;
     private User user;
     private Chat chat;
     private MessageData messageData;
+    @Autowired
     private MessageService messageService;
     private Message message;
 
     @BeforeEach
     void setUp() {
 
-        messageService = new MessageService(chatRepository, messageRepository, emitterService);
+
         user = new User("Email@com", "password", "Username", "MoiNik");
         user = userRepository.save(user);
 

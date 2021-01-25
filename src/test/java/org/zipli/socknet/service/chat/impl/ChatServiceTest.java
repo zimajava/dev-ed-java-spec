@@ -4,8 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
-import org.zipli.socknet.dto.BaseData;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.zipli.socknet.dto.ChatData;
 import org.zipli.socknet.dto.FullChatData;
 import org.zipli.socknet.exception.chat.CreateChatException;
 import org.zipli.socknet.exception.chat.DeleteChatException;
@@ -14,7 +14,6 @@ import org.zipli.socknet.repository.MessageRepository;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.repository.model.Chat;
 import org.zipli.socknet.repository.model.User;
-import org.zipli.socknet.security.jwt.JwtUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,7 +22,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
-@DataMongoTest
+@SpringBootTest
 class ChatServiceTest {
     @Autowired
     UserRepository userRepository;
@@ -31,16 +30,15 @@ class ChatServiceTest {
     ChatRepository chatRepository;
     @Autowired
     MessageRepository messageRepository;
-    EmitterService emitterService = new EmitterService(userRepository, new JwtUtils());
     private User user;
     private Chat chat;
     private FullChatData dataChat;
+    @Autowired
     private ChatService chatService;
-    private BaseData baseData;
 
     @BeforeEach
     void setUp() {
-        chatService = new ChatService(userRepository, chatRepository, messageRepository, emitterService);
+
         user = new User("Email@com", "password", "Username", "MoiNik");
         user = userRepository.save(user);
 
@@ -90,7 +88,7 @@ class ChatServiceTest {
                 chat.getChatName());
         FullChatData dataTree = new FullChatData(userOne.getId(), chat.getId(), chat.getChatName());
 
-        chatService.deleteChat(dataTree);
+        chatService.deleteChat(new ChatData(dataTree.getUserId(),dataTree.getChatId()));
 
         assertFalse(chatRepository.existsByChatName(chat.getChatName()));
         assertFalse(messageRepository.existsByChatId(chat.getId()));

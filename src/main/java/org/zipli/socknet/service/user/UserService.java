@@ -145,13 +145,7 @@ public class UserService implements IUserService {
         if (user == null) {
             throw new DeleteAccountException(ErrorStatusCode.USER_ID_DOES_NOT_CORRECT);
         }
-        user.setEmail(null);
-        user.setUserName(userId);
-        user.setNickName("deleted user");
-        user.setConfirm(false);
-        user.setPassword(null);
-        user.setAvatar(null);
-        userRepository.save(user);
+        userRepository.deleteById(userId);
         return userId;
     }
 }
