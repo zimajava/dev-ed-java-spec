@@ -66,7 +66,7 @@ class ChatServiceTest {
             Chat chatOne = chatService.createChat(dataChat);
             Chat chatTwo = chatService.createChat(dataChat);
         } catch (CreateChatException e) {
-            assertEquals(e.getMessage(), "Such a chat {} already exists");
+            assertEquals(e.getErrorStatusCode().getMessage(), "Chat already exists");
         }
         chatRepository.deleteAll();
     }
@@ -78,7 +78,7 @@ class ChatServiceTest {
         userOne = userRepository.save(userOne);
 
         Chat chat = new Chat("NameChat", false, userOne.getId());
-        chat.setIdUsers(Collections.singletonList(userOne.getId()));
+        chat.setUsersId(Collections.singletonList(userOne.getId()));
         chat = chatRepository.save(chat);
 
         userOne.setChatsId(Collections.singletonList(chat.getId()));
@@ -104,7 +104,7 @@ class ChatServiceTest {
         try {
             chatService.deleteChat(dataTree);
         } catch (DeleteChatException e) {
-            assertEquals(e.getMessage(), "Only the author can delete chat {}");
+            assertEquals(e.getErrorStatusCode().getMessage(), "Only the creator can execute");
         }
     }
 
@@ -117,7 +117,7 @@ class ChatServiceTest {
         Chat chat = chatService.joinChat(dataChat);
         User userUpdate = userRepository.getUserById(user.getId());
 
-        assertTrue(chat.getIdUsers().contains(dataChat.getUserId()));
+        assertTrue(chat.getUsersId().contains(dataChat.getUserId()));
         assertTrue(userUpdate.getChatsId().contains(chat.getId()));
     }
 
@@ -142,14 +142,14 @@ class ChatServiceTest {
     void leaveChat() {
 
         Chat chat = new Chat("", true, user.getId());
-        chat.getIdUsers().add(user.getId());
+        chat.getUsersId().add(user.getId());
         chat = chatRepository.save(chat);
 
         dataChat.setChatId(chat.getId());
 
         Chat newChat = chatService.leaveChat(dataChat);
 
-        assertEquals(chat.getIdUsers().size() - 1, newChat.getIdUsers().size());
+        assertEquals(chat.getUsersId().size() - 1, newChat.getUsersId().size());
 
     }
 
