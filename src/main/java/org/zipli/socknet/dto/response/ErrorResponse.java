@@ -11,5 +11,6 @@ import org.zipli.socknet.exception.ErrorStatusCode;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ErrorResponse {
-    private ErrorStatusCode errorStatusCode;
+    private int code;
+    private String reason;
 }
