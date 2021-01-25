@@ -67,9 +67,13 @@ public class EmailConfirmationService {
     public String confirmAccount(String token) {
         if (token != null) {
             String userName = jwtUtils.getUserNameFromJwtToken(token);
-            User user = userRepository.getUserByUserName(userName);
-            user.setConfirm(true);
-            userRepository.save(user);
+
+//            User user = userRepository.getUserByUserName(userName);
+//            user.setConfirm(true);
+//            userRepository.save(user);
+
+            userRepository.confirmAccountInUsersModel(userName);
+
             return "Account verified";
         } else {
             throw new NotConfirmAccountException(ErrorStatusCode.TOKEN_INVALID_OR_BROKEN);

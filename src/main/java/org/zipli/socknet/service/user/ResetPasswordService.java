@@ -74,14 +74,18 @@ public class ResetPasswordService {
         } else if (newPassword != null) {
 
             String userName = jwtUtils.getUserNameFromJwtToken(token);
-            User user = userRepository.getUserByUserName(userName);
 
-            if (user != null) {
-                user.setPassword(passwordEncoder.encode(newPassword));
-            } else {
-                throw new UserNotFoundException(ErrorStatusCode.USER_DOES_NOT_EXIST);
-            }
-            userRepository.save(user);
+//            User user = userRepository.getUserByUserName(userName);
+//
+//            if (user != null) {
+//                user.setPassword(passwordEncoder.encode(newPassword));
+//            } else {
+//                throw new UserNotFoundException(ErrorStatusCode.USER_DOES_NOT_EXIST);
+//            }
+//            userRepository.save(user);
+
+            userRepository.updatePasswordInUsersModel(userName, newPassword);
+
             return "Password successfully changed";
         } else {
             throw new UserNotFoundException(ErrorStatusCode.PASSWORD_IS_NULL);
