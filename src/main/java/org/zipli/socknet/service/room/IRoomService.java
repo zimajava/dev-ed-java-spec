@@ -16,11 +16,11 @@ import java.util.List;
 public interface IRoomService {
     Room getRoom(String idRoom) throws GetRoomException;
 
-    List<RoomsResponse> getRooms();
+    List<Room> getRooms();
 
-    RoomResponse joinRoom(String idRoom, UserInfoByRoomRequest userInfoByRoomRequest) throws JoinRoomException;
+    Room joinRoom(String idRoom, UserInfoByRoomRequest userInfoByRoomRequest) throws JoinRoomException;
 
-    RoomResponse leaveRoom(String idRoom, UserInfoByRoomRequest userInfoByRoomRequest) throws LiveRoomException;
+    Room leaveRoom(String idRoom, UserInfoByRoomRequest userInfoByRoomRequest) throws LiveRoomException;
 
     void deleteRoom(String idRoom);
 

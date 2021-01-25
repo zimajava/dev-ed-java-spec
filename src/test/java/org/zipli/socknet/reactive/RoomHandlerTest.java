@@ -47,8 +47,6 @@ class RoomHandlerTest {
     private final CreateRoomRequest createRoomRequest = new CreateRoomRequest("UserName", "ChatName");
     private final RoomMessage roomMessage =
             new RoomMessage("AuthorUser", "IdRoom", "Text", new Date().getTime());
-    private final MessageEventResponse messageEventResponse =
-            new MessageEventResponse();
     private final MessageRoomRequest messageRoomRequest
             = new MessageRoomRequest("UserName", "Text");
     @Autowired
@@ -57,14 +55,14 @@ class RoomHandlerTest {
     private RoomService roomService;
     @MockBean
     private ServerRequest request;
-    private List<RoomsResponse> roomsResponses;
+    private List<Room> rooms;
     @Autowired
     private WebTestClient webTestClient;
 
     @BeforeEach
     void setUp() {
-        roomsResponses = new ArrayList<>();
-        roomsResponses.add(new RoomsResponse("123", "RoomName"));
+        rooms = new ArrayList<>();
+        rooms.add(new Room("123", "RoomName"));
     }
 
     @Test
@@ -105,7 +103,7 @@ class RoomHandlerTest {
 
     @Test
     void getRooms() {
-        Mockito.when(roomService.getRooms()).thenReturn(roomsResponses);
+        Mockito.when(roomService.getRooms()).thenReturn(rooms);
         Mono<ServerResponse> serverResponseGetRooms = roomHandler.getRooms(request);
 
         List<RoomsResponse> responseBody = webTestClient.get().uri("/zipli/room/getRooms")
@@ -117,7 +115,7 @@ class RoomHandlerTest {
                 .returnResult()
                 .getResponseBody();
 
-        assertEquals(responseBody.get(0).getRoomId(), roomsResponses.get(0).getRoomId());
+        assertEquals(responseBody.get(0).getRoomId(), rooms.get(0).getId());
         assertEquals(Objects.requireNonNull(serverResponseGetRooms.block()).statusCode(), HttpStatus.OK);
     }
 
@@ -125,7 +123,7 @@ class RoomHandlerTest {
     void joinRoom_Pass() throws JoinRoomException {
         Mockito.when(request.pathVariable("roomId")).thenReturn(idRoom);
         Mockito.when(request.bodyToMono(UserInfoByRoomRequest.class)).thenReturn(Mono.just(userInfoByRoomRequest));
-        Mockito.when(roomService.joinRoom(idRoom, userInfoByRoomRequest)).thenReturn(roomResponse);
+        Mockito.when(roomService.joinRoom(idRoom, userInfoByRoomRequest)).thenReturn(room);
         Mono<ServerResponse> serverResponseJoinRoom = roomHandler.joinRoom(request);
 
         assertEquals(Objects.requireNonNull(serverResponseJoinRoom.block()).statusCode(), HttpStatus.OK);
@@ -165,7 +163,7 @@ class RoomHandlerTest {
     void leaveRoom_Pass() throws LiveRoomException {
         Mockito.when(request.pathVariable("roomId")).thenReturn(idRoom);
         Mockito.when(request.bodyToMono(UserInfoByRoomRequest.class)).thenReturn(Mono.just(userInfoByRoomRequest));
-        Mockito.when(roomService.leaveRoom(idRoom, userInfoByRoomRequest)).thenReturn(roomResponse);
+        Mockito.when(roomService.leaveRoom(idRoom, userInfoByRoomRequest)).thenReturn(room);
         Mono<ServerResponse> serverResponseLeaveRoom = roomHandler.leaveRoom(request);
 
         assertEquals(Objects.requireNonNull(serverResponseLeaveRoom.block()).statusCode(), HttpStatus.OK);

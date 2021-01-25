@@ -13,6 +13,8 @@ import org.zipli.socknet.dto.request.MessageRoomRequest;
 import org.zipli.socknet.dto.request.UserInfoByRoomRequest;
 import org.zipli.socknet.dto.response.DeleteRoomResponse;
 import org.zipli.socknet.dto.response.ErrorResponse;
+import org.zipli.socknet.dto.response.RoomResponse;
+import org.zipli.socknet.dto.response.RoomsResponse;
 import org.zipli.socknet.dto.response.roomEvent.BaseEventResponse;
 import org.zipli.socknet.exception.ErrorStatusCode;
 import org.zipli.socknet.exception.room.*;
@@ -20,6 +22,7 @@ import org.zipli.socknet.service.room.IRoomService;
 import reactor.core.publisher.Mono;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -43,7 +46,10 @@ public class RoomHandler implements IRoomHandler {
 
     @Override
     public Mono<ServerResponse> getRooms(ServerRequest request) {
-        return serverResponseOk(roomService.getRooms());
+        return serverResponseOk(roomService.getRooms()
+                .stream()
+                .map(e -> new RoomsResponse(e.getId(), e.getRoomName()))
+                .collect(Collectors.toList()));
     }
 
     public Mono<ServerResponse> joinRoom(ServerRequest request) {
@@ -52,7 +58,7 @@ public class RoomHandler implements IRoomHandler {
         if (roomId != null) {
             if (userInfoByRoom.isPresent()) {
                 try {
-                    return serverResponseOk(roomService.joinRoom(roomId, userInfoByRoom.get()));
+                    return serverResponseOk(new RoomResponse(roomService.joinRoom(roomId, userInfoByRoom.get())));
                 } catch (JoinRoomException e) {
                     log.error("Join Room fail: Room {} not exit", roomId);
                     return serverResponseBadRequest(e.getErrorStatusCodeRoom());
@@ -74,7 +80,7 @@ public class RoomHandler implements IRoomHandler {
         if (roomId != null) {
             if (userInfoByRoom.isPresent()) {
                 try {
-                    return serverResponseOk(roomService.leaveRoom(roomId, userInfoByRoom.get()));
+                    return serverResponseOk(new RoomResponse(roomService.leaveRoom(roomId, userInfoByRoom.get())));
                 } catch (LiveRoomException e) {
                     if (e.getErrorStatusCodeRoom() == ErrorStatusCode.CHAT_NOT_EXISTS) {
                         log.error("Leave Room fail: Room {} not exit", roomId);

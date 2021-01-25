@@ -58,15 +58,12 @@ public class RoomService implements IRoomService {
     }
 
     @Override
-    public List<RoomsResponse> getRooms() {
-        return roomRepository.findAll()
-                .stream()
-                .map(e -> new RoomsResponse(e.getId(), e.getRoomName()))
-                .collect(Collectors.toList());
+    public List<Room> getRooms() {
+        return roomRepository.findAll();
     }
 
     @Override
-    public RoomResponse joinRoom(String roomId, UserInfoByRoomRequest userInfoByRoomRequest) throws JoinRoomException {
+    public Room joinRoom(String roomId, UserInfoByRoomRequest userInfoByRoomRequest) throws JoinRoomException {
         Optional<Room> roomOptional = roomRepository.findById(roomId);
 
         if (roomOptional.isPresent()) {
@@ -85,14 +82,14 @@ public class RoomService implements IRoomService {
                     userInfoByRoomRequest.getUserName(),
                     room.getUsersInfo().size()
             );
-            return new RoomResponse(room.getId(), room.getRoomName(), room.getCreatorUserName(), room.getUsersInfo());
+            return room;
         } else {
             throw new JoinRoomException(ErrorStatusCode.ROOM_NOT_EXIT);
         }
     }
 
     @Override
-    public RoomResponse leaveRoom(String roomId, UserInfoByRoomRequest userInfoByRoomRequest) throws LiveRoomException {
+    public Room leaveRoom(String roomId, UserInfoByRoomRequest userInfoByRoomRequest) throws LiveRoomException {
         Optional<Room> roomOptional = roomRepository.findById(roomId);
 
         if (roomOptional.isPresent()) {
@@ -116,7 +113,7 @@ public class RoomService implements IRoomService {
             } else {
                 throw new LiveRoomException(ErrorStatusCode.INCORRECT_REQUEST);
             }
-            return new RoomResponse(room.getId(), room.getRoomName(), room.getCreatorUserName(), room.getUsersInfo());
+            return room;
         } else {
             throw new LiveRoomException(ErrorStatusCode.ROOM_NOT_EXIT);
         }

@@ -62,24 +62,24 @@ class RoomServiceTest {
 
     @Test
     void getRooms() {
-        List<RoomsResponse> roomsResponse = roomService.getRooms();
+        List<Room> roomsResponse = roomService.getRooms();
         List<Room> rooms = roomRepository.findAll();
 
         assertEquals(roomsResponse.size(), rooms.size());
-        assertEquals(roomsResponse.get(0).getRoomId(), rooms.get(0).getId());
-        assertEquals(roomsResponse.get(0).getNameRoom(), rooms.get(0).getRoomName());
-        assertEquals(roomsResponse.get(1).getRoomId(), rooms.get(1).getId());
-        assertEquals(roomsResponse.get(1).getNameRoom(), rooms.get(1).getRoomName());
+        assertEquals(roomsResponse.get(0).getId(), rooms.get(0).getId());
+        assertEquals(roomsResponse.get(0).getRoomName(), rooms.get(0).getRoomName());
+        assertEquals(roomsResponse.get(1).getId(), rooms.get(1).getId());
+        assertEquals(roomsResponse.get(1).getRoomName(), rooms.get(1).getRoomName());
     }
 
     @Test
     void joinRoom_Pass() throws JoinRoomException, CreateRoomException {
         Room roomCreate = roomService.createRoom("User_Join_Pass", "Room_Join_Pass");
-        RoomResponse roomJoin = roomService.joinRoom(roomCreate.getId(), userInfoByRoomRequest);
+        Room roomJoin = roomService.joinRoom(roomCreate.getId(), userInfoByRoomRequest);
         Room room = roomRepository.getRoomById(roomCreate.getId());
 
-        assertEquals(roomJoin.getUsers().get(0).getUserId(), room.getUsersInfo().get(0).getUserId());
-        assertEquals(roomJoin.getUsers().get(0).getUserName(), room.getUsersInfo().get(0).getUserName());
+        assertEquals(roomJoin.getUsersInfo().get(0).getUserId(), room.getUsersInfo().get(0).getUserId());
+        assertEquals(roomJoin.getUsersInfo().get(0).getUserName(), room.getUsersInfo().get(0).getUserName());
     }
 
     @Test
@@ -94,13 +94,13 @@ class RoomServiceTest {
     @Test
     void leaveRoom_Pass() throws CreateRoomException, JoinRoomException, LiveRoomException {
         Room roomCreate = roomService.createRoom("User_Leave_Pass", "Room_Leave_Pass");
-        RoomResponse roomJoin = roomService.joinRoom(roomCreate.getId(), userInfoByRoomRequest);
-        RoomResponse roomLeave = roomService.leaveRoom(roomCreate.getId(), userInfoByRoomRequest);
+        Room roomJoin = roomService.joinRoom(roomCreate.getId(), userInfoByRoomRequest);
+        Room roomLeave = roomService.leaveRoom(roomCreate.getId(), userInfoByRoomRequest);
 
-        assertEquals(roomJoin.getUsers().get(0).getUserId(), userInfoByRoomRequest.getUserId());
-        assertEquals(roomJoin.getUsers().get(0).getSignal(), userInfoByRoomRequest.getSignal());
-        assertEquals(roomJoin.getUsers().get(0).getUserName(), userInfoByRoomRequest.getUserName());
-        assertEquals(roomJoin.getUsers().size() - 1, roomLeave.getUsers().size());
+        assertEquals(roomJoin.getUsersInfo().get(0).getUserId(), userInfoByRoomRequest.getUserId());
+        assertEquals(roomJoin.getUsersInfo().get(0).getSignal(), userInfoByRoomRequest.getSignal());
+        assertEquals(roomJoin.getUsersInfo().get(0).getUserName(), userInfoByRoomRequest.getUserName());
+        assertEquals(roomJoin.getUsersInfo().size() - 1, roomLeave.getUsersInfo().size());
     }
 
     @Test
