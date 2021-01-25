@@ -171,6 +171,7 @@ class RoomHandlerTest {
 
     @Test
     void leaveRoom_Fail_INCORRECT_REQUEST() {
+        Mockito.when(request.pathVariable("roomId")).thenReturn(idRoom);
         Mockito.when(request.bodyToMono(UserInfoByRoomRequest.class)).thenReturn(Mono.empty());
         Mono<ServerResponse> serverResponseLeaveRoom = roomHandler.leaveRoom(request);
 
@@ -189,8 +190,9 @@ class RoomHandlerTest {
 
     @Test
     void leaveRoom_Fail_ROOM_NOT_EXIT() throws LiveRoomException {
+        Mockito.when(request.pathVariable("roomId")).thenReturn("");
         Mockito.when(request.bodyToMono(UserInfoByRoomRequest.class)).thenReturn(Mono.just(userInfoByRoomRequest));
-        Mockito.when(roomService.leaveRoom(null, userInfoByRoomRequest))
+        Mockito.when(roomService.leaveRoom("", userInfoByRoomRequest))
                 .thenThrow(new LiveRoomException(ErrorStatusCode.ROOM_NOT_EXIT));
         Mono<ServerResponse> serverResponseLeaveRoom = roomHandler.leaveRoom(request);
 
@@ -235,7 +237,8 @@ class RoomHandlerTest {
 
     @Test
     void getMessagesByRoom_Fail() throws GetMessagesByRoomException {
-        Mockito.when(roomService.getMessagesByRoom(null))
+        Mockito.when(request.pathVariable("roomId")).thenReturn(" ");
+        Mockito.when(roomService.getMessagesByRoom(" "))
                 .thenThrow(new GetMessagesByRoomException(ErrorStatusCode.ROOM_NOT_EXIT));
         Mono<ServerResponse> serverResponseGetMessagesByRoom = roomHandler.getMessagesByRoom(request);
 
@@ -305,19 +308,10 @@ class RoomHandlerTest {
 
     @Test
     void saveMessage_Fail_INCORRECT_REQUEST() {
+        Mockito.when(request.pathVariable("roomId")).thenReturn("");
         Mockito.when(request.bodyToMono(MessageRoomRequest.class)).thenReturn(Mono.empty());
         Mono<ServerResponse> serverResponseSaveMessage = roomHandler.saveMessage(request);
 
-        ErrorResponse errorResponse = webTestClient.post().uri("/zipli/room/createRoom")
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isBadRequest()
-                .expectBody(ErrorResponse.class)
-                .returnResult()
-                .getResponseBody();
-
-        assertEquals(errorResponse.getCode(), ErrorStatusCode.INCORRECT_REQUEST.getValue());
-        assertEquals(errorResponse.getReason(), ErrorStatusCode.INCORRECT_REQUEST.getMessage());
         assertEquals(Objects.requireNonNull(serverResponseSaveMessage.block()).statusCode(), HttpStatus.BAD_REQUEST);
     }
 

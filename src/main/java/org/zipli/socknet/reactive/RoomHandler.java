@@ -55,7 +55,7 @@ public class RoomHandler implements IRoomHandler {
     public Mono<ServerResponse> joinRoom(ServerRequest request) {
         String roomId = request.pathVariable("roomId");
         Optional<UserInfoByRoomRequest> userInfoByRoom = request.bodyToMono(UserInfoByRoomRequest.class).blockOptional();
-        if (roomId.trim().isEmpty() ) {
+        if (!roomId.trim().isEmpty() ) {
             if (userInfoByRoom.isPresent()) {
                 try {
                     return serverResponseOk(new RoomResponse(roomService.joinRoom(roomId, userInfoByRoom.get())));
@@ -77,7 +77,7 @@ public class RoomHandler implements IRoomHandler {
     public Mono<ServerResponse> leaveRoom(ServerRequest request) {
         String roomId = request.pathVariable("roomId");
         Optional<UserInfoByRoomRequest> userInfoByRoom = request.bodyToMono(UserInfoByRoomRequest.class).blockOptional();
-        if (roomId.trim().isEmpty() ) {
+        if (!roomId.trim().isEmpty() ) {
             if (userInfoByRoom.isPresent()) {
                 try {
                     return serverResponseOk(new RoomResponse(roomService.leaveRoom(roomId, userInfoByRoom.get())));
@@ -102,7 +102,7 @@ public class RoomHandler implements IRoomHandler {
     @Override
     public Mono<ServerResponse> deleteRoom(ServerRequest request) {
         String roomId = request.pathVariable("roomId");
-        if (roomId.trim().isEmpty() ) {
+        if (!roomId.trim().isEmpty() ) {
             try {
                 roomService.deleteRoom(roomId);
                 return serverResponseOk(new DeleteRoomResponse("Ok"));
@@ -127,7 +127,7 @@ public class RoomHandler implements IRoomHandler {
     @Override
     public Mono<ServerResponse> getMessagesByRoom(ServerRequest request) {
         String roomId = request.pathVariable("roomId");
-        if (roomId.trim().isEmpty() ) {
+        if (!roomId.trim().isEmpty()) {
             try {
                 return serverResponseOk(roomService.getMessagesByRoom(roomId));
             } catch (GetMessagesByRoomException e) {
@@ -159,7 +159,7 @@ public class RoomHandler implements IRoomHandler {
     public Mono<ServerResponse> saveMessage(ServerRequest request) {
         String roomId = request.pathVariable("roomId");
         Optional<MessageRoomRequest> message = request.bodyToMono(MessageRoomRequest.class).blockOptional();
-        if (roomId.trim().isEmpty() ) {
+        if (!roomId.trim().isEmpty()) {
             if (message.isPresent()) {
                 try {
                     return serverResponseOk(roomService.saveMessage(roomId, message.get()));
