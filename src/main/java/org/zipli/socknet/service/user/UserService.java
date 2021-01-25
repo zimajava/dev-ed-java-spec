@@ -157,7 +157,7 @@ public class UserService implements IUserService {
         if (searchParam.length() < 3) {
             throw new SearchByParamsException(ErrorStatusCode.PARAM_TOO_SHORT);
         }
-        List<User> users = userRepository.getUsersBySearchParam(searchParam);
+        List<User> users = userRepository.findUsersBySearchParam(searchParam);
         if (users.isEmpty()) {
             throw new SearchByParamsException(ErrorStatusCode.USERS_DOES_NOT_EXIST_BY_PARAM);
         }

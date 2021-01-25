@@ -75,5 +75,15 @@ public class UserRepository {
                 .addCriteria(Criteria.where("id").is(id));
         mongoTemplate.remove(query, User.class);
     }
-}
+
+    public List<User> findUsersBySearchParam(String param) {//i
+        Criteria criteria = new Criteria();
+        criteria.orOperator(Criteria.where("userName").regex(param, "m"),
+                Criteria.where("nickName").regex(param, "m"),
+                Criteria.where("email").regex(param, "m"));
+        Query query = new Query(criteria);
+
+        return mongoTemplate.find(query, User.class);
+    }
+
 }

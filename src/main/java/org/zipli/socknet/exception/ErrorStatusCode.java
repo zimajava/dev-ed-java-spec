@@ -25,10 +25,10 @@ public enum ErrorStatusCode {
     FILE_IS_NOT_IN_A_DB("The file is not in the database", 122),
     INCORRECT_REQUEST("Incorrect request", 123),
     ROOM_NOT_EXIT("Room doesn't exist", 124),
-    ROOM_ALREADY_EXISTS("Room already exists", 125);
-    PARAM_IS_NULL("Parameter by search is null", 12),
-    USERS_DOES_NOT_EXIST_BY_PARAM("Users weren't found by these parameters", 13),
-    PARAM_TOO_SHORT("Parameter is shorter than 3 characters", 13);
+    ROOM_ALREADY_EXISTS("Room already exists", 125),
+    PARAM_IS_NULL("Parameter by search is null", 126),
+    USERS_DOES_NOT_EXIST_BY_PARAM("Users weren't found by these parameters", 127),
+    PARAM_TOO_SHORT("Parameter is shorter than 3 characters", 128);
 
     private final int value;
     private final String message;

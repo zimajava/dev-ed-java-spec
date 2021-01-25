@@ -8,7 +8,6 @@ import org.zipli.socknet.dto.response.WsMessageResponse;
 import org.zipli.socknet.dto.video.VideoData;
 import org.zipli.socknet.exception.ErrorStatusCode;
 import org.zipli.socknet.exception.SearchByParamsException;
-import org.zipli.socknet.exception.WsException;
 import org.zipli.socknet.exception.auth.UserNotFoundException;
 import org.zipli.socknet.exception.chat.*;
 import org.zipli.socknet.exception.file.FileDeleteException;
@@ -400,7 +399,6 @@ public class EventHandler {
                     log.error(commandFail, eventCommand, fileDelete, e.getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    WsException.FILE_ACCESS_ERROR.getNumberException()))
                                     ErrorStatusCode.UNEXPECTED_EXCEPTION.getValue()))
                     );
                 }
@@ -418,7 +416,13 @@ public class EventHandler {
                     log.error("Failed to find users by param {} reason {}", param, e.getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    WsException.SEARCH_BY_PARAMS_ERROR.getNumberException()))
+                                    e.getErrorStatusCode().getValue()))
+                    );
+                } catch (Exception e) {
+                    log.error(commandFail, eventCommand, searchData, e.getMessage());
+                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
+                            new WsMessageResponse(eventCommand,
+                                    ErrorStatusCode.UNEXPECTED_EXCEPTION.getValue()))
                     );
                 }
                 break;

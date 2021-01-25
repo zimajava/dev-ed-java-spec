@@ -12,14 +12,13 @@ import org.zipli.socknet.dto.request.EmailRequest;
 import org.zipli.socknet.dto.request.NickNameRequest;
 import org.zipli.socknet.dto.request.PasswordRequest;
 import org.zipli.socknet.dto.response.UserInfo;
-import org.zipli.socknet.exception.DeleteAccountException;
 import org.zipli.socknet.exception.ErrorStatusCode;
 import org.zipli.socknet.exception.account.*;
 import org.zipli.socknet.repository.model.User;
 import org.zipli.socknet.service.user.UserService;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 @SpringBootTest
 public class AccountControllerTest {

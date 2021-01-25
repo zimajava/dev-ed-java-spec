@@ -10,6 +10,7 @@ import org.zipli.socknet.dto.request.AvatarRequest;
 import org.zipli.socknet.dto.request.EmailRequest;
 import org.zipli.socknet.dto.request.NickNameRequest;
 import org.zipli.socknet.dto.request.PasswordRequest;
+import org.zipli.socknet.exception.SearchByParamsException;
 import org.zipli.socknet.exception.account.*;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.repository.model.User;
@@ -236,7 +237,7 @@ public class UserServiceTest {
         User secondUser = new User("em@g.com", "pass", "Value", "Nick");
         List<User> list = Stream.of(user, secondUser).collect(Collectors.toList());
 
-        Mockito.when(userRepository.getUsersBySearchParam(searchParam))
+        Mockito.when(userRepository.findUsersBySearchParam(searchParam))
                 .thenReturn(List.of(user, secondUser));
 
         assertEquals(list, userService.getUsersBySearchParam(searchParam));
@@ -260,7 +261,7 @@ public class UserServiceTest {
     void getUsersBySearchParam_Users_Exist() {
         assertThrows(SearchByParamsException.class, () -> {
             userService.getUsersBySearchParam(searchParam);
-            Mockito.when(userRepository.getUsersBySearchParam(searchParam)).thenReturn(null);
+            Mockito.when(userRepository.findUsersBySearchParam(searchParam)).thenReturn(null);
         });
     }
 }
