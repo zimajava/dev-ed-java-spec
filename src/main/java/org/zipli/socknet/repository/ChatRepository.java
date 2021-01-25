@@ -1,10 +1,12 @@
 package org.zipli.socknet.repository;
 
+import nonapi.io.github.classgraph.concurrency.SingletonMap;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 import org.zipli.socknet.repository.model.Chat;
+import org.zipli.socknet.repository.model.User;
 
 import java.util.Collection;
 import java.util.List;
