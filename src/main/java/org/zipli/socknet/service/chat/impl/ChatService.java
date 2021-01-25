@@ -2,17 +2,19 @@ package org.zipli.socknet.service.chat.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.zipli.socknet.dto.*;
+import org.zipli.socknet.dto.BaseData;
+import org.zipli.socknet.dto.ChatData;
+import org.zipli.socknet.dto.Command;
+import org.zipli.socknet.dto.FullChatData;
 import org.zipli.socknet.dto.response.WsMessageResponse;
 import org.zipli.socknet.exception.ErrorStatusCode;
-import org.zipli.socknet.exception.WsException;
 import org.zipli.socknet.exception.auth.UserNotFoundException;
 import org.zipli.socknet.exception.chat.*;
-import org.zipli.socknet.repository.model.Chat;
-import org.zipli.socknet.repository.model.User;
 import org.zipli.socknet.repository.ChatRepository;
 import org.zipli.socknet.repository.MessageRepository;
 import org.zipli.socknet.repository.UserRepository;
+import org.zipli.socknet.repository.model.Chat;
+import org.zipli.socknet.repository.model.User;
 import org.zipli.socknet.service.chat.IChatService;
 import org.zipli.socknet.service.chat.IEmitterService;
 
@@ -66,7 +68,7 @@ public class ChatService implements IChatService {
             log.info("Chat {} successfully created id {} user {} ", data.getChatName(), chat.getId(), data.getUserId());
 
             chat.getUsersId().parallelStream()
-                .forEach(userId -> emitterService.sendMessageToUser(userId,
+                    .forEach(userId -> emitterService.sendMessageToUser(userId,
                             new WsMessageResponse(Command.CHAT_USER_ADD,
                                     new FullChatData(data.getUserId(),
                                             chat.getId(),
@@ -79,7 +81,7 @@ public class ChatService implements IChatService {
 
             return chat;
         } else {
-            throw new CreateChatException("Such a chat {} already exists");
+            throw new CreateChatException(ErrorStatusCode.CHAT_ALREADY_EXISTS);
         }
 
     }
@@ -94,7 +96,7 @@ public class ChatService implements IChatService {
                 final Chat finalChat = chatRepository.save(chat);
 
                 finalChat.getUsersId().parallelStream()
-                         .forEach(userId -> emitterService.sendMessageToUser(userId,
+                        .forEach(userId -> emitterService.sendMessageToUser(userId,
                                 new WsMessageResponse(Command.CHAT_UPDATE,
                                         new FullChatData(data.getUserId(),
                                                 finalChat.getId(),
@@ -108,14 +110,10 @@ public class ChatService implements IChatService {
 
                 return chat;
             } else {
-                throw new UpdateChatException("Only the author can update chat {}",
-                        WsException.CHAT_ACCESS_ERROR
-                );
+                throw new UpdateChatException(ErrorStatusCode.CHAT_ACCESS_ERROR);
             }
         } else {
-            throw new UpdateChatException("Chat {} doesn't exist",
-                    WsException.CHAT_NOT_EXISTS
-            );
+            throw new UpdateChatException(ErrorStatusCode.CHAT_NOT_EXISTS);
         }
     }
 
@@ -134,7 +132,6 @@ public class ChatService implements IChatService {
                                     return user;
                                 })
                                 .collect(Collectors.toList())
-
                 );
 
                 messageRepository.deleteAllByChatId(data.getChatId());
@@ -143,7 +140,7 @@ public class ChatService implements IChatService {
                 log.info("Chat {} name {} delete by user {} ", data.getChatId(), data.getUserId(), chat.getChatName());
 
                 chat.getUsersId().parallelStream()
-                    .forEach(userId -> emitterService.sendMessageToUser(userId,
+                        .forEach(userId -> emitterService.sendMessageToUser(userId,
                                 new WsMessageResponse(Command.CHAT_DELETE,
                                         new FullChatData(data.getUserId(),
                                                 chat.getId(),
@@ -154,14 +151,10 @@ public class ChatService implements IChatService {
                                 ))
                         );
             } else {
-                throw new DeleteChatException("Only the author can delete chat {}",
-                        WsException.CHAT_ACCESS_ERROR.getNumberException()
-                );
+                throw new DeleteChatException(ErrorStatusCode.CHAT_ACCESS_ERROR);
             }
         } else {
-            throw new DeleteChatException("Chat {} doesn't exist",
-                    WsException.CHAT_NOT_EXISTS.getNumberException()
-            );
+            throw new DeleteChatException(ErrorStatusCode.CHAT_NOT_EXISTS);
         }
     }
 
@@ -180,7 +173,7 @@ public class ChatService implements IChatService {
             log.info("Leave chat {} user {}", data.getChatId(), data.getUserId());
 
             finalChat.getUsersId().parallelStream()
-                     .forEach(userId -> emitterService.sendMessageToUser(userId,
+                    .forEach(userId -> emitterService.sendMessageToUser(userId,
                             new WsMessageResponse(Command.CHAT_LEAVE,
                                     new FullChatData(data.getUserId(),
                                             finalChat.getId(),
@@ -193,7 +186,7 @@ public class ChatService implements IChatService {
 
             return chat;
         } else {
-            throw new LeaveChatException("Chat {} doesn't exist");
+            throw new LeaveChatException(ErrorStatusCode.CHAT_NOT_EXISTS);
         }
     }
 
@@ -227,14 +220,10 @@ public class ChatService implements IChatService {
                                 ))
                         );
             } else {
-                throw new JoinChatException("Can't access chat {}",
-                        WsException.CHAT_ACCESS_ERROR.getNumberException()
-                );
+                throw new JoinChatException(ErrorStatusCode.CHAT_ACCESS_ERROR);
             }
         } else {
-            throw new JoinChatException("Chat {} doesn't exist",
-                    WsException.CHAT_NOT_EXISTS.getNumberException()
-            );
+            throw new JoinChatException(ErrorStatusCode.CHAT_NOT_EXISTS);
         }
         return chat;
     }

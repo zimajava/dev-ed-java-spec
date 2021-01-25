@@ -1,4 +1,4 @@
-package org.zipli.socknet.exception;
+package org.zipli.socknet.exception.session;
 
 public class CreateSocketException extends Throwable {
 

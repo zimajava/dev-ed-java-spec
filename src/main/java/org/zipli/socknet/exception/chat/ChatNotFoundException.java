@@ -1,14 +1,16 @@
 package org.zipli.socknet.exception.chat;
 
-public class ChatNotFoundException extends RuntimeException {
-    private final int numberException;
+import org.zipli.socknet.exception.ErrorStatusCode;
 
-    public ChatNotFoundException(String message, int numberException) {
-        super(message);
-        this.numberException = numberException;
+public class ChatNotFoundException extends RuntimeException {
+
+    private final ErrorStatusCode errorStatusCode;
+
+    public ChatNotFoundException(ErrorStatusCode errorStatusCode) {
+        this.errorStatusCode = errorStatusCode;
     }
 
-    public long getNumberException() {
-        return numberException;
+    public ErrorStatusCode getErrorStatusCode() {
+        return errorStatusCode;
     }
 }

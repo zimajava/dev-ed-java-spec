@@ -129,7 +129,7 @@ class FileServiceTest {
         Chat chat = new Chat("chatName", false, idUsers, "userId", fileIds);
         chat.setId("2");
 
-        Mockito.doReturn(true)
+        Mockito.doReturn(chat)
                 .when(chatRepository)
                 .save(chat);
 
@@ -172,26 +172,4 @@ class FileServiceTest {
             fileService.deleteFile(data);
         });
     }
-
-//    @Test
-//    void deleteFile_FailFindFileException() {
-//
-//        Chat chat1 = new Chat("chatName", false, new ArrayList<>(), "userId", new ArrayList<>());
-//        chat1.setId("2");
-//
-//        File fileDelete = new File("userId", "chatId", new Date(), "title");
-//        fileDelete.setId("3");
-//
-//        Mockito.doReturn(fileDelete)
-//                .when(fileRepository)
-//                .getFileById(fileData.getFileId());
-//
-//        Mockito.doReturn(chat1)
-//                .when(chatRepository)
-//                .findChatById(fileData.getIdChat());
-//
-//        assertThrows(FindFileException.class, () -> {
-//            fileService.deleteFile(fileData);
-//        });
-//    }
 }
