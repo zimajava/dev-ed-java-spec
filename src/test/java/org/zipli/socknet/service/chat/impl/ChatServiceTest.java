@@ -68,7 +68,7 @@ class ChatServiceTest {
             Chat chatOne = chatService.createChat(dataChat);
             Chat chatTwo = chatService.createChat(dataChat);
         } catch (CreateChatException e) {
-            assertEquals(e.getMessage(), "Such a chat {} already exists");
+            assertEquals(e.getErrorStatusCode().getMessage(), "Chat already exists");
         }
         chatRepository.deleteAll();
     }
@@ -106,7 +106,7 @@ class ChatServiceTest {
         try {
             chatService.deleteChat(dataTree);
         } catch (DeleteChatException e) {
-            assertEquals(e.getMessage(), "Only the author can delete chat {}");
+            assertEquals(e.getErrorStatusCode().getMessage(), "Only the creator can execute");
         }
     }
 
