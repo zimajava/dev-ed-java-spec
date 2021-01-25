@@ -97,22 +97,25 @@ public class RoomService implements IRoomService {
 
         if (roomOptional.isPresent()) {
             Room room = roomOptional.get();
-            room.getUsersInfo().removeIf(userInfo -> userInfo.getUserName().equals(userInfoByRoomRequest.getUserName()));
-            room = roomRepository.save(room);
+            if (room.getUsersInfo() !=null && userInfoByRoomRequest.getUserName()!=null) {
+                room.getUsersInfo().removeIf(userInfo -> userInfo.getUserName().equals(userInfoByRoomRequest.getUserName()));
+                room = roomRepository.save(room);
 
-            messageEmitterByRoomId.get(roomId).tryEmitNext(ServerSentEvent.<BaseEventResponse>builder()
-                    .id(String.valueOf(eventIdGeneration.get(room.getId()).getAndIncrement()))
-                    .event(EventCommandRoom.LEAVE_ROOM_EVENT.name())
-                    .data(new RoomEventResponse(userInfoByRoomRequest.getUserName(),
-                            userInfoByRoomRequest.getSignal()))
-                    .build());
+                messageEmitterByRoomId.get(roomId).tryEmitNext(ServerSentEvent.<BaseEventResponse>builder()
+                        .id(String.valueOf(eventIdGeneration.get(room.getId()).getAndIncrement()))
+                        .event(EventCommandRoom.LEAVE_ROOM_EVENT.name())
+                        .data(new RoomEventResponse(userInfoByRoomRequest.getUserName(),
+                                userInfoByRoomRequest.getSignal()))
+                        .build());
 
-            log.info("Leave Room successful: Room - {}, user - {}, number of users - {}",
-                    room.getId(),
-                    userInfoByRoomRequest.getUserName(),
-                    room.getUsersInfo().size()
-            );
-
+                log.info("Leave Room successful: Room - {}, user - {}, number of users - {}",
+                        room.getId(),
+                        userInfoByRoomRequest.getUserName(),
+                        room.getUsersInfo().size()
+                );
+            }else{
+                throw new LiveRoomException(ErrorStatusCode.INCORRECT_REQUEST);
+            }
             return new RoomResponse(room.getId(), room.getRoomName(), room.getCreatorUserName(), room.getUsersInfo());
         } else {
             throw new LiveRoomException(ErrorStatusCode.ROOM_NOT_EXIT);

@@ -76,7 +76,11 @@ public class RoomHandler implements IRoomHandler {
                 try {
                     return serverResponseOk(roomService.leaveRoom(roomId, userInfoByRoom.get()));
                 } catch (LiveRoomException e) {
-                    log.error("Leave Room fail: Room {} not exit", roomId);
+                    if (e.getErrorStatusCodeRoom() == ErrorStatusCode.CHAT_NOT_EXISTS) {
+                        log.error("Leave Room fail: Room {} not exit", roomId);
+                    } else {
+                        log.error("Leave Room {} fail: INCORRECT_REQUEST, Body(UserInfoByRoomRequest).getUserName not exist.", roomId);
+                    }
                     return serverResponseBadRequest(e.getErrorStatusCodeRoom());
                 }
             } else {
