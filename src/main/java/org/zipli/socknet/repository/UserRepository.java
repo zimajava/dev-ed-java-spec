@@ -23,7 +23,7 @@ public class UserRepository {
     }
 
     public void saveAll(List<User> users) {
-        for (User user:users) {
+        for (User user : users) {
             mongoTemplate.save(user);
         }
     }
@@ -51,8 +51,6 @@ public class UserRepository {
                 .addCriteria(Criteria.where("id").in(id));
         return mongoTemplate.find(query, User.class);
     }
-
-
 
     public List<User> findAllByIsConfirm(boolean confirm) {
         Query query = new Query()
