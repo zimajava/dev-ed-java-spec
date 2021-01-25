@@ -6,17 +6,17 @@ import org.zipli.socknet.dto.ChatData;
 import org.zipli.socknet.dto.Command;
 import org.zipli.socknet.dto.MessageData;
 import org.zipli.socknet.dto.response.WsMessageResponse;
-import org.zipli.socknet.exception.WsException;
+import org.zipli.socknet.exception.ErrorStatusCode;
 import org.zipli.socknet.exception.chat.ChatNotFoundException;
 import org.zipli.socknet.exception.chat.GetMessageException;
 import org.zipli.socknet.exception.chat.UpdateChatException;
 import org.zipli.socknet.exception.message.MessageDeleteException;
 import org.zipli.socknet.exception.message.MessageSendException;
 import org.zipli.socknet.exception.message.MessageUpdateException;
-import org.zipli.socknet.repository.model.Chat;
-import org.zipli.socknet.repository.model.Message;
 import org.zipli.socknet.repository.ChatRepository;
 import org.zipli.socknet.repository.MessageRepository;
+import org.zipli.socknet.repository.model.Chat;
+import org.zipli.socknet.repository.model.Message;
 import org.zipli.socknet.service.chat.IEmitterService;
 import org.zipli.socknet.service.chat.IMessageService;
 
@@ -41,7 +41,7 @@ public class MessageService implements IMessageService {
 
         Chat chat = chatRepository.findChatById(data.getChatId());
         if (chat != null) {
-            List<String> listIdMessages = chat.getIdMessages();
+            List<String> listIdMessages = chat.getMessagesId();
             List<Message> messages = new ArrayList<>();
             for (String idMessage : listIdMessages) {
                 messages.add(messageRepository.getMessageById(idMessage));
@@ -49,7 +49,7 @@ public class MessageService implements IMessageService {
             log.info("Get messages {} In chat:{} ", data.getUserId(), data.getChatId());
             return messages;
         } else {
-            throw new GetMessageException("Chat{} doesn't exist");
+            throw new GetMessageException(ErrorStatusCode.CHAT_NOT_EXISTS);
         }
     }
 
@@ -60,9 +60,9 @@ public class MessageService implements IMessageService {
         final Message finalMessage = messageRepository.save(message);
         Chat chat = chatRepository.findChatById(data.getChatId());
         if (chat != null) {
-            chat.getIdMessages().add(message.getId());
+            chat.getMessagesId().add(message.getId());
 
-            chat.getIdUsers().parallelStream()
+            chat.getUsersId().parallelStream()
                     .forEach(userId -> emitterService.sendMessageToUser(userId,
                             new WsMessageResponse(Command.MESSAGE_SEND,
                                     new MessageData(data.getUserId(),
@@ -79,8 +79,7 @@ public class MessageService implements IMessageService {
 
             return message;
         } else {
-            throw new ChatNotFoundException("Chat {} doesn't exist",
-                    WsException.CHAT_NOT_FOUND_EXCEPTION.getNumberException());
+            throw new ChatNotFoundException(ErrorStatusCode.CHAT_NOT_EXISTS);
         }
     }
 
@@ -98,7 +97,7 @@ public class MessageService implements IMessageService {
 
                 log.info("UpdateMessage with userId {}  to chat {} with author {} new message {} ", data.getUserId(), message.getChatId(), message.getAuthorId(), message.getId());
 
-                finalChat.getIdUsers().parallelStream()
+                finalChat.getUsersId().parallelStream()
                         .forEach(userId -> emitterService.sendMessageToUser(userId,
                                 new WsMessageResponse(Command.MESSAGE_UPDATE,
                                         new MessageData(data.getUserId(),
@@ -110,15 +109,11 @@ public class MessageService implements IMessageService {
                                 ))
                         );
             } else {
-                throw new ChatNotFoundException("Chat {} doesn't exist",
-                        WsException.CHAT_NOT_FOUND_EXCEPTION.getNumberException()
-                );
+                throw new ChatNotFoundException(ErrorStatusCode.CHAT_NOT_EXISTS);
             }
             return message;
         } else {
-            throw new MessageUpdateException("Only the author can update message {}",
-                    WsException.CHAT_ACCESS_ERROR
-            );
+            throw new MessageUpdateException(ErrorStatusCode.CHAT_ACCESS_ERROR);
         }
     }
 
@@ -130,12 +125,12 @@ public class MessageService implements IMessageService {
         if (message != null) {
             Chat chat = chatRepository.findChatById(data.getChatId());
             if (chat != null) {
-                chat.getIdMessages().remove(message.getId());
+                chat.getMessagesId().remove(message.getId());
                 final Chat finalChat = chatRepository.save(chat);
 
                 log.info("DeleteMessage user {} in chat {} message {} ", data.getUserId(), data.getChatId(), data.getMessageId());
 
-                finalChat.getIdUsers().parallelStream()
+                finalChat.getUsersId().parallelStream()
                         .forEach(userId -> emitterService.sendMessageToUser(userId,
                                 new WsMessageResponse(Command.MESSAGE_DELETE,
                                         new MessageData(data.getUserId(),
@@ -147,13 +142,11 @@ public class MessageService implements IMessageService {
                                 ))
                         );
             } else {
-                throw new ChatNotFoundException("Chat {} doesn't exist",
-                        WsException.CHAT_NOT_FOUND_EXCEPTION.getNumberException()
-                );
+                throw new ChatNotFoundException(ErrorStatusCode.CHAT_NOT_EXISTS);
             }
             messageRepository.delete(message);
         } else {
-            throw new MessageDeleteException("Only the author can delete message");
+            throw new MessageDeleteException(ErrorStatusCode.MESSAGE_ACCESS_ERROR);
         }
     }
 

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.zipli.socknet.dto.MessageData;
 import org.zipli.socknet.exception.chat.ChatNotFoundException;
 import org.zipli.socknet.exception.message.MessageDeleteException;
@@ -25,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @Slf4j
-@DataMongoTest
+@SpringBootTest
 class MessageServiceTest {
 
     @Autowired
@@ -34,17 +35,17 @@ class MessageServiceTest {
     MessageRepository messageRepository;
     @Autowired
     ChatRepository chatRepository;
-    EmitterService emitterService = new EmitterService(userRepository, new JwtUtils());
+    @Autowired
+    EmitterService emitterService;
     private User user;
     private Chat chat;
     private MessageData messageData;
+    @Autowired
     private MessageService messageService;
     private Message message;
 
     @BeforeEach
     void setUp() {
-
-        messageService = new MessageService(chatRepository, messageRepository, emitterService);
         user = new User("Email@com", "password", "Username", "MoiNik");
         user = userRepository.save(user);
 
@@ -83,9 +84,9 @@ class MessageServiceTest {
         messageTwo = messageRepository.save(messageTwo);
         messageTree = messageRepository.save(messageTree);
 
-        chat.getIdMessages().add(messageOne.getId());
-        chat.getIdMessages().add(messageTwo.getId());
-        chat.getIdMessages().add(messageTree.getId());
+        chat.getMessagesId().add(messageOne.getId());
+        chat.getMessagesId().add(messageTwo.getId());
+        chat.getMessagesId().add(messageTree.getId());
 
         chat = chatRepository.save(chat);
 
@@ -94,9 +95,9 @@ class MessageServiceTest {
 
         assertEquals(messages.size(), 3);
 
-        assertEquals(messages.get(0).getMessage(), messageOne.getMessage());
-        assertEquals(messages.get(1).getMessage(), messageTwo.getMessage());
-        assertEquals(messages.get(2).getMessage(), messageTree.getMessage());
+        assertEquals(messages.get(0).getTextMessage(), messageOne.getTextMessage());
+        assertEquals(messages.get(1).getTextMessage(), messageTwo.getTextMessage());
+        assertEquals(messages.get(2).getTextMessage(), messageTree.getTextMessage());
 
     }
 
@@ -123,7 +124,7 @@ class MessageServiceTest {
         try {
             messageService.updateMessage(data);
         } catch (MessageUpdateException e) {
-            assertEquals(e.getMessage(), "Only the author can update message {}");
+            assertEquals(e.getErrorStatusCode().getMessage(), "Only the creator can execute");
         }
     }
 
@@ -138,7 +139,7 @@ class MessageServiceTest {
         assertFalse(messageRepository.existsById(messageDelete.getId()));
         assertFalse(chatRepository
                 .findChatById(data.getChatId())
-                .getIdMessages()
+                .getMessagesId()
                 .contains(messageDelete.getId()));
     }
 
@@ -166,7 +167,7 @@ class MessageServiceTest {
         try {
             messageService.deleteMessage(data);
         } catch (ChatNotFoundException e) {
-            assertEquals(e.getMessage(), "Chat {} doesn't exist");
+            assertEquals(e.getErrorStatusCode().getMessage(), "Chat doesn't exist");
         }
     }
 
