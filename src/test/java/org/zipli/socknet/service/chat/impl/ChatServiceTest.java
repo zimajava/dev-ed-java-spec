@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.zipli.socknet.dto.ChatData;
 import org.zipli.socknet.dto.FullChatData;
 import org.zipli.socknet.exception.chat.CreateChatException;
 import org.zipli.socknet.exception.chat.DeleteChatException;
@@ -29,11 +30,11 @@ class ChatServiceTest {
     ChatRepository chatRepository;
     @Autowired
     MessageRepository messageRepository;
-    @Autowired
-    private ChatService chatService;
     private User user;
     private Chat chat;
     private FullChatData dataChat;
+    @Autowired
+    private ChatService chatService;
 
     @BeforeEach
     void setUp() {
@@ -86,7 +87,7 @@ class ChatServiceTest {
                 chat.getChatName());
         FullChatData dataTree = new FullChatData(userOne.getId(), chat.getId(), chat.getChatName());
 
-        chatService.deleteChat(dataTree);
+        chatService.deleteChat(new ChatData(dataTree.getUserId(),dataTree.getChatId()));
 
         assertFalse(chatRepository.existsByChatName(chat.getChatName()));
         assertFalse(messageRepository.existsByChatId(chat.getId()));

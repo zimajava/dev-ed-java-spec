@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.zipli.socknet.dto.MessageData;
 import org.zipli.socknet.exception.chat.ChatNotFoundException;
@@ -15,6 +16,7 @@ import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.repository.model.Chat;
 import org.zipli.socknet.repository.model.Message;
 import org.zipli.socknet.repository.model.User;
+import org.zipli.socknet.security.jwt.JwtUtils;
 
 import java.util.Collections;
 import java.util.Date;
@@ -34,11 +36,12 @@ class MessageServiceTest {
     @Autowired
     ChatRepository chatRepository;
     @Autowired
-    private MessageService messageService;
+    EmitterService emitterService;
     private User user;
     private Chat chat;
     private MessageData messageData;
-
+    @Autowired
+    private MessageService messageService;
     private Message message;
 
     @BeforeEach
