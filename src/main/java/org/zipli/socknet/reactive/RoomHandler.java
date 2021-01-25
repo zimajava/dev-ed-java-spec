@@ -179,7 +179,7 @@ public class RoomHandler implements IRoomHandler {
 
     private Mono<ServerResponse> serverResponseBadRequest(ErrorStatusCode errorStatusCode) {
         return ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(new ErrorResponse(errorStatusCode.getValue(), errorStatusCode.getMessage())));
+                .body(BodyInserters.fromValue(new ErrorResponse(errorStatusCode)));
     }
 
     private Mono<ServerResponse> serverResponseOk(Object object) {
