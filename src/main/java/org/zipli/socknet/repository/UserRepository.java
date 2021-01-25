@@ -76,7 +76,7 @@ public class UserRepository {
         mongoTemplate.remove(query, User.class);
     }
 
-    public List<User> findUsersBySearchParam(String param) {//i
+    public List<User> findUsersBySearchParam(String param) {
         Criteria criteria = new Criteria();
         Query query = new Query(criteria);
 
