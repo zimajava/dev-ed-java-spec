@@ -1,10 +1,10 @@
 package org.zipli.socknet.service.user;
 
-import org.zipli.socknet.repository.model.User;
 import org.zipli.socknet.dto.request.AvatarRequest;
 import org.zipli.socknet.dto.request.EmailRequest;
 import org.zipli.socknet.dto.request.NickNameRequest;
 import org.zipli.socknet.dto.request.PasswordRequest;
+import org.zipli.socknet.repository.model.User;
 
 import javax.mail.MessagingException;
 

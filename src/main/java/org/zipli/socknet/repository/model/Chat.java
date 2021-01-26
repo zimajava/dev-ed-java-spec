@@ -21,34 +21,34 @@ public class Chat {
     private String id;
     private String chatName;
     private boolean isPrivate;
-    private List<String> idMessages;
-    private List<String> idUsers;
-    private List<String> idFiles;
+    private List<String> messagesId;
+    private List<String> usersId;
+    private List<String> filesId;
     private String creatorUserId;
 
-    public Chat(String chatName, boolean isPrivate, List<String> idUsers, String creatorUserId) {
+    public Chat(String chatName, boolean isPrivate, List<String> usersId, String creatorUserId) {
         this.chatName = chatName;
         this.isPrivate = isPrivate;
-        this.idMessages = new ArrayList<>();
-        this.idUsers = idUsers;
+        this.messagesId = new ArrayList<>();
+        this.usersId = usersId;
         this.creatorUserId = creatorUserId;
     }
 
     public Chat(String chatName, boolean isPrivate, String creatorUserId) {
         this.chatName = chatName;
         this.isPrivate = isPrivate;
-        this.idMessages = new ArrayList<>();
-        this.idUsers = new ArrayList<>();
-        this.idFiles = new ArrayList<>();
+        this.messagesId = new ArrayList<>();
+        this.usersId = new ArrayList<>();
+        this.filesId = new ArrayList<>();
         this.creatorUserId = creatorUserId;
     }
 
-    public Chat(String chatName, boolean isPrivate, List<String> idUsers, String userId, List<String> fileIds) {
+    public Chat(String chatName, boolean isPrivate, List<String> usersId, String userId, List<String> fileIds) {
         this.chatName = chatName;
         this.isPrivate = isPrivate;
-        this.idUsers = idUsers;
+        this.usersId = usersId;
         this.creatorUserId = userId;
-        this.idFiles = fileIds;
-        this.idMessages = new ArrayList<>();
+        this.filesId = fileIds;
+        this.messagesId = new ArrayList<>();
     }
 }

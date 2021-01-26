@@ -7,12 +7,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.zipli.socknet.dto.response.ErrorResponse;
+import org.zipli.socknet.dto.request.*;
 import org.zipli.socknet.dto.response.LoginResponse;
 import org.zipli.socknet.exception.auth.AuthException;
 import org.zipli.socknet.exception.auth.NotConfirmAccountException;
 import org.zipli.socknet.exception.auth.UserNotFoundException;
 import org.zipli.socknet.repository.model.User;
-import org.zipli.socknet.dto.request.*;
 import org.zipli.socknet.service.auth.AuthService;
 import org.zipli.socknet.service.user.EmailConfirmationService;
 import org.zipli.socknet.service.user.ResetPasswordService;
@@ -48,7 +49,7 @@ public class AuthController {
                     signupRequest.getUserName(), signupRequest.getNickName(), e.getErrorStatusCode().getMessage());
             return ResponseEntity
                     .badRequest()
-                    .body(e.getErrorStatusCode().getValue());
+                    .body(new ErrorResponse(e.getErrorStatusCode()));
         }
         return ResponseEntity.ok("User registered successfully!");
     }
@@ -61,7 +62,7 @@ public class AuthController {
             log.error("Failed confirm email tokenIsNull {}, reason {}", Objects.isNull(confirmMailRequest.getToken()), e.getErrorStatusCode().getMessage());
             return ResponseEntity
                     .badRequest()
-                    .body(e.getErrorStatusCode().getValue());
+                    .body(new ErrorResponse(e.getErrorStatusCode()));
         }
         return ResponseEntity.ok("Account verified");
     }
@@ -74,7 +75,7 @@ public class AuthController {
             log.error("Failed restore password by email {}, reason {}", forgotPasswordRequest.getEmail(), e.getErrorStatusCode().getMessage());
             return ResponseEntity
                     .badRequest()
-                    .body(e.getErrorStatusCode().getValue());
+                    .body(new ErrorResponse(e.getErrorStatusCode()));
         }
         resetPasswordService.sendEmailForChangingPassword(forgotPasswordRequest.getEmail());
         return ResponseEntity.ok("Password can be changed");
@@ -89,7 +90,7 @@ public class AuthController {
                     Objects.isNull(resetPasswordRequest.getToken()), e.getErrorStatusCode().getMessage());
             return ResponseEntity
                     .badRequest()
-                    .body(e.getErrorStatusCode().getValue());
+                    .body(new ErrorResponse(e.getErrorStatusCode()));
         }
         return ResponseEntity.ok("Password successfully changed");
     }
@@ -104,7 +105,7 @@ public class AuthController {
                     loginRequest.getLogin(), Objects.isNull(loginRequest.getPassword()), e.getErrorStatusCode().getMessage());
             return ResponseEntity
                     .badRequest()
-                    .body(e.getErrorStatusCode().getValue());
+                    .body(new ErrorResponse(e.getErrorStatusCode()));
         }
         return ResponseEntity.ok(loginResponse);
     }

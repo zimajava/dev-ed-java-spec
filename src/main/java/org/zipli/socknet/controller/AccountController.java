@@ -3,10 +3,8 @@ package org.zipli.socknet.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.zipli.socknet.dto.response.ErrorResponse;
 import org.zipli.socknet.dto.response.UserResponse;
-import org.zipli.socknet.exception.DeleteAccountException;
-import org.zipli.socknet.exception.GetUserException;
-import org.zipli.socknet.exception.UpdatePasswordException;
 import org.zipli.socknet.exception.account.DeleteAvatarException;
 import org.zipli.socknet.exception.account.UpdateAvatarException;
 import org.zipli.socknet.exception.account.UpdateEmailException;
@@ -15,6 +13,7 @@ import org.zipli.socknet.dto.request.AvatarRequest;
 import org.zipli.socknet.dto.request.EmailRequest;
 import org.zipli.socknet.dto.request.NickNameRequest;
 import org.zipli.socknet.dto.request.PasswordRequest;
+import org.zipli.socknet.exception.account.*;
 import org.zipli.socknet.service.user.UserService;
 
 import javax.validation.Valid;
@@ -38,7 +37,7 @@ public class AccountController {
             log.error("Failed get user by userId {}, reason {}", userId, e.getErrorStatusCode().getMessage());
             return ResponseEntity
                     .badRequest()
-                    .body(e.getErrorStatusCode().getValue());
+                    .body(new ErrorResponse(e.getErrorStatusCode()));
         }
     }
 
@@ -50,7 +49,7 @@ public class AccountController {
             log.error("Failed to delete avatar by userId {}, reason {}", userId, e.getErrorStatusCode().getMessage());
             return ResponseEntity
                     .badRequest()
-                    .body(e.getErrorStatusCode().getValue());
+                    .body(new ErrorResponse(e.getErrorStatusCode()));
         }
     }
 
@@ -63,7 +62,7 @@ public class AccountController {
                     data.getUserId(), Objects.isNull(data.getAvatar()), e.getErrorStatusCode().getMessage());
             return ResponseEntity
                     .badRequest()
-                    .body(e.getErrorStatusCode().getValue());
+                    .body(new ErrorResponse(e.getErrorStatusCode()));
         }
     }
 
@@ -76,7 +75,7 @@ public class AccountController {
                     data.getUserId(), data.getNickName(), e.getErrorStatusCode().getMessage());
             return ResponseEntity
                     .badRequest()
-                    .body(e.getErrorStatusCode().getValue());
+                    .body(new ErrorResponse(e.getErrorStatusCode()));
         }
     }
 
@@ -89,7 +88,7 @@ public class AccountController {
                     data.getUserId(), data.getEmail(), e.getErrorStatusCode().getMessage());
             return ResponseEntity
                     .badRequest()
-                    .body(e.getErrorStatusCode().getValue());
+                    .body(new ErrorResponse(e.getErrorStatusCode()));
         }
     }
 
@@ -102,7 +101,7 @@ public class AccountController {
                     data.getUserId(), Objects.isNull(data.getPassword()), e.getErrorStatusCode().getMessage());
             return ResponseEntity
                     .badRequest()
-                    .body(e.getErrorStatusCode().getValue());
+                    .body(new ErrorResponse(e.getErrorStatusCode()));
         }
     }
 
@@ -114,7 +113,7 @@ public class AccountController {
             log.error("Failed delete user by userId {}, reason {}", userId, e.getErrorStatusCode().getMessage());
             return ResponseEntity
                     .badRequest()
-                    .body(e.getErrorStatusCode().getValue());
+                    .body(new ErrorResponse(e.getErrorStatusCode()));
         }
     }
 }

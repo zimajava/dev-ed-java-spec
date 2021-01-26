@@ -6,9 +6,11 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.zipli.socknet.dto.request.*;
+import org.zipli.socknet.dto.response.ErrorResponse;
 import org.zipli.socknet.dto.response.LoginResponse;
 import org.zipli.socknet.exception.ErrorStatusCode;
 import org.zipli.socknet.exception.auth.AuthException;
@@ -22,8 +24,7 @@ import org.zipli.socknet.service.auth.AuthService;
 import org.zipli.socknet.service.user.EmailConfirmationService;
 import org.zipli.socknet.service.user.ResetPasswordService;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class AuthControllerTest {
@@ -142,8 +143,9 @@ class AuthControllerTest {
 
         assertEquals(ResponseEntity
                         .badRequest()
-                        .body(ErrorStatusCode.EMAIL_DOES_NOT_CORRECT.getValue()),
-                authController.processForgotPassword(new ForgotPasswordRequest(email)));
+                        .body(HttpStatus.BAD_REQUEST).getStatusCode(),
+                authController.processForgotPassword(new ForgotPasswordRequest(email)).getStatusCode());
+        assertEquals(new ErrorResponse(ErrorStatusCode.EMAIL_DOES_NOT_CORRECT),authController.processForgotPassword(new ForgotPasswordRequest(email)).getBody());
     }
 
     @Test
@@ -171,8 +173,9 @@ class AuthControllerTest {
 
         assertEquals(ResponseEntity
                         .badRequest()
-                        .body(ErrorStatusCode.USER_DOES_NOT_EXIST.getValue()),
-                authController.processResetPassword(new ResetPasswordRequest(token, newPassword)));
+                        .body(HttpStatus.BAD_REQUEST).getStatusCode(),
+                authController.processResetPassword(new ResetPasswordRequest(token, newPassword)).getStatusCode());
+        assertEquals(new ErrorResponse(ErrorStatusCode.USER_DOES_NOT_EXIST),authController.processResetPassword(new ResetPasswordRequest(token, newPassword)).getBody());
     }
 
     @Test
@@ -192,7 +195,7 @@ class AuthControllerTest {
                 .when(authService)
                 .login(loginRequest.getLogin(), loginRequest.getPassword());
 
-        assertEquals(ResponseEntity.badRequest()
-                .body(ErrorStatusCode.USER_DOES_NOT_EXIST.getValue()), authController.authenticateUser(loginRequest));
+        assertEquals(ResponseEntity.badRequest().body(HttpStatus.BAD_REQUEST).getStatusCode(), authController.authenticateUser(loginRequest).getStatusCode());
+        assertEquals(new ErrorResponse(ErrorStatusCode.USER_DOES_NOT_EXIST),authController.authenticateUser(loginRequest).getBody());
     }
 }

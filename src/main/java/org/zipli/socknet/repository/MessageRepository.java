@@ -1,16 +1,57 @@
 package org.zipli.socknet.repository;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Repository;
 import org.zipli.socknet.repository.model.Message;
 
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+
 @Repository
-public interface MessageRepository extends MongoRepository<Message, String> {
-    Message getMessageById(String id);
+public class MessageRepository {
 
-    void deleteAllByChatId(String chatId);
+    private final MongoTemplate mongoTemplate;
 
-    boolean existsByChatId(String chatId);
+    public MessageRepository(MongoTemplate mongoTemplate) {
+        this.mongoTemplate = mongoTemplate;
+    }
 
-    Message getMessageByIdAndAuthorId(String id, String authorId);
+    public Message getMessageById(String id) {
+        Query query = new Query()
+                .addCriteria(Criteria.where("id").is(id));
+        return mongoTemplate.findOne(query, Message.class);
+    }
+
+    public void deleteAllByChatId(String chatId) {
+        Query query = new Query()
+                .addCriteria(Criteria.where("chatId").is(chatId));
+        mongoTemplate.remove(query, Message.class);
+    }
+
+    public boolean existsByChatId(String chatId) {
+        Query query = new Query()
+                .addCriteria(Criteria.where("chatId").is(chatId));
+        return mongoTemplate.exists(query, Message.class);
+    }
+
+    public Message getMessageByIdAndAuthorId(String id, String authorId) {
+        Query query = new Query()
+                .addCriteria(Criteria.where("id").is(id).and("authorId").is(authorId));
+        return mongoTemplate.findOne(query, Message.class);
+    }
+
+    public boolean existsById(String id) {
+        Query query = new Query()
+                .addCriteria(Criteria.where("id").is(id));
+        return mongoTemplate.exists(query, Message.class);
+    }
+
+    public Message save(Message message) {
+        mongoTemplate.save(message);
+        return message;
+    }
+
+    public void delete(Message message) {
+        mongoTemplate.remove(message);
+    }
 }

@@ -1,15 +1,16 @@
 package org.zipli.socknet.exception.chat;
 
+import org.zipli.socknet.exception.ErrorStatusCode;
+
 public class DeleteChatException extends RuntimeException {
 
-    private final int numberException;
+    private final ErrorStatusCode errorStatusCode;
 
-    public DeleteChatException(String message, int numberException) {
-        super(message);
-        this.numberException = numberException;
+    public DeleteChatException(ErrorStatusCode errorStatusCode) {
+        this.errorStatusCode = errorStatusCode;
     }
 
-    public long getNumberException() {
-        return numberException;
+    public ErrorStatusCode getErrorStatusCode() {
+        return errorStatusCode;
     }
 }
