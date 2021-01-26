@@ -3,8 +3,12 @@ package org.zipli.socknet.repository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 import org.zipli.socknet.repository.model.User;
 
 
@@ -157,5 +161,47 @@ class UserRepositoryTest {
     void deleteById_Fail() {
         userRepository.deleteById(null);
         assertEquals(userRepository.findUserByUserName(user.getUserName()).getId(), user.getId());
+    }
+
+    @Test
+    void confirmAccountInUsersModel_Pass() {
+        user.setConfirm(false);
+        userRepository.save(user);
+        userRepository.confirmAccountInUsersModel(user.getUserName());
+
+        boolean accountIsConfirm = userRepository.getUserById(user.getId()).isConfirm();
+        assertTrue(accountIsConfirm);
+    }
+
+    @Test
+    void confirmAccountInUsersModel_Fail() {
+        user.setConfirm(false);
+        userRepository.save(user);
+        userRepository.confirmAccountInUsersModel("wrongUserName");
+
+        boolean accountIsConfirm = userRepository.getUserById(user.getId()).isConfirm();
+        assertFalse(accountIsConfirm);
+    }
+
+    @Test
+    void updatePasswordInUsersModel_Pass() {
+        String userName = user.getUserName();
+        String codedPassword = "newPass";
+
+        userRepository.updatePasswordInUsersModel(userName, codedPassword);
+
+        String presentPassword = userRepository.getUserByUserName(userName).getPassword();
+        assertEquals(codedPassword, presentPassword);
+    }
+
+    @Test
+    void updatePasswordInUsersModel_Fail() {
+        String userName = "wrongUserName";
+        String codedPassword = "newPass";
+
+        userRepository.updatePasswordInUsersModel(userName, codedPassword);
+
+        String presentPassword = userRepository.getUserByUserName(user.getUserName()).getPassword();
+        assertNotEquals(codedPassword, presentPassword);
     }
 }

@@ -28,9 +28,6 @@ class ResetPasswordServiceTest {
     @MockBean
     UserRepository userRepository;
 
-    @MockBean
-    User user;
-
     private String email;
     private String newPassword;
 
