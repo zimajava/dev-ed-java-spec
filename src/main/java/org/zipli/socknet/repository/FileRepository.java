@@ -28,8 +28,7 @@ public class FileRepository {
     public boolean existsById(String id) {
         Query query = new Query();
         query.addCriteria(Criteria.where("id").is(id));
-        File file = mongoTemplate.findOne(query, File.class);
-        return file != null;
+        return mongoTemplate.exists(query, File.class);
     }
 
     public void deleteById(String id) {
