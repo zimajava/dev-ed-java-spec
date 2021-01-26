@@ -31,9 +31,9 @@ public class AuthService implements IAuthService {
     public LoginResponse login(String emailOrUsername, String password) {
         User result;
         if (emailOrUsername.contains("@")) {
-            result = userRepository.findUserByEmail(emailOrUsername);
+            result = userRepository.getUserByEmail(emailOrUsername);
         } else {
-            result = userRepository.findUserByUserName(emailOrUsername);
+            result = userRepository.getUserByUserName(emailOrUsername);
         }
         if (result == null) {
             throw new AuthException(ErrorStatusCode.USER_DOES_NOT_EXIST);

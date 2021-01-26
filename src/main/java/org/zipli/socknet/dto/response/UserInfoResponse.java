@@ -12,29 +12,21 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserResponse {
+public class UserInfoResponse {
     private String email;
+    private String userId;
     private String userName;
     private String nickName;
-    private List<String> chatsId;
     private String avatar;
 
-    public UserResponse(User user) {
+    public UserInfoResponse(User user) {
         this.email = user.getEmail();
         this.userName = user.getUserName();
         this.nickName = user.getNickName();
-        this.chatsId = user.getChatsId();
         if (user.getAvatar() == null) {
             this.avatar = "";
         } else {
             this.avatar = user.getAvatar();
         }
-    }
-
-    @Override
-    public String toString() {
-        return "UserResponse{" +
-                ", userName='" + userName + '\'' +
-                '}';
     }
 }
