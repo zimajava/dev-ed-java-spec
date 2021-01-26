@@ -31,8 +31,7 @@ public class MessageRepository {
     public boolean existsByChatId(String chatId) {
         Query query = new Query()
                 .addCriteria(Criteria.where("chatId").is(chatId));
-        Message message = mongoTemplate.findOne(query, Message.class);
-        return message != null;
+        return mongoTemplate.exists(query, Message.class);
     }
 
     public Message getMessageByIdAndAuthorId(String id, String authorId) {
@@ -44,8 +43,7 @@ public class MessageRepository {
     public boolean existsById(String id) {
         Query query = new Query()
                 .addCriteria(Criteria.where("id").is(id));
-        Message message = mongoTemplate.findOne(query, Message.class);
-        return message != null;
+        return mongoTemplate.exists(query, Message.class);
     }
 
     public Message save(Message message) {
