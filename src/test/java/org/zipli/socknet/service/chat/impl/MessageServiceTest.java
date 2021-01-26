@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.zipli.socknet.dto.MessageData;
 import org.zipli.socknet.exception.chat.ChatNotFoundException;
@@ -46,6 +45,8 @@ class MessageServiceTest {
 
     @BeforeEach
     void setUp() {
+
+        messageService = new MessageService(chatRepository, messageRepository, emitterService);
         user = new User("Email@com", "password", "Username", "MoiNik");
         user = userRepository.save(user);
 
