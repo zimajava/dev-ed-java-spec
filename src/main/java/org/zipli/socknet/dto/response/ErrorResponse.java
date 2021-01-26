@@ -1,35 +1,21 @@
 package org.zipli.socknet.dto.response;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.Objects;
+import org.zipli.socknet.exception.ErrorStatusCode;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ErrorResponse {
     private int code;
+    private String reason;
 
-    public ErrorResponse(int code) {
-        this.code = code;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ErrorResponse that = (ErrorResponse) o;
-        return code == that.code;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(code);
-    }
-
-    @Override
-    public String toString() {
-        return "{ code = " + code +
-                "}";
+    public ErrorResponse(ErrorStatusCode errorStatusCode) {
+        this.code = errorStatusCode.getValue();
+        this.reason = errorStatusCode.getMessage();
     }
 }
