@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -39,5 +40,18 @@ public class User {
         this.nickName = nickName;
         this.isConfirm = false;
         chatsId = new ArrayList<>();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return isConfirm == user.isConfirm && Objects.equals(id, user.id) && Objects.equals(email, user.email) && Objects.equals(password, user.password) && Objects.equals(userName, user.userName) && Objects.equals(nickName, user.nickName) && Objects.equals(chatsId, user.chatsId) && Objects.equals(avatar, user.avatar);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, email, password, userName, nickName, isConfirm, chatsId, avatar);
     }
 }

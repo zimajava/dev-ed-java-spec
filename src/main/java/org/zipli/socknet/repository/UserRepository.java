@@ -70,12 +70,6 @@ public class UserRepository {
         return mongoTemplate.findOne(query, User.class);
     }
 
-    public User findUserByUserName(String username) {
-        Query query = new Query()
-                .addCriteria(Criteria.where("userName").is(username));
-        return mongoTemplate.findOne(query, User.class);
-    }
-
     public void deleteById(String id) {
         Query query = new Query()
                 .addCriteria(Criteria.where("id").is(id));
@@ -114,4 +108,17 @@ public class UserRepository {
                 .set("password", password);
         return mongoTemplate.findAndModify(query, update, new FindAndModifyOptions().returnNew(true), User.class);
     }
+
+    public List<User> findUsersBySearchParam(String param) {
+        Criteria criteria = new Criteria();
+        Query query = new Query(criteria);
+
+        criteria.orOperator(
+                Criteria.where("userName").regex("^" + param),
+                Criteria.where("nickName").regex("^" + param),
+                Criteria.where("email").regex("^" + param));
+
+        return mongoTemplate.find(query, User.class);
+    }
+
 }

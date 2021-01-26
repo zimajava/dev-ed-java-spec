@@ -14,6 +14,9 @@ import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.repository.model.User;
 import org.zipli.socknet.security.jwt.JwtUtils;
 import org.zipli.socknet.security.services.UserDetailsImpl;
+import org.zipli.socknet.exception.SearchByParamsException;
+
+import java.util.List;
 
 @Service
 public class UserService implements IUserService {
@@ -126,5 +129,23 @@ public class UserService implements IUserService {
         }
         userRepository.deleteById(userId);
         return userId;
+    }
+
+    @Override
+    @Transactional
+    public List<User> getUsersBySearchParam(String param) throws SearchByParamsException {
+        if (param == null) {
+            throw new SearchByParamsException(ErrorStatusCode.PARAM_IS_NULL);
+        }
+        String searchParam = param.trim();
+
+        if (searchParam.length() < 3) {
+            throw new SearchByParamsException(ErrorStatusCode.PARAM_TOO_SHORT);
+        }
+        List<User> users = userRepository.findUsersBySearchParam(searchParam);
+        if (users.isEmpty()) {
+            throw new SearchByParamsException(ErrorStatusCode.USERS_DOES_NOT_EXIST_BY_PARAM);
+        }
+        return users;
     }
 }

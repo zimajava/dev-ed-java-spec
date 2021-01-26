@@ -10,9 +10,15 @@ import org.zipli.socknet.dto.request.AvatarRequest;
 import org.zipli.socknet.dto.request.EmailRequest;
 import org.zipli.socknet.dto.request.NickNameRequest;
 import org.zipli.socknet.dto.request.PasswordRequest;
+import org.zipli.socknet.exception.SearchByParamsException;
 import org.zipli.socknet.exception.account.*;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.repository.model.User;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -223,6 +229,42 @@ public class UserServiceTest {
     void deleteAccountTest_BadUserId() {
         assertThrows(DeleteAccountException.class, () -> {
             userService.deleteAccount(null);
+        });
+    }
+
+    @Test
+    void getUsersBySearchParam_Pass() {
+        String searchParam = "Val";
+        User secondUser = new User("em@g.com", "pass", "Value", "Nick");
+        List<User> list = Stream.of(user, secondUser).collect(Collectors.toList());
+
+        Mockito.when(userRepository.findUsersBySearchParam(searchParam))
+                .thenReturn(List.of(user, secondUser));
+
+        assertEquals(list, userService.getUsersBySearchParam(searchParam));
+    }
+
+    @Test
+    void getUsersBySearchParam_Null_Param() {
+        assertThrows(SearchByParamsException.class, () -> {
+            userService.getUsersBySearchParam(null);
+        });
+    }
+
+    @Test
+    void getUsersBySearchParam_Shorter_Three_Chars() {
+        assertThrows(SearchByParamsException.class, () -> {
+            userService.getUsersBySearchParam("nl");
+        });
+    }
+
+    @Test
+    void getUsersBySearchParam_Users_Exist() {
+        String searchParam = "Val";
+        Mockito.when(userRepository.findUsersBySearchParam(searchParam)).thenReturn(new ArrayList<>());
+
+        assertThrows(SearchByParamsException.class, () -> {
+            userService.getUsersBySearchParam(searchParam);
         });
     }
 }

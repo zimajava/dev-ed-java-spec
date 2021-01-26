@@ -23,24 +23,25 @@ class UserRepositoryTest {
     private User user3;
     private List<User> users = new ArrayList<>();
     private Collection<String> userId = new ArrayList<>();
+    private String param;
 
     @Autowired
     UserRepository userRepository;
 
     @BeforeEach
     void setup() {
-        user = new User("login@ukr.net", "Password5", "UserName5", "UserName5");
+        user = new User("StudyEmail@ukr.net", "asf2431", "SamS", "SSY");
         user.setId("328717123122");
         user.setConfirm(true);
 
         userRepository.save(user);
 
-        user2 = new User("lowwgin@ukr.net", "Passwwword5", "UsewwrName5", "UsewwrName5");
+        user2 = new User("Saemail@ukr.net", "qwerty1234", "Smoky", "BestFriend");
         user2.setConfirm(true);
         user2.setId("328717111123122");
         users.add(user2);
 
-        user3 = new User("logdsin@ukr.net", "Passsdword5", "UserdsName5", "UsersdName5");
+        user3 = new User("homeEmail@ukr.net", "uyy234", "HomeAccount", "SaMie");
         user3.setConfirm(true);
         user3.setId("328717123333122");
         users.add(user3);
@@ -139,25 +140,63 @@ class UserRepositoryTest {
 
     @Test
     void findUserByUserName_Pass() {
-        assertEquals(userRepository.findUserByUserName(user.getUserName()).getId(), user.getId());
+        assertEquals(userRepository.getUserByUserName(user.getUserName()).getId(), user.getId());
     }
 
     @Test
     void findUserByUserName_Fail() {
-        assertNull(userRepository.findUserByUserName("wrong"));
+        assertNull(userRepository.getUserByUserName("wrong"));
     }
 
     @Test
     void deleteById_Pass() {
         userRepository.deleteById(user.getId());
-        assertEquals(userRepository.findUserByUserName(user.getUserName()), null);
+        assertEquals(userRepository.getUserByUserName(user.getUserName()), null);
     }
 
     @Test
     void deleteById_Fail() {
         userRepository.deleteById(null);
-        assertEquals(userRepository.findUserByUserName(user.getUserName()).getId(), user.getId());
+        assertEquals(userRepository.getUserByUserName(user.getUserName()).getId(), user.getId());
     }
+
+    @Test
+    void findUsersBySearchParam_Match_In_3_Fields() {
+        List<User> expectedList = new ArrayList<>();
+        expectedList.add(user);
+        expectedList.add(user2);
+        expectedList.add(user3);
+
+        param = "Sa";
+
+        List<User> actualList = userRepository.findUsersBySearchParam(param);
+
+        assertEquals(expectedList, actualList);
+    }
+
+    @Test
+    void findUsersBySearchParam_Match_In_1_Field() {
+        List<User> expectedList = new ArrayList<>();
+        expectedList.add(user);
+
+        param = "Study";
+
+        List<User> actualList = userRepository.findUsersBySearchParam(param);
+
+        assertEquals(expectedList, actualList);
+    }
+
+    @Test
+    void findUsersBySearchParam_No_Match() {
+        List<User> expectedList = new ArrayList<>();
+
+        param = "Av";
+
+        List<User> actualList = userRepository.findUsersBySearchParam(param);
+
+        assertEquals(expectedList, actualList);
+    }
+
 
     @Test
     void updateOrDeleteAvatar_Pass() {
