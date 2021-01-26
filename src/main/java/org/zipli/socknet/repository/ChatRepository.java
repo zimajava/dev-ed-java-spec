@@ -1,12 +1,10 @@
 package org.zipli.socknet.repository;
 
-import nonapi.io.github.classgraph.concurrency.SingletonMap;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 import org.zipli.socknet.repository.model.Chat;
-import org.zipli.socknet.repository.model.User;
 
 import java.util.Collection;
 import java.util.List;
@@ -39,8 +37,7 @@ public class ChatRepository {
     public boolean existsByChatName(String chatName) {
         Query query = new Query();
         query.addCriteria(Criteria.where("chatName").is(chatName));
-        Chat chat = mongoTemplate.findOne(query, Chat.class);
-        return chat != null;
+        return mongoTemplate.exists(query, Chat.class);
     }
 
     public void deleteById(String id) {
