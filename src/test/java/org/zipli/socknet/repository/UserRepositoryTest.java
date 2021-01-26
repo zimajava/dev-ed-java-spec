@@ -3,12 +3,8 @@ package org.zipli.socknet.repository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
 import org.zipli.socknet.repository.model.User;
 
 
@@ -140,16 +136,6 @@ class UserRepositoryTest {
     @Test
     void findUserByEmail_Fail() {
         assertNull(userRepository.findUserByEmail("wrong"));
-    }
-
-    @Test
-    void findUserByUserName_Pass() {
-        assertEquals(userRepository.getUserByUserName(user.getUserName()).getId(), user.getId());
-    }
-
-    @Test
-    void findUserByUserName_Fail() {
-        assertNull(userRepository.getUserByUserName("wrong"));
     }
 
     @Test

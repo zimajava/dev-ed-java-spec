@@ -67,12 +67,6 @@ public class UserRepository {
         return mongoTemplate.findOne(query, User.class);
     }
 
-    public User findUserByUserName(String username) {
-        Query query = new Query()
-                .addCriteria(where("userName").is(username));
-        return mongoTemplate.findOne(query, User.class);
-    }
-
     public void deleteById(String id) {
         Query query = new Query()
                 .addCriteria(Criteria.where("id").is(id));
