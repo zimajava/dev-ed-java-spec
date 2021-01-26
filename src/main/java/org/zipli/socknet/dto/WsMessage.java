@@ -90,8 +90,8 @@ public class WsMessage {
                     bytesNode.forEach(b -> finalBytes[i[0]++] = (byte) b.intValue());
 
                     return new WsMessage(command, new FileData(
-                            data.findValue("idUser").asText(),
-                            data.findValue("idChat").asText(),
+                            data.findValue("userId").asText(),
+                            data.findValue("chatId").asText(),
                             data.findValue("fileId").asText(),
                             data.findValue("title").asText(),
                             finalBytes

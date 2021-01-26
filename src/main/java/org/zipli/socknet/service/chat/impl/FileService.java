@@ -63,13 +63,11 @@ public class FileService implements IFileService {
             if (gridFSFile != null) {
                 file = new File(data.getUserId(), data.getChatId(), new Date(), data.getTitle(), data.getBytes());
                 finalFile = fileRepository.save(file);
-                chat = chatRepository.findChatById(data.getChatId());
+                chat = chatRepository.update(data.getChatId(), data.getFileId());
+                log.info("Send file to db userId {} chatId {}", data.getUserId(), data.getChatId());
 
                 if (chat != null) {
-                    chat.getIdFiles().add(file.getId());
-                    log.info("Send file to db userId {} chatId {}", data.getUserId(), data.getChatId());
-
-                    chat.getIdUsers().parallelStream()
+                    chat.getUsersId().parallelStream()
                             .filter(e -> !e.equals(data.getUserId()))
                             .forEach(userId -> emitterService.sendMessageToUser(userId,
                                     new WsMessageResponse(Command.FILE_SEND,
@@ -81,16 +79,15 @@ public class FileService implements IFileService {
                                     ))
                             );
                 } else {
-                    throw new UpdateChatException("Chat doesn't exist", WsException.CHAT_NOT_EXISTS);
+                    throw new UpdateChatException(ErrorStatusCode.CHAT_NOT_EXISTS);
                 }
             } else {
-                throw new SaveFileException("GridFSFile is null!", WsException.GRIDFSFILE_IS_NOT_FOUND);
+                throw new SaveFileException(ErrorStatusCode.GRID_FS_FILE_IS_NOT_FOUND);
             }
-            chatRepository.save(chat);
             return finalFile;
         } catch (Exception e) {
             log.error("Error in loading file into DB");
-            throw new SendFileException("Error in loading file into DB", WsException.FILE_WAS_NOT_LOADING_CORRECT);
+            throw new SendFileException(ErrorStatusCode.FILE_WAS_NOT_LOADING_CORRECT);
         }
     }
 
