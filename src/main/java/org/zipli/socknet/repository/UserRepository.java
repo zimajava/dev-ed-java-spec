@@ -1,10 +1,16 @@
 package org.zipli.socknet.repository;
 
+import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 import org.zipli.socknet.repository.model.User;
+
+import static org.springframework.data.mongodb.core.query.Criteria.where;
+import static org.springframework.data.mongodb.core.query.Update.update;
+
+import org.springframework.data.mongodb.core.query.Update;
 
 import java.util.Collection;
 import java.util.List;
@@ -74,5 +80,38 @@ public class UserRepository {
         Query query = new Query()
                 .addCriteria(Criteria.where("id").is(id));
         mongoTemplate.remove(query, User.class);
+    }
+
+    public User updateOrDeleteAvatar(String userId, String avatar) {
+        Query query = new Query()
+                .addCriteria(where("id").is(userId));
+        Update update = new Update()
+                .set("avatar", avatar);
+        return mongoTemplate.findAndModify(query, update, new FindAndModifyOptions().returnNew(true), User.class);
+    }
+
+    public User updateNickName(String userId, String nickName) {
+        Query query = new Query()
+                .addCriteria(where("id").is(userId));
+        Update update = new Update()
+                .set("nickName", nickName);
+        return mongoTemplate.findAndModify(query, update, new FindAndModifyOptions().returnNew(true), User.class);
+    }
+
+    public User updateEmail(String userId, String email) {
+        Query query = new Query()
+                .addCriteria(where("id").is(userId));
+        Update update = new Update()
+                .set("email", email)
+                .set("isConfirm", false);
+        return mongoTemplate.findAndModify(query, update, new FindAndModifyOptions().returnNew(true), User.class);
+    }
+
+    public User updatePassword(String userId, String password) {
+        Query query = new Query()
+                .addCriteria(where("id").is(userId));
+        Update update = new Update()
+                .set("password", password);
+        return mongoTemplate.findAndModify(query, update, new FindAndModifyOptions().returnNew(true), User.class);
     }
 }

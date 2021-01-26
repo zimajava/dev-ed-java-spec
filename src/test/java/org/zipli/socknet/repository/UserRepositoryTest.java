@@ -158,4 +158,55 @@ class UserRepositoryTest {
         userRepository.deleteById(null);
         assertEquals(userRepository.findUserByUserName(user.getUserName()).getId(), user.getId());
     }
+
+    @Test
+    void updateOrDeleteAvatar_Pass() {
+        userRepository.updateOrDeleteAvatar(user.getId(), null);
+        assertEquals(userRepository.findUserByUserName(user.getUserName()).getAvatar(), null);
+
+        userRepository.updateOrDeleteAvatar(user.getId(), "dsdddd");
+        assertEquals(userRepository.findUserByUserName(user.getUserName()).getAvatar(), "dsdddd");
+    }
+
+    @Test
+    void updateOrDeleteAvatar_Fail() {
+        userRepository.updateOrDeleteAvatar(null, null);
+        assertEquals(userRepository.findUserByUserName(user.getUserName()).getId(), user.getId());
+    }
+
+    @Test
+    void updateNickName_Pass() {
+        userRepository.updateNickName(user.getId(), "Nick");
+        assertEquals(userRepository.findUserByUserName(user.getUserName()).getNickName(), "Nick");
+    }
+
+    @Test
+    void updateNickName_Fail() {
+        userRepository.updateNickName(null, null);
+        assertEquals(userRepository.findUserByUserName(user.getUserName()).getId(), user.getId());
+    }
+
+    @Test
+    void updateEmail_Pass() {
+        userRepository.updateEmail(user.getId(), "Esochka@gmail.com");
+        assertEquals(userRepository.findUserByUserName(user.getUserName()).getEmail(), "Esochka@gmail.com");
+    }
+
+    @Test
+    void updateEmail_Fail() {
+        userRepository.updateEmail(null, null);
+        assertEquals(userRepository.findUserByUserName(user.getUserName()).getId(), user.getId());
+    }
+
+    @Test
+    void updatePassword_Pass() {
+        userRepository.updatePassword(user.getId(), "Parol5");
+        assertEquals(userRepository.findUserByUserName(user.getUserName()).getPassword(), "Parol5");
+    }
+
+    @Test
+    void updatePassword_Fail() {
+        userRepository.updatePassword(null, null);
+        assertEquals(userRepository.findUserByUserName(user.getUserName()).getId(), user.getId());
+    }
 }

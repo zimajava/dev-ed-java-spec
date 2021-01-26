@@ -64,7 +64,7 @@ public class UserServiceTest {
 
     @Test
     void deleteAvatarTest_Pass() {
-        Mockito.when(userRepository.getUserById(user.getId())).thenReturn(user);
+        Mockito.when(userRepository.updateOrDeleteAvatar(user.getId(), null)).thenReturn(user);
         assertEquals(userService.deleteAvatar(user.getId()), user);
     }
 
@@ -84,8 +84,8 @@ public class UserServiceTest {
 
     @Test
     void updateAvatarTest_Pass() {
-        Mockito.when(userRepository.getUserById(user.getId())).thenReturn(user);
-        assertEquals(userService.updateAvatar(new AvatarRequest(user.getId(), avatar)), user);
+        Mockito.when(userRepository.updateOrDeleteAvatar(user.getId(), "sdsd")).thenReturn(user);
+        assertEquals(userService.updateAvatar(new AvatarRequest(user.getId(), "sdsd")), user);
     }
 
     @Test
@@ -112,7 +112,7 @@ public class UserServiceTest {
 
     @Test
     void updateNickNameTest_Pass() {
-        Mockito.when(userRepository.getUserById(user.getId())).thenReturn(user);
+        Mockito.when(userRepository.updateNickName(user.getId(), "vladil-12")).thenReturn(user);
         assertEquals(userService.updateNickName(new NickNameRequest(user.getId(), "vladil-12")),
                 user);
     }
@@ -141,7 +141,7 @@ public class UserServiceTest {
 
     @Test
     void updateEmailTest_Pass() {
-        Mockito.when(userRepository.getUserById(user.getId())).thenReturn(user);
+        Mockito.when(userRepository.updateEmail(user.getId(), "vlad3415@ukr.net")).thenReturn(user);
         assertEquals(userService.updateEmail(new EmailRequest(user.getId(), "vlad3415@ukr.net")),
                 user);
     }
@@ -179,7 +179,7 @@ public class UserServiceTest {
 
     @Test
     void updatePasswordTest_Pass() {
-        Mockito.when(userRepository.getUserById(user.getId())).thenReturn(user);
+        Mockito.when(userRepository.updatePassword(user.getId(), "Password4")).thenReturn(user);
         assertEquals(userService.updatePassword(new PasswordRequest(user.getId(), "Password4")),
                 user);
     }
@@ -222,7 +222,7 @@ public class UserServiceTest {
     @Test
     void deleteAccountTest_BadUserId() {
         assertThrows(DeleteAccountException.class, () -> {
-            userService.deleteAccount(user.getId());
+            userService.deleteAccount(null);
         });
     }
 }
