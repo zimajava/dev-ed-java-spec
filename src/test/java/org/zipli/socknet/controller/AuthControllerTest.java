@@ -145,7 +145,7 @@ class AuthControllerTest {
                         .badRequest()
                         .body(HttpStatus.BAD_REQUEST).getStatusCode(),
                 authController.processForgotPassword(new ForgotPasswordRequest(email)).getStatusCode());
-        assertEquals(new ErrorResponse(ErrorStatusCode.EMAIL_DOES_NOT_CORRECT.getValue()),authController.processForgotPassword(new ForgotPasswordRequest(email)).getBody());
+        assertEquals(new ErrorResponse(ErrorStatusCode.EMAIL_DOES_NOT_CORRECT),authController.processForgotPassword(new ForgotPasswordRequest(email)).getBody());
     }
 
     @Test
@@ -175,7 +175,7 @@ class AuthControllerTest {
                         .badRequest()
                         .body(HttpStatus.BAD_REQUEST).getStatusCode(),
                 authController.processResetPassword(new ResetPasswordRequest(token, newPassword)).getStatusCode());
-        assertEquals(new ErrorResponse(ErrorStatusCode.USER_DOES_NOT_EXIST.getValue()),authController.processResetPassword(new ResetPasswordRequest(token, newPassword)).getBody());
+        assertEquals(new ErrorResponse(ErrorStatusCode.USER_DOES_NOT_EXIST),authController.processResetPassword(new ResetPasswordRequest(token, newPassword)).getBody());
     }
 
     @Test
@@ -196,6 +196,6 @@ class AuthControllerTest {
                 .login(loginRequest.getLogin(), loginRequest.getPassword());
 
         assertEquals(ResponseEntity.badRequest().body(HttpStatus.BAD_REQUEST).getStatusCode(), authController.authenticateUser(loginRequest).getStatusCode());
-        assertEquals(new ErrorResponse(ErrorStatusCode.USER_DOES_NOT_EXIST.getValue()),authController.authenticateUser(loginRequest).getBody());
+        assertEquals(new ErrorResponse(ErrorStatusCode.USER_DOES_NOT_EXIST),authController.authenticateUser(loginRequest).getBody());
     }
 }

@@ -49,7 +49,7 @@ public class AuthController {
                     signupRequest.getUserName(), signupRequest.getNickName(), e.getErrorStatusCode().getMessage());
             return ResponseEntity
                     .badRequest()
-                    .body(new ErrorResponse(e.getErrorStatusCode().getValue()));
+                    .body(new ErrorResponse(e.getErrorStatusCode()));
         }
         return ResponseEntity.ok("User registered successfully!");
     }
@@ -62,7 +62,7 @@ public class AuthController {
             log.error("Failed confirm email tokenIsNull {}, reason {}", Objects.isNull(confirmMailRequest.getToken()), e.getErrorStatusCode().getMessage());
             return ResponseEntity
                     .badRequest()
-                    .body(new ErrorResponse(e.getErrorStatusCode().getValue()));
+                    .body(new ErrorResponse(e.getErrorStatusCode()));
         }
         return ResponseEntity.ok("Account verified");
     }
@@ -75,7 +75,7 @@ public class AuthController {
             log.error("Failed restore password by email {}, reason {}", forgotPasswordRequest.getEmail(), e.getErrorStatusCode().getMessage());
             return ResponseEntity
                     .badRequest()
-                    .body(new ErrorResponse(e.getErrorStatusCode().getValue()));
+                    .body(new ErrorResponse(e.getErrorStatusCode()));
         }
         resetPasswordService.sendEmailForChangingPassword(forgotPasswordRequest.getEmail());
         return ResponseEntity.ok("Password can be changed");
@@ -90,7 +90,7 @@ public class AuthController {
                     Objects.isNull(resetPasswordRequest.getToken()), e.getErrorStatusCode().getMessage());
             return ResponseEntity
                     .badRequest()
-                    .body(new ErrorResponse(e.getErrorStatusCode().getValue()));
+                    .body(new ErrorResponse(e.getErrorStatusCode()));
         }
         return ResponseEntity.ok("Password successfully changed");
     }
@@ -105,7 +105,7 @@ public class AuthController {
                     loginRequest.getLogin(), Objects.isNull(loginRequest.getPassword()), e.getErrorStatusCode().getMessage());
             return ResponseEntity
                     .badRequest()
-                    .body(new ErrorResponse(e.getErrorStatusCode().getValue()));
+                    .body(new ErrorResponse(e.getErrorStatusCode()));
         }
         return ResponseEntity.ok(loginResponse);
     }

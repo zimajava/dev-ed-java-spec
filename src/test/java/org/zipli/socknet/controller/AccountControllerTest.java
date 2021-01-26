@@ -67,7 +67,7 @@ public class AccountControllerTest {
         Mockito.doThrow(e)
                 .when(userService)
                 .findUser(null);
-        assertEquals(ResponseEntity.badRequest().body(new ErrorResponse(ErrorStatusCode.USER_ID_NULL.getValue())),
+        assertEquals(ResponseEntity.badRequest().body(new ErrorResponse(ErrorStatusCode.USER_ID_NULL)),
                 accountController.getUser(null));
     }
 
@@ -77,7 +77,7 @@ public class AccountControllerTest {
         Mockito.doThrow(e)
                 .when(userService)
                 .findUser(user.getId());
-        assertEquals(ResponseEntity.badRequest().body(new ErrorResponse(ErrorStatusCode.USER_ID_DOES_NOT_CORRECT.getValue())),
+        assertEquals(ResponseEntity.badRequest().body(new ErrorResponse(ErrorStatusCode.USER_ID_DOES_NOT_CORRECT)),
                 accountController.getUser(user.getId()));
     }
 
@@ -96,7 +96,7 @@ public class AccountControllerTest {
         Mockito.doThrow(e)
                 .when(userService)
                 .deleteAvatar(null);
-        assertEquals(ResponseEntity.badRequest().body(new ErrorResponse(e.getErrorStatusCode().getValue())),
+        assertEquals(ResponseEntity.badRequest().body(new ErrorResponse(e.getErrorStatusCode())),
                 accountController.deleteAvatar(null));
     }
 
@@ -106,7 +106,7 @@ public class AccountControllerTest {
         Mockito.doThrow(e)
                 .when(userService)
                 .deleteAvatar(user.getId());
-        assertEquals(ResponseEntity.badRequest().body(new ErrorResponse(e.getErrorStatusCode().getValue())),
+        assertEquals(ResponseEntity.badRequest().body(new ErrorResponse(e.getErrorStatusCode())),
                 accountController.deleteAvatar(user.getId()));
     }
 
@@ -124,7 +124,7 @@ public class AccountControllerTest {
         Mockito.doThrow(new UpdateAvatarException(ErrorStatusCode.DATA_IS_NULL))
                 .when(userService)
                 .updateAvatar(avatarRequest);
-        assertEquals(ResponseEntity.badRequest().body(new ErrorResponse(ErrorStatusCode.DATA_IS_NULL.getValue())),
+        assertEquals(ResponseEntity.badRequest().body(new ErrorResponse(ErrorStatusCode.DATA_IS_NULL)),
                 accountController.updateAvatar(avatarRequest));
     }
 
@@ -134,7 +134,7 @@ public class AccountControllerTest {
         Mockito.doThrow(e)
                 .when(userService)
                 .updateAvatar(avatarRequest);
-        assertEquals(ResponseEntity.badRequest().body(new ErrorResponse(e.getErrorStatusCode().getValue())),
+        assertEquals(ResponseEntity.badRequest().body(new ErrorResponse(e.getErrorStatusCode())),
                 accountController.updateAvatar(avatarRequest));
     }
 
@@ -152,7 +152,7 @@ public class AccountControllerTest {
         Mockito.doThrow(new UpdateNickNameException(ErrorStatusCode.DATA_IS_NULL))
                 .when(userService)
                 .updateNickName(nickNameRequest);
-        assertEquals(ResponseEntity.badRequest().body(new ErrorResponse(ErrorStatusCode.DATA_IS_NULL.getValue())),
+        assertEquals(ResponseEntity.badRequest().body(new ErrorResponse(ErrorStatusCode.DATA_IS_NULL)),
                 accountController.updateNickName(nickNameRequest));
     }
 
@@ -162,7 +162,7 @@ public class AccountControllerTest {
         Mockito.doThrow(e)
                 .when(userService)
                 .updateNickName(nickNameRequest);
-        assertEquals(ResponseEntity.badRequest().body(new ErrorResponse(e.getErrorStatusCode().getValue())),
+        assertEquals(ResponseEntity.badRequest().body(new ErrorResponse(e.getErrorStatusCode())),
                 accountController.updateNickName(nickNameRequest));
     }
 
@@ -181,7 +181,7 @@ public class AccountControllerTest {
         Mockito.doThrow(new UpdateEmailException(ErrorStatusCode.DATA_IS_NULL))
                 .when(userService)
                 .updateEmail(emailRequest);
-        assertEquals(ResponseEntity.badRequest().body(new ErrorResponse(ErrorStatusCode.DATA_IS_NULL.getValue())),
+        assertEquals(ResponseEntity.badRequest().body(new ErrorResponse(ErrorStatusCode.DATA_IS_NULL)),
                 accountController.updateEmail(emailRequest));
     }
 
@@ -191,7 +191,7 @@ public class AccountControllerTest {
         Mockito.doThrow(e)
                 .when(userService)
                 .updateEmail(emailRequest);
-        assertEquals(ResponseEntity.badRequest().body(new ErrorResponse(e.getErrorStatusCode().getValue())),
+        assertEquals(ResponseEntity.badRequest().body(new ErrorResponse(e.getErrorStatusCode())),
                 accountController.updateEmail(emailRequest));
     }
 
@@ -201,7 +201,7 @@ public class AccountControllerTest {
         Mockito.doThrow(e)
                 .when(userService)
                 .updateEmail(emailRequest);
-        assertEquals(ResponseEntity.badRequest().body(new ErrorResponse(e.getErrorStatusCode().getValue())),
+        assertEquals(ResponseEntity.badRequest().body(new ErrorResponse(e.getErrorStatusCode())),
                 accountController.updateEmail(emailRequest));
     }
 
@@ -211,7 +211,7 @@ public class AccountControllerTest {
         Mockito.doThrow(e)
                 .when(userService)
                 .updateEmail(emailRequest);
-        assertEquals(ResponseEntity.badRequest().body(new ErrorResponse(e.getErrorStatusCode().getValue())),
+        assertEquals(ResponseEntity.badRequest().body(new ErrorResponse(e.getErrorStatusCode())),
                 accountController.updateEmail(emailRequest));
     }
 
@@ -230,7 +230,7 @@ public class AccountControllerTest {
                 .when(userService)
                 .updatePassword(passwordRequest);
 
-        assertEquals(ResponseEntity.badRequest().body(new ErrorResponse(ErrorStatusCode.DATA_IS_NULL.getValue())),
+        assertEquals(ResponseEntity.badRequest().body(new ErrorResponse(ErrorStatusCode.DATA_IS_NULL)),
                 accountController.updatePassword(passwordRequest));
     }
 
@@ -240,7 +240,7 @@ public class AccountControllerTest {
         Mockito.doThrow(e)
                 .when(userService)
                 .updatePassword(passwordRequest);
-        assertEquals(accountController.updatePassword(passwordRequest), ResponseEntity.badRequest().body(new ErrorResponse(e.getErrorStatusCode().getValue())));
+        assertEquals(accountController.updatePassword(passwordRequest), ResponseEntity.badRequest().body(new ErrorResponse(e.getErrorStatusCode())));
     }
 
     @Test
@@ -259,7 +259,7 @@ public class AccountControllerTest {
                 .when(userService)
                 .deleteAccount(null);
         assertEquals(ResponseEntity.badRequest()
-                .body(new ErrorResponse(ErrorStatusCode.USER_ID_NULL.getValue())), accountController.deleteAccount(null));
+                .body(new ErrorResponse(ErrorStatusCode.USER_ID_NULL)), accountController.deleteAccount(null));
     }
 
     @Test
@@ -268,7 +268,7 @@ public class AccountControllerTest {
         Mockito.doThrow(e)
                 .when(userService)
                 .deleteAccount(user.getId());
-        assertEquals(ResponseEntity.badRequest().body(new ErrorResponse(ErrorStatusCode.USER_ID_DOES_NOT_CORRECT.getValue())),
+        assertEquals(ResponseEntity.badRequest().body(new ErrorResponse(ErrorStatusCode.USER_ID_DOES_NOT_CORRECT)),
                 accountController.deleteAccount(user.getId()));
     }
 }
