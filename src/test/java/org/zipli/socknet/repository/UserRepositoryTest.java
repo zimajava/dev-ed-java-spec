@@ -1,10 +1,12 @@
 package org.zipli.socknet.repository;
 
+import io.jsonwebtoken.lang.Assert;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.zipli.socknet.exception.account.GetUserException;
 import org.zipli.socknet.repository.model.User;
 
 
@@ -214,6 +216,11 @@ class UserRepositoryTest {
     }
 
     @Test
+    void updateOrDeleteAvatar_BadId() {
+        assertNull(userRepository.updateOrDeleteAvatar("1212132", null));
+    }
+
+    @Test
     void updateNickName_Pass() {
         userRepository.updateNickName(user.getId(), "Nick");
         assertEquals(userRepository.getUserByUserName(user.getUserName()).getNickName(), "Nick");
@@ -223,6 +230,11 @@ class UserRepositoryTest {
     void updateNickName_Fail() {
         userRepository.updateNickName(null, null);
         assertEquals(userRepository.getUserByUserName(user.getUserName()).getId(), user.getId());
+    }
+
+    @Test
+    void updateNickName_BadId() {
+        assertNull(userRepository.updateNickName("1212132", null));
     }
 
     @Test
@@ -238,6 +250,11 @@ class UserRepositoryTest {
     }
 
     @Test
+    void updateEmail_BadId() {
+        assertNull(userRepository.updateEmail("1212132", null));
+    }
+
+    @Test
     void updatePassword_Pass() {
         userRepository.updatePassword(user.getId(), "Parol5");
         assertEquals(userRepository.getUserByUserName(user.getUserName()).getPassword(), "Parol5");
@@ -247,5 +264,10 @@ class UserRepositoryTest {
     void updatePassword_Fail() {
         userRepository.updatePassword(null, null);
         assertEquals(userRepository.getUserByUserName(user.getUserName()).getId(), user.getId());
+    }
+
+    @Test
+    void updatePassword_BadId() {
+        assertNull(userRepository.updatePassword("1212132", null));
     }
 }
