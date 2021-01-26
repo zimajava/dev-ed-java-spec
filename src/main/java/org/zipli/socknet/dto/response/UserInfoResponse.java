@@ -12,18 +12,21 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserInfo {
+public class UserInfoResponse {
     private String email;
     private String userId;
     private String userName;
     private String nickName;
     private String avatar;
 
-    public UserInfo(User user) {
+    public UserInfoResponse(User user) {
         this.email = user.getEmail();
         this.userName = user.getUserName();
         this.nickName = user.getNickName();
-        this.avatar = user.getAvatar();
+        if (user.getAvatar() == null) {
+            this.avatar = "";
+        } else {
+            this.avatar = user.getAvatar();
+        }
     }
-
 }

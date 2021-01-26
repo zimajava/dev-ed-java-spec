@@ -140,24 +140,24 @@ class UserRepositoryTest {
 
     @Test
     void findUserByUserName_Pass() {
-        assertEquals(userRepository.findUserByUserName(user.getUserName()).getId(), user.getId());
+        assertEquals(userRepository.getUserByUserName(user.getUserName()).getId(), user.getId());
     }
 
     @Test
     void findUserByUserName_Fail() {
-        assertNull(userRepository.findUserByUserName("wrong"));
+        assertNull(userRepository.getUserByUserName("wrong"));
     }
 
     @Test
     void deleteById_Pass() {
         userRepository.deleteById(user.getId());
-        assertEquals(userRepository.findUserByUserName(user.getUserName()), null);
+        assertEquals(userRepository.getUserByUserName(user.getUserName()), null);
     }
 
     @Test
     void deleteById_Fail() {
         userRepository.deleteById(null);
-        assertEquals(userRepository.findUserByUserName(user.getUserName()).getId(), user.getId());
+        assertEquals(userRepository.getUserByUserName(user.getUserName()).getId(), user.getId());
     }
 
     @Test

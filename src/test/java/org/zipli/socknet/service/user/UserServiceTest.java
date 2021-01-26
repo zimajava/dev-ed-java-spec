@@ -15,6 +15,7 @@ import org.zipli.socknet.exception.account.*;
 import org.zipli.socknet.repository.UserRepository;
 import org.zipli.socknet.repository.model.User;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,7 +31,6 @@ public class UserServiceTest {
     private final String nickName = "Nicki";
     private final String password = "qwerty";
     private final String avatar = "avatar";
-    private final String searchParam = "Val";
 
     @Autowired
     UserService userService;
@@ -234,6 +234,7 @@ public class UserServiceTest {
 
     @Test
     void getUsersBySearchParam_Pass() {
+        String searchParam = "Val";
         User secondUser = new User("em@g.com", "pass", "Value", "Nick");
         List<User> list = Stream.of(user, secondUser).collect(Collectors.toList());
 
@@ -259,9 +260,11 @@ public class UserServiceTest {
 
     @Test
     void getUsersBySearchParam_Users_Exist() {
+        String searchParam = "Val";
+        Mockito.when(userRepository.findUsersBySearchParam(searchParam)).thenReturn(new ArrayList<>());
+
         assertThrows(SearchByParamsException.class, () -> {
             userService.getUsersBySearchParam(searchParam);
-            Mockito.when(userRepository.findUsersBySearchParam(searchParam)).thenReturn(null);
         });
     }
 }

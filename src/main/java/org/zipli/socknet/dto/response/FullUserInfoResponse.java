@@ -10,15 +10,15 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class FullUserInfo extends UserInfo {
+public class FullUserInfoResponse extends UserInfoResponse {
     private List<String> chatsId;
 
-    public FullUserInfo(User user) {
+    public FullUserInfoResponse(User user) {
         super(user.getEmail(), user.getId(), user.getUserName(), user.getNickName(), user.getAvatar());
         this.chatsId = user.getChatsId();
     }
 
-    public FullUserInfo(List<String> chatsId) {
+    public FullUserInfoResponse(List<String> chatsId) {
         this.chatsId = chatsId;
     }
 

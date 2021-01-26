@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.zipli.socknet.dto.*;
 import org.zipli.socknet.dto.response.ErrorResponse;
-import org.zipli.socknet.dto.response.UserInfo;
+import org.zipli.socknet.dto.response.UserInfoResponse;
 import org.zipli.socknet.dto.response.WsMessageResponse;
 import org.zipli.socknet.dto.video.VideoData;
 import org.zipli.socknet.exception.ErrorStatusCode;
@@ -19,7 +19,7 @@ import org.zipli.socknet.exception.message.MessageUpdateException;
 import org.zipli.socknet.exception.video.VideoCallException;
 import org.zipli.socknet.repository.model.Chat;
 import org.zipli.socknet.repository.model.User;
-import org.zipli.socknet.service.user.UserService;
+import org.zipli.socknet.service.user.IUserService;
 import org.zipli.socknet.util.JsonUtils;
 import reactor.core.publisher.Sinks;
 
@@ -35,9 +35,9 @@ public class EventHandler {
     private final IFileService fileService;
     private final IChatService chatService;
     private final IVideoService videoService;
-    private final UserService userService;
+    private final IUserService userService;
 
-    public EventHandler(IMessageService messageService, IFileService fileService, IChatService chatService, IVideoService videoService, UserService userService) {
+    public EventHandler(IMessageService messageService, IFileService fileService, IChatService chatService, IVideoService videoService, IUserService userService) {
         this.messageService = messageService;
         this.fileService = fileService;
         this.chatService = chatService;
@@ -410,14 +410,14 @@ public class EventHandler {
                 String param = searchData.getSearchParam();
                 try {
                     List<User> users = userService.getUsersBySearchParam(param);
-                    List<UserInfo> list = users.stream().map(UserInfo::new).collect(Collectors.toList());
-                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(new WsMessageResponse(eventCommand, list)));
+                    List<UserInfoResponse> responseList = users.stream().map(UserInfoResponse::new).collect(Collectors.toList());
+                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(new WsMessageResponse(eventCommand, responseList)));
                     log.info("Users by searchParam {} were found", param);
                 } catch (SearchByParamsException e) {
                     log.error("Failed to find users by param {} reason {}", param, e.getMessage());
                     emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
                             new WsMessageResponse(eventCommand,
-                                    e.getErrorStatusCode().getValue()))
+                                    new ErrorResponse(e.getErrorStatusCode())))
                     );
                 } catch (Exception e) {
                     log.error(commandFail, eventCommand, searchData, e.getMessage());

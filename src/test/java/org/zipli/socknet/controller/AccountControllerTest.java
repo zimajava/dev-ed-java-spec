@@ -11,7 +11,7 @@ import org.zipli.socknet.dto.request.AvatarRequest;
 import org.zipli.socknet.dto.request.EmailRequest;
 import org.zipli.socknet.dto.request.NickNameRequest;
 import org.zipli.socknet.dto.request.PasswordRequest;
-import org.zipli.socknet.dto.response.UserInfo;
+import org.zipli.socknet.dto.response.UserInfoResponse;
 import org.zipli.socknet.exception.ErrorStatusCode;
 import org.zipli.socknet.exception.account.*;
 import org.zipli.socknet.repository.model.User;
@@ -58,7 +58,7 @@ public class AccountControllerTest {
                 .when(userService)
                 .findUser(user.getId());
 
-        assertEquals(ResponseEntity.ok(new UserInfo(userService.findUser(user.getId()))).getStatusCode(),
+        assertEquals(ResponseEntity.ok(new UserInfoResponse(userService.findUser(user.getId()))).getStatusCode(),
                 accountController.getUser(user.getId()).getStatusCode());
     }
 
@@ -87,7 +87,7 @@ public class AccountControllerTest {
         Mockito.doReturn(user)
                 .when(userService)
                 .deleteAvatar(user.getId());
-        assertEquals(ResponseEntity.ok(new UserInfo(userService.deleteAvatar(user.getId()))).getStatusCode(),
+        assertEquals(ResponseEntity.ok(new UserInfoResponse(userService.deleteAvatar(user.getId()))).getStatusCode(),
                 accountController.deleteAvatar(user.getId()).getStatusCode());
     }
 
@@ -116,7 +116,7 @@ public class AccountControllerTest {
         Mockito.doReturn(user)
                 .when(userService)
                 .updateAvatar(avatarRequest);
-        assertEquals(ResponseEntity.ok(new UserInfo(userService.updateAvatar(avatarRequest))).getStatusCode(),
+        assertEquals(ResponseEntity.ok(new UserInfoResponse(userService.updateAvatar(avatarRequest))).getStatusCode(),
                 accountController.updateAvatar(avatarRequest).getStatusCode());
     }
 
@@ -144,7 +144,7 @@ public class AccountControllerTest {
         Mockito.doReturn(user)
                 .when(userService)
                 .updateNickName(nickNameRequest);
-        assertEquals(ResponseEntity.ok(new UserInfo(userService.updateNickName(nickNameRequest))).getStatusCode(),
+        assertEquals(ResponseEntity.ok(new UserInfoResponse(userService.updateNickName(nickNameRequest))).getStatusCode(),
                 accountController.updateNickName(nickNameRequest).getStatusCode());
     }
 
@@ -172,7 +172,7 @@ public class AccountControllerTest {
         Mockito.doReturn(user)
                 .when(userService)
                 .updateEmail(emailRequest);
-        assertEquals(ResponseEntity.ok(new UserInfo(userService.updateEmail(emailRequest))).getStatusCode(),
+        assertEquals(ResponseEntity.ok(new UserInfoResponse(userService.updateEmail(emailRequest))).getStatusCode(),
                 accountController.updateEmail(emailRequest).getStatusCode());
     }
 
@@ -222,7 +222,7 @@ public class AccountControllerTest {
                 .when(userService)
                 .updatePassword(passwordRequest);
         assertEquals(accountController.updatePassword(passwordRequest).getStatusCode(),
-                ResponseEntity.ok(new UserInfo(userService.updatePassword(passwordRequest))).getStatusCode());
+                ResponseEntity.ok(new UserInfoResponse(userService.updatePassword(passwordRequest))).getStatusCode());
     }
 
     @Test
