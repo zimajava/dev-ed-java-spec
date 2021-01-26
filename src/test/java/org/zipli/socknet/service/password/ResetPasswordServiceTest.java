@@ -48,7 +48,7 @@ class ResetPasswordServiceTest {
 
         Mockito.doReturn(user)
                 .when(userRepository)
-                .findUserByUserName(user.getUserName());
+                .getUserByUserName(user.getUserName());
 
         Mockito.when(jwtUtils.generateJwtToken(new UserDetailsImpl(user), user.getEmail())).thenReturn(token);
 

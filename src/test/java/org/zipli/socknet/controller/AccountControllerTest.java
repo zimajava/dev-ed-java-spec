@@ -12,13 +12,14 @@ import org.zipli.socknet.dto.request.EmailRequest;
 import org.zipli.socknet.dto.request.NickNameRequest;
 import org.zipli.socknet.dto.request.PasswordRequest;
 import org.zipli.socknet.dto.response.ErrorResponse;
-import org.zipli.socknet.dto.response.UserResponse;
+import org.zipli.socknet.dto.response.UserInfoResponse;
 import org.zipli.socknet.exception.ErrorStatusCode;
 import org.zipli.socknet.exception.account.*;
 import org.zipli.socknet.repository.model.User;
 import org.zipli.socknet.service.user.UserService;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 @SpringBootTest
 public class AccountControllerTest {
@@ -57,8 +58,9 @@ public class AccountControllerTest {
         Mockito.doReturn(user)
                 .when(userService)
                 .findUser(user.getId());
-        assertEquals(ResponseEntity.ok(new UserResponse(userService.findUser(user.getId()))).toString(),
-                accountController.getUser(user.getId()).toString());
+
+        assertEquals(ResponseEntity.ok(new UserInfoResponse(userService.findUser(user.getId()))).getStatusCode(),
+                accountController.getUser(user.getId()).getStatusCode());
     }
 
     @Test
@@ -86,8 +88,8 @@ public class AccountControllerTest {
         Mockito.doReturn(user)
                 .when(userService)
                 .deleteAvatar(user.getId());
-        assertEquals(ResponseEntity.ok(new UserResponse(userService.deleteAvatar(user.getId()))).toString(),
-                accountController.deleteAvatar(user.getId()).toString());
+        assertEquals(ResponseEntity.ok(new UserInfoResponse(userService.deleteAvatar(user.getId()))).getStatusCode(),
+                accountController.deleteAvatar(user.getId()).getStatusCode());
     }
 
     @Test
@@ -115,8 +117,8 @@ public class AccountControllerTest {
         Mockito.doReturn(user)
                 .when(userService)
                 .updateAvatar(avatarRequest);
-        assertEquals(ResponseEntity.ok(new UserResponse(userService.updateAvatar(avatarRequest))).toString(),
-                accountController.updateAvatar(avatarRequest).toString());
+        assertEquals(ResponseEntity.ok(new UserInfoResponse(userService.updateAvatar(avatarRequest))).getStatusCode(),
+                accountController.updateAvatar(avatarRequest).getStatusCode());
     }
 
     @Test
@@ -143,8 +145,8 @@ public class AccountControllerTest {
         Mockito.doReturn(user)
                 .when(userService)
                 .updateNickName(nickNameRequest);
-        assertEquals(ResponseEntity.ok(new UserResponse(userService.updateNickName(nickNameRequest))).toString(),
-                accountController.updateNickName(nickNameRequest).toString());
+        assertEquals(ResponseEntity.ok(new UserInfoResponse(userService.updateNickName(nickNameRequest))).getStatusCode(),
+                accountController.updateNickName(nickNameRequest).getStatusCode());
     }
 
     @Test
@@ -171,8 +173,8 @@ public class AccountControllerTest {
         Mockito.doReturn(user)
                 .when(userService)
                 .updateEmail(emailRequest);
-        assertEquals(ResponseEntity.ok(new UserResponse(userService.updateEmail(emailRequest))).toString(),
-                accountController.updateEmail(emailRequest).toString());
+        assertEquals(ResponseEntity.ok(new UserInfoResponse(userService.updateEmail(emailRequest))).getStatusCode(),
+                accountController.updateEmail(emailRequest).getStatusCode());
     }
 
     @Test
@@ -220,8 +222,8 @@ public class AccountControllerTest {
         Mockito.doReturn(user)
                 .when(userService)
                 .updatePassword(passwordRequest);
-        assertEquals(accountController.updatePassword(passwordRequest).toString(),
-                ResponseEntity.ok(new UserResponse(userService.updatePassword(passwordRequest))).toString());
+        assertEquals(accountController.updatePassword(passwordRequest).getStatusCode(),
+                ResponseEntity.ok(new UserInfoResponse(userService.updatePassword(passwordRequest))).getStatusCode());
     }
 
     @Test
