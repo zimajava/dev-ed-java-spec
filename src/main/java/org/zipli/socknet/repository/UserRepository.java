@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.springframework.data.mongodb.core.query.Criteria.where;
-import static org.springframework.data.mongodb.core.query.Update.update;
 
 @Component
 public class UserRepository {
