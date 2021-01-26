@@ -1,4 +1,4 @@
 # dev-ed-java-spec
 
 dev-ed-java-spec
-# API documentation https://u.to/snHxGg
+# API documentation https://u.to/mhbzGg
