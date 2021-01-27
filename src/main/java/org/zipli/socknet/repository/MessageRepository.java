@@ -1,13 +1,16 @@
 package org.zipli.socknet.repository;
 
+import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.stereotype.Component;
+import org.zipli.socknet.dto.MessageData;
 import org.zipli.socknet.repository.model.Message;
 
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
-@Repository
+@Component
 public class MessageRepository {
 
     private final MongoTemplate mongoTemplate;
@@ -25,7 +28,7 @@ public class MessageRepository {
     public void deleteAllByChatId(String chatId) {
         Query query = new Query()
                 .addCriteria(Criteria.where("chatId").is(chatId));
-        mongoTemplate.remove(query, Message.class);
+        mongoTemplate.findAllAndRemove(query, Message.class);
     }
 
     public boolean existsByChatId(String chatId) {
@@ -47,11 +50,17 @@ public class MessageRepository {
     }
 
     public Message save(Message message) {
-        mongoTemplate.save(message);
-        return message;
+        return mongoTemplate.save(message);
     }
 
     public void delete(Message message) {
         mongoTemplate.remove(message);
+    }
+
+    public Message updateMessage(MessageData message) {
+        Query query = new Query().addCriteria(Criteria.where("id").is(message.getMessageId()).and("authorId").is(message.getUserId()));
+        Update update = new Update().set("textMessage", message.getTextMessage());
+
+        return mongoTemplate.findAndModify(query, update, new FindAndModifyOptions().returnNew(true), Message.class);
     }
 }

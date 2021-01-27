@@ -86,16 +86,13 @@ public class MessageService implements IMessageService {
     @Override
     public Message updateMessage(MessageData data) throws MessageUpdateException, ChatNotFoundException {
 
-        Message message = messageRepository.getMessageByIdAndAuthorId(data.getMessageId(), data.getUserId());
+        final Chat finalChat = chatRepository.findChatById(data.getChatId());
 
-        if (message != null) {
-            final Chat finalChat = chatRepository.findChatById(data.getChatId());
+        if (finalChat != null) {
+            final Message finalMessage = messageRepository.updateMessage(data);
 
-            if (finalChat != null) {
-                message.setTextMessage(data.getTextMessage());
-                final Message finalMessage = messageRepository.save(message);
-
-                log.info("UpdateMessage with userId {}  to chat {} with author {} new message {} ", data.getUserId(), message.getChatId(), message.getAuthorId(), message.getId());
+            if (finalMessage != null) {
+                log.info("UpdateMessage with userId {}  to chat {} with author {} new message {} ", data.getUserId(), finalMessage.getChatId(), finalMessage.getAuthorId(), finalMessage.getId());
 
                 finalChat.getUsersId().parallelStream()
                         .forEach(userId -> emitterService.sendMessageToUser(userId,
@@ -108,12 +105,12 @@ public class MessageService implements IMessageService {
                                         )
                                 ))
                         );
+                return finalMessage;
             } else {
-                throw new ChatNotFoundException(ErrorStatusCode.CHAT_NOT_EXISTS);
+                throw new MessageUpdateException(ErrorStatusCode.CHAT_ACCESS_ERROR);
             }
-            return message;
         } else {
-            throw new MessageUpdateException(ErrorStatusCode.CHAT_ACCESS_ERROR);
+            throw new ChatNotFoundException(ErrorStatusCode.CHAT_NOT_EXISTS);
         }
     }
 

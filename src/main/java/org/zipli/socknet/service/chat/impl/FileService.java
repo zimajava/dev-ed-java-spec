@@ -69,7 +69,6 @@ public class FileService implements IFileService {
 
                 if (chat != null) {
                     chat.getUsersId().parallelStream()
-                            .filter(e -> !e.equals(data.getUserId()))
                             .forEach(userId -> emitterService.sendMessageToUser(userId,
                                     new WsMessageResponse(Command.FILE_SEND,
                                             new FileData(userId,
@@ -102,7 +101,6 @@ public class FileService implements IFileService {
                     final Chat finalChat = chatRepository.save(chat);
 
                     finalChat.getUsersId().parallelStream()
-                            .filter(e -> !e.equals(data.getUserId()))
                             .forEach(userId -> emitterService.sendMessageToUser(userId,
                                     new WsMessageResponse(Command.FILE_DELETE,
                                             new FileDataToDelete(userId,
