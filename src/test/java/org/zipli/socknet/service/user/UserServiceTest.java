@@ -215,7 +215,7 @@ public class UserServiceTest {
     @Test
     void deleteAccountTest_Pass() {
         Mockito.when(userRepository.getUserById(user.getId())).thenReturn(user);
-        assertEquals(userService.deleteAccount(user.getId()), user.getId());
+        assertEquals(userService.deleteAccount(user.getId()), "Account deleted(");
     }
 
     @Test

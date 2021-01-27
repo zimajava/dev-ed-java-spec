@@ -128,7 +128,7 @@ public class UserService implements IUserService {
             throw new DeleteAccountException(ErrorStatusCode.USER_ID_NULL);
         }
         userRepository.deleteById(userId);
-        return userId;
+        return "Account deleted(";
     }
 
     @Override
