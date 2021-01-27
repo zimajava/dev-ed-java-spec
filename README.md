@@ -1,17 +1,17 @@
-# dev-ed-java-spec
+# ZipliSocknet is the web app for simple, comfortable and productive communication between users.
 
-dev-ed-java-spec
+ZipliSocket allows end users to create three types of chats: private, group and meeting rooms, make audio and video calls, sharing text messages and files.
 
-# Project description
+To start using the app please enter your information: e-mail, userName, password and nickName (optional).
+If you forget your password you will be able to restore it or reset it.
 
-# Objective of the project
-Create an application for communication between users.
+When you add your e-mail in a registration form, you will receive the confirmation to your e-mail.  Please make sure that you e-mail is correct. Using this e-mail address you also can change your password.
 
-# Our application can:
+# ZipliSocknet application can:
 
 - Register and authorize the user.
 - Password recovery.
-- Email confirmation.
+- E-mail confirmation.
 - Create three type of chats:
 - Private chat (where communication takes place between two users).
 - Group chat (where communication between an unlimited number of users).
@@ -29,10 +29,12 @@ Create an application for communication between users.
 - Delete account.
 - Logout from your account.
 
-We used the following frameworks: Spring Framework (Spring Boot, Spring Security, OAuth2.0, WebFlux, MongoDB).
+# Technologies:
 
-We used the following libraries: JavaX, JsonWebToken, Lombok.
+Frameworks: Spring Framework (Spring Boot, Spring Security, OAuth2.0, WebFlux, MongoDB).
+Libraries: JavaX, JsonWebToken, Lombok.
+
+# Documentation:
 
 Link to swagger: https://dev-ed-messenger-server-dev.herokuapp.com/swagger-ui/ 
-
 API documentation https://u.to/mhbzGg
