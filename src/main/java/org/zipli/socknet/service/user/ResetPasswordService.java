@@ -74,14 +74,9 @@ public class ResetPasswordService {
         } else if (newPassword != null) {
 
             String userName = jwtUtils.getUserNameFromJwtToken(token);
-            User user = userRepository.getUserByUserName(userName);
+            String codedPassword = passwordEncoder.encode(newPassword);
+            userRepository.updatePasswordInUsersModel(userName, codedPassword);
 
-            if (user != null) {
-                user.setPassword(passwordEncoder.encode(newPassword));
-            } else {
-                throw new UserNotFoundException(ErrorStatusCode.USER_DOES_NOT_EXIST);
-            }
-            userRepository.save(user);
             return "Password successfully changed";
         } else {
             throw new UserNotFoundException(ErrorStatusCode.PASSWORD_IS_NULL);

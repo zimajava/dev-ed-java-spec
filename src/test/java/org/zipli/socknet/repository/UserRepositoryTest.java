@@ -141,16 +141,6 @@ class UserRepositoryTest {
     }
 
     @Test
-    void findUserByUserName_Pass() {
-        assertEquals(userRepository.getUserByUserName(user.getUserName()).getId(), user.getId());
-    }
-
-    @Test
-    void findUserByUserName_Fail() {
-        assertNull(userRepository.getUserByUserName("wrong"));
-    }
-
-    @Test
     void deleteById_Pass() {
         userRepository.deleteById(user.getId());
         assertEquals(userRepository.getUserByUserName(user.getUserName()), null);
@@ -174,6 +164,48 @@ class UserRepositoryTest {
         List<User> actualList = userRepository.findUsersBySearchParam(param);
 
         assertEquals(expectedList, actualList);
+    }
+
+    @Test
+    void confirmAccountInUsersModel_Pass() {
+        user.setConfirm(false);
+        userRepository.save(user);
+        userRepository.confirmAccountInUsersModel(user.getUserName());
+
+        boolean accountIsConfirm = userRepository.getUserById(user.getId()).isConfirm();
+        assertTrue(accountIsConfirm);
+    }
+
+    @Test
+    void confirmAccountInUsersModel_Fail() {
+        user.setConfirm(false);
+        userRepository.save(user);
+        userRepository.confirmAccountInUsersModel("wrongUserName");
+
+        boolean accountIsConfirm = userRepository.getUserById(user.getId()).isConfirm();
+        assertFalse(accountIsConfirm);
+    }
+
+    @Test
+    void updatePasswordInUsersModel_Pass() {
+        String userName = user.getUserName();
+        String codedPassword = "newPass";
+
+        userRepository.updatePasswordInUsersModel(userName, codedPassword);
+
+        String presentPassword = userRepository.getUserByUserName(userName).getPassword();
+        assertEquals(codedPassword, presentPassword);
+    }
+
+    @Test
+    void updatePasswordInUsersModel_Fail() {
+        String userName = "wrongUserName";
+        String codedPassword = "newPass";
+
+        userRepository.updatePasswordInUsersModel(userName, codedPassword);
+
+        String presentPassword = userRepository.getUserByUserName(user.getUserName()).getPassword();
+        assertNotEquals(codedPassword, presentPassword);
     }
 
     @Test

@@ -28,9 +28,6 @@ class ResetPasswordServiceTest {
     @MockBean
     UserRepository userRepository;
 
-    @MockBean
-    User user;
-
     private String email;
     private String newPassword;
 
@@ -75,10 +72,13 @@ class ResetPasswordServiceTest {
                 .when(jwtUtils)
                 .getUserNameFromJwtToken(token);
 
-        Mockito.doReturn(new User())
-                .when(userRepository)
-                .getUserByUserName(userName);
-
         assertEquals("Password successfully changed", resetPasswordService.resetPassword(newPassword, token));
+    }
+
+    @Test
+    void resetPassword_TokenIsInvalid() {
+        assertThrows(UserNotFoundException.class, () -> {
+            resetPasswordService.resetPassword(null, null);
+        });
     }
 }
