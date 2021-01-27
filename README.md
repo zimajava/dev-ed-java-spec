@@ -1,4 +1,4 @@
-# ZipliSocknet is the web app for simple, comfortable and productive communication between users.
+# ZipliSocknet is the web app for simple, comfortable and productive communication between users
 
 ZipliSocket allows end users to create three types of chats: private, group and meeting rooms, make audio and video calls, sharing text messages and files.
 
