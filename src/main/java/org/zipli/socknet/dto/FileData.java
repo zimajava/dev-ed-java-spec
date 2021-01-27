@@ -15,16 +15,16 @@ public class FileData extends ChatData {
     private String title;
     private byte[] bytes;
 
-    public FileData(String idUser, String chatId, String fileId, String title) {
-        super(idUser, chatId);
-        this.fileId = fileId;
-        this.title = title;
-    }
-
-    public FileData(String idUser, String chatId, String fileId, String title, byte[] bytes) {
-        super(idUser, chatId);
+    public FileData(String userId, String chatId, String fileId, String title, byte[] bytes) {
+        super(userId, chatId);
         this.fileId = fileId;
         this.title = title;
         this.bytes = bytes;
+    }
+
+    public FileData(String userId, String chatId, String title, byte[] finalBytes) {
+        super(userId, chatId);
+        this.title = title;
+        this.bytes = finalBytes;
     }
 }

@@ -382,7 +382,7 @@ public class EventHandler {
                 break;
 
             case FILE_DELETE:
-                FileData fileDelete = (FileData) message.getData();
+                FileDataToDelete fileDelete = (FileDataToDelete) message.getData();
                 try {
                     fileService.deleteFile(fileDelete);
                 } catch (FileDeleteException e) {
