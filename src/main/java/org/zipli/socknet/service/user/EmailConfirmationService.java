@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.zipli.socknet.exception.ErrorStatusCode;
 import org.zipli.socknet.exception.auth.NotConfirmAccountException;
 import org.zipli.socknet.repository.UserRepository;
-import org.zipli.socknet.repository.model.User;
 import org.zipli.socknet.security.jwt.JwtUtils;
 
 import javax.mail.MessagingException;
@@ -67,9 +66,7 @@ public class EmailConfirmationService {
     public String confirmAccount(String token) {
         if (token != null) {
             String userName = jwtUtils.getUserNameFromJwtToken(token);
-            User user = userRepository.getUserByUserName(userName);
-            user.setConfirm(true);
-            userRepository.save(user);
+            userRepository.confirmAccountInUsersModel(userName);
             return "Account verified";
         } else {
             throw new NotConfirmAccountException(ErrorStatusCode.TOKEN_INVALID_OR_BROKEN);
