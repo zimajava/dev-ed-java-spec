@@ -1,10 +1,12 @@
 package org.zipli.socknet.repository;
 
+import io.jsonwebtoken.lang.Assert;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.zipli.socknet.exception.account.GetUserException;
 import org.zipli.socknet.repository.model.User;
 
 
@@ -227,5 +229,77 @@ class UserRepositoryTest {
         List<User> actualList = userRepository.findUsersBySearchParam(param);
 
         assertEquals(expectedList, actualList);
+    }
+
+
+    @Test
+    void updateOrDeleteAvatar_Pass() {
+        userRepository.updateOrDeleteAvatar(user.getId(), null);
+        assertEquals(userRepository.getUserByUserName(user.getUserName()).getAvatar(), null);
+
+        userRepository.updateOrDeleteAvatar(user.getId(), "dsdddd");
+        assertEquals(userRepository.getUserByUserName(user.getUserName()).getAvatar(), "dsdddd");
+    }
+
+    @Test
+    void updateOrDeleteAvatar_Fail() {
+        userRepository.updateOrDeleteAvatar(null, null);
+        assertEquals(userRepository.getUserByUserName(user.getUserName()).getId(), user.getId());
+    }
+
+    @Test
+    void updateOrDeleteAvatar_BadId() {
+        assertNull(userRepository.updateOrDeleteAvatar("1212132", null));
+    }
+
+    @Test
+    void updateNickName_Pass() {
+        userRepository.updateNickName(user.getId(), "Nick");
+        assertEquals(userRepository.getUserByUserName(user.getUserName()).getNickName(), "Nick");
+    }
+
+    @Test
+    void updateNickName_Fail() {
+        userRepository.updateNickName(null, null);
+        assertEquals(userRepository.getUserByUserName(user.getUserName()).getId(), user.getId());
+    }
+
+    @Test
+    void updateNickName_BadId() {
+        assertNull(userRepository.updateNickName("1212132", null));
+    }
+
+    @Test
+    void updateEmail_Pass() {
+        userRepository.updateEmail(user.getId(), "Esochka@gmail.com");
+        assertEquals(userRepository.getUserByUserName(user.getUserName()).getEmail(), "Esochka@gmail.com");
+    }
+
+    @Test
+    void updateEmail_Fail() {
+        userRepository.updateEmail(null, null);
+        assertEquals(userRepository.getUserByUserName(user.getUserName()).getId(), user.getId());
+    }
+
+    @Test
+    void updateEmail_BadId() {
+        assertNull(userRepository.updateEmail("1212132", null));
+    }
+
+    @Test
+    void updatePassword_Pass() {
+        userRepository.updatePassword(user.getId(), "Parol5");
+        assertEquals(userRepository.getUserByUserName(user.getUserName()).getPassword(), "Parol5");
+    }
+
+    @Test
+    void updatePassword_Fail() {
+        userRepository.updatePassword(null, null);
+        assertEquals(userRepository.getUserByUserName(user.getUserName()).getId(), user.getId());
+    }
+
+    @Test
+    void updatePassword_BadId() {
+        assertNull(userRepository.updatePassword("1212132", null));
     }
 }

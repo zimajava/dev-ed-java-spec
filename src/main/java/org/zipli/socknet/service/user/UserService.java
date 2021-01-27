@@ -52,12 +52,10 @@ public class UserService implements IUserService {
         if (userId == null) {
             throw new DeleteAvatarException(ErrorStatusCode.USER_ID_NULL);
         }
-        User user = userRepository.getUserById(userId);
+        User user = userRepository.updateOrDeleteAvatar(userId, null);
         if (user == null) {
             throw new DeleteAvatarException(ErrorStatusCode.USER_ID_DOES_NOT_CORRECT);
         }
-        user.setAvatar(null);
-        userRepository.save(user);
         return user;
     }
 
@@ -67,12 +65,10 @@ public class UserService implements IUserService {
         if (data.getUserId() == null || data.getAvatar() == null) {
             throw new UpdateAvatarException(ErrorStatusCode.DATA_IS_NULL);
         }
-        User user = userRepository.getUserById(data.getUserId());
+        User user = userRepository.updateOrDeleteAvatar(data.getUserId(), data.getAvatar());
         if (user == null) {
             throw new UpdateAvatarException(ErrorStatusCode.USER_ID_DOES_NOT_CORRECT);
         }
-        user.setAvatar(data.getAvatar());
-        userRepository.save(user);
         return user;
     }
 
@@ -82,12 +78,10 @@ public class UserService implements IUserService {
         if (data.getUserId() == null || data.getNickName() == null) {
             throw new UpdateNickNameException(ErrorStatusCode.DATA_IS_NULL);
         }
-        User user = userRepository.getUserById(data.getUserId());
+        User user = userRepository.updateNickName(data.getUserId(), data.getNickName());
         if (user == null) {
             throw new UpdateNickNameException(ErrorStatusCode.USER_ID_DOES_NOT_CORRECT);
         }
-        user.setNickName(data.getNickName());
-        userRepository.save(user);
         return user;
     }
 
@@ -97,10 +91,6 @@ public class UserService implements IUserService {
         if (data.getUserId() == null || data.getEmail() == null) {
             throw new UpdateEmailException(ErrorStatusCode.DATA_IS_NULL);
         }
-        User user = userRepository.getUserById(data.getUserId());
-        if (user == null) {
-            throw new UpdateEmailException(ErrorStatusCode.USER_ID_DOES_NOT_CORRECT);
-        }
         if (!(data.getEmail().contains("@"))) {
             throw new UpdateEmailException(ErrorStatusCode.EMAIL_DOES_NOT_CORRECT);
         }
@@ -108,9 +98,10 @@ public class UserService implements IUserService {
         if (existingUser != null) {
             throw new UpdateEmailException(ErrorStatusCode.EMAIL_ALREADY_EXISTS);
         }
-        user.setEmail(data.getEmail());
-        user.setConfirm(false);
-        userRepository.save(user);
+        User user = userRepository.updateEmail(data.getUserId(), data.getEmail());
+        if (user == null) {
+            throw new UpdateEmailException(ErrorStatusCode.USER_ID_DOES_NOT_CORRECT);
+        }
         UserDetails userDetails = new UserDetailsImpl(user);
         String token = jwtUtils.generateJwtToken(userDetails, data.getEmail());
         emailConfirmationService.sendEmail(data.getEmail(), token);
@@ -123,12 +114,10 @@ public class UserService implements IUserService {
         if (data.getUserId() == null || data.getPassword() == null) {
             throw new UpdatePasswordException(ErrorStatusCode.DATA_IS_NULL);
         }
-        User user = userRepository.getUserById(data.getUserId());
+        User user = userRepository.updatePassword(data.getUserId(), data.getPassword());
         if (user == null) {
             throw new UpdatePasswordException(ErrorStatusCode.USER_ID_DOES_NOT_CORRECT);
         }
-        user.setPassword(passwordEncoder.encode(data.getPassword()));
-        userRepository.save(user);
         return user;
     }
 
@@ -137,10 +126,6 @@ public class UserService implements IUserService {
     public String deleteAccount(String userId) throws DeleteAccountException {
         if (userId == null) {
             throw new DeleteAccountException(ErrorStatusCode.USER_ID_NULL);
-        }
-        User user = userRepository.getUserById(userId);
-        if (user == null) {
-            throw new DeleteAccountException(ErrorStatusCode.USER_ID_DOES_NOT_CORRECT);
         }
         userRepository.deleteById(userId);
         return userId;

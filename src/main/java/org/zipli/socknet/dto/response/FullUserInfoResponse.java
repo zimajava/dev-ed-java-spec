@@ -12,9 +12,11 @@ import java.util.List;
 @NoArgsConstructor
 public class FullUserInfoResponse extends UserInfoResponse {
     private List<String> chatsId;
+    private String userId;
 
     public FullUserInfoResponse(User user) {
-        super(user.getEmail(), user.getId(), user.getUserName(), user.getNickName(), user.getAvatar());
+        super(user.getEmail(), user.getUserName(), user.getNickName(), user.getAvatar());
+        this.userId = user.getId();
         this.chatsId = user.getChatsId();
     }
 
