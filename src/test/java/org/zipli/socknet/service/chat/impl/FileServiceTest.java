@@ -72,7 +72,7 @@ class FileServiceTest {
 
         Mockito.doReturn(chat)
                 .when(chatRepository)
-                .findChatById(fileData.getChatId());
+                .update(fileData.getChatId(), fileData.getFileId());
 
         File fileAdd = new File(user.getId(), "chatId", new Date(), "title");
         fileAdd.setId("3");

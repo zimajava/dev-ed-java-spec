@@ -101,6 +101,30 @@ class ChatRepositoryTest {
         assertEquals(chatRepository.getChatsByIdIn(listOfIds).toString(), expectedChats.toString());
     }
 
+    @Test
+    void update_Pass() {
+        String idFileToAdd = "idFileToAdd";
+        Chat updatedChat = chatRepository.update(chat.getId(), idFileToAdd);
+        Collection<String> actualListOfIds = updatedChat.getFilesId();
+
+        Collection<String> listOfIds = new ArrayList<>();
+        listOfIds.add(idFileToAdd);
+
+        assertEquals(actualListOfIds, listOfIds);
+    }
+
+    @Test
+    void update_Fail() {
+        String idFileToAdd = "idFileToAdd";
+        chatRepository.update("wrongChatId", idFileToAdd);
+        Collection<String> actualListOfIds = chat.getFilesId();
+
+        Collection<String> listOfIds = new ArrayList<>();
+        listOfIds.add(idFileToAdd);
+
+        assertNotEquals(actualListOfIds, listOfIds);
+    }
+
     @AfterEach
     void afterEach() {
         chatRepository.deleteAll();

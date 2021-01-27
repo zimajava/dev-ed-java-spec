@@ -63,12 +63,10 @@ public class FileService implements IFileService {
             if (gridFSFile != null) {
                 file = new File(data.getUserId(), data.getChatId(), new Date(), data.getTitle(), data.getBytes());
                 finalFile = fileRepository.save(file);
-                chat = chatRepository.findChatById(data.getChatId());
+                chat = chatRepository.update(data.getChatId(), data.getFileId());
+                log.info("Send file to db userId {} chatId {}", data.getUserId(), data.getChatId());
 
                 if (chat != null) {
-                    chat.getFilesId().add(file.getId());
-                    log.info("Send file to db userId {} chatId {}", data.getUserId(), data.getChatId());
-
                     chat.getUsersId().parallelStream()
                             .filter(e -> !e.equals(data.getUserId()))
                             .forEach(userId -> emitterService.sendMessageToUser(userId,
@@ -86,7 +84,6 @@ public class FileService implements IFileService {
             } else {
                 throw new SaveFileException(ErrorStatusCode.GRID_FS_FILE_IS_NOT_FOUND);
             }
-            chatRepository.save(chat);
             return finalFile;
         } catch (Exception e) {
             log.error("Error in loading file into DB");

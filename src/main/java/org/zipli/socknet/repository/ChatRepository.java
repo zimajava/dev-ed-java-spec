@@ -1,8 +1,10 @@
 package org.zipli.socknet.repository;
 
+import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 import org.zipli.socknet.repository.model.Chat;
 
@@ -50,5 +52,13 @@ public class ChatRepository {
         Query query = new Query();
         query.addCriteria(Criteria.where("id").in(id));
         return mongoTemplate.find(query, Chat.class);
+    }
+
+    public Chat update(String chatId, String fileId) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("id").is(chatId));
+        Update update = new Update();
+        update.addToSet("filesId", fileId);
+        return mongoTemplate.findAndModify(query, update, new FindAndModifyOptions().returnNew(true), Chat.class);
     }
 }
