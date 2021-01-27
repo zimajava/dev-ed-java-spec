@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Service;
 import org.zipli.socknet.dto.Command;
 import org.zipli.socknet.dto.FileData;
+import org.zipli.socknet.dto.FileDataToDelete;
 import org.zipli.socknet.dto.response.WsMessageResponse;
 import org.zipli.socknet.exception.ErrorStatusCode;
 import org.zipli.socknet.exception.chat.UpdateChatException;
@@ -92,7 +93,7 @@ public class FileService implements IFileService {
     }
 
     @Override
-    public void deleteFile(FileData data) throws FileDeleteException {
+    public void deleteFile(FileDataToDelete data) throws FileDeleteException {
         File file = fileRepository.getFileById(data.getFileId());
         Chat chat = chatRepository.findChatById(data.getChatId());
         try {
@@ -104,11 +105,9 @@ public class FileService implements IFileService {
                             .filter(e -> !e.equals(data.getUserId()))
                             .forEach(userId -> emitterService.sendMessageToUser(userId,
                                     new WsMessageResponse(Command.FILE_DELETE,
-                                            new FileData(userId,
+                                            new FileDataToDelete(userId,
                                                     finalChat.getId(),
-                                                    file.getId(),
-                                                    file.getTitle(),
-                                                    file.getBytes()
+                                                    file.getId()
                                             )
                                     ))
                             );
