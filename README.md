@@ -29,10 +29,10 @@ Create an application for communication between users.
 - Delete account.
 - Logout from your account.
 
-# We used the following frameworks: Spring Framework (Spring Boot, Spring Security, OAuth2.0, WebFlux, MongoDB).
+We used the following frameworks: Spring Framework (Spring Boot, Spring Security, OAuth2.0, WebFlux, MongoDB).
 
-# We used the following libraries: JavaX, JsonWebToken, Lombok.
+We used the following libraries: JavaX, JsonWebToken, Lombok.
 
-# Link to swagger: https://dev-ed-messenger-server-dev.herokuapp.com/swagger-ui/ 
+Link to swagger: https://dev-ed-messenger-server-dev.herokuapp.com/swagger-ui/ 
 
-# API documentation https://u.to/mhbzGg
+API documentation https://u.to/mhbzGg
