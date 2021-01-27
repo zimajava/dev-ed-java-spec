@@ -31,10 +31,10 @@ When you add your e-mail in a registration form, you will receive the confirmati
 
 # Technologies:
 
-Frameworks: Spring Framework (Spring Boot, Spring Security, OAuth2.0, WebFlux, MongoDB).
-Libraries: JavaX, JsonWebToken, Lombok.
+- Frameworks: Spring Framework (Spring Boot, Spring Security, OAuth2.0, WebFlux, MongoDB).
+- Libraries: JavaX, JsonWebToken, Lombok.
 
 # Documentation:
 
-Link to swagger: https://dev-ed-messenger-server-dev.herokuapp.com/swagger-ui/ 
-API documentation https://u.to/mhbzGg
+- Link to swagger: https://dev-ed-messenger-server-dev.herokuapp.com/swagger-ui/ 
+- API documentation https://u.to/mhbzGg
