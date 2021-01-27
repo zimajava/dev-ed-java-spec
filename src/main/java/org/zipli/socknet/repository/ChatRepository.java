@@ -16,6 +16,10 @@ public class ChatRepository {
 
     private final MongoTemplate mongoTemplate;
 
+    public ChatRepository(MongoTemplate mongoTemplate) {
+        this.mongoTemplate = mongoTemplate;
+    }
+
     public Chat save(Chat chat) {
         return mongoTemplate.save(chat);
     }
@@ -26,9 +30,6 @@ public class ChatRepository {
         mongoTemplate.remove(query, Chat.class);
     }
 
-    public ChatRepository(MongoTemplate mongoTemplate) {
-        this.mongoTemplate = mongoTemplate;
-    }
     public Chat findChatById(String id) {
         Query query = new Query();
         query.addCriteria(Criteria.where("id").is(id));
