@@ -364,8 +364,6 @@ public class EventHandler {
                 FileData fileData = (FileData) message.getData();
                 try {
                     fileService.sendFile(fileData);
-                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
-                            new WsMessageResponse(eventCommand, "File is successfully sent")));
 
                 } catch (SendFileException e) {
                     log.error("Failed to load file in a GridFs {} reason {}", fileData.getFileId(),
@@ -387,8 +385,6 @@ public class EventHandler {
                 FileData fileDelete = (FileData) message.getData();
                 try {
                     fileService.deleteFile(fileDelete);
-                    emitter.tryEmitNext(JsonUtils.jsonWriteHandle(
-                            new WsMessageResponse(eventCommand, "File is successfully deleted")));
                 } catch (FileDeleteException e) {
                     log.error("Failed to find the file to delete or the creator of the file is wrong {} reason {}",
                             fileDelete.getUserId(), e.getErrorStatusCode().getMessage());
