@@ -76,16 +76,17 @@ class FileServiceTest {
                 .when(gridFsTemplate)
                 .findOne(new Query(Criteria.where("_id").is(null)));
 
-        Mockito.doReturn(chat)
-                .when(chatRepository)
-                .update(fileData.getChatId(), fileData.getFileId());
-
         File fileAdd = new File(user.getId(), "chatId", new Date(), "title");
         fileAdd.setId("3");
 
         Mockito.doReturn(fileAdd)
                 .when(fileRepository)
                 .save(any());
+
+        Mockito.doReturn(chat)
+                .when(chatRepository)
+                .update(fileData.getChatId(), fileAdd.getId());
+
         final File file = fileService.sendFile(fileData);
 
         assertEquals(fileData.getTitle(), file.getTitle());
