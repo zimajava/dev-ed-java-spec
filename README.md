@@ -37,4 +37,4 @@ When you add your e-mail in a registration form, you will receive the confirmati
 # Documentation:
 
 - Link to swagger: https://dev-ed-messenger-server-dev.herokuapp.com/swagger-ui/ 
-- API documentation https://u.to/mhbzGg
+- API documentation https://docs.google.com/spreadsheets/d/1W897DAFjfr2oaOk_JbBFYdjMvvn8kh3WPMWYO7I7ATY/edit?usp=sharing
