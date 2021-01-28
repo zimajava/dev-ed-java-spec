@@ -64,7 +64,7 @@ public class FileService implements IFileService {
             if (gridFSFile != null) {
                 file = new File(data.getUserId(), data.getChatId(), new Date(), data.getTitle(), data.getBytes());
                 finalFile = fileRepository.save(file);
-                chat = chatRepository.update(data.getChatId(), data.getFileId());
+                chat = chatRepository.update(data.getChatId(), finalFile.getId());
                 log.info("Send file to db userId {} chatId {}", data.getUserId(), data.getChatId());
 
                 if (chat != null) {
@@ -116,7 +116,6 @@ public class FileService implements IFileService {
             gridFsTemplate.delete(new Query(Criteria.where("_id").is(data.getFileId())));
             fileRepository.deleteById(file.getId());
             log.info("File is successfully deleted UserId {} ChatId {} FileId {}", data.getUserId(), data.getChatId(), data.getFileId());
-
         } catch (Exception e) {
             log.error("Error. The given data is invalid");
             throw new FileDeleteException(ErrorStatusCode.FILE_ACCESS_ERROR);

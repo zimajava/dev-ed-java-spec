@@ -31,6 +31,7 @@ public class Chat {
         this.isPrivate = isPrivate;
         this.messagesId = new ArrayList<>();
         this.usersId = usersId;
+        this.filesId = new ArrayList<>();
         this.creatorUserId = creatorUserId;
     }
 
