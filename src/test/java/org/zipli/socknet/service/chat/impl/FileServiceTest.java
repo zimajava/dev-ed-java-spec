@@ -13,6 +13,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.zipli.socknet.dto.FileData;
+import org.zipli.socknet.dto.FileDataToDelete;
 import org.zipli.socknet.exception.file.FileDeleteException;
 import org.zipli.socknet.exception.file.SendFileException;
 import org.zipli.socknet.repository.ChatRepository;
@@ -47,6 +48,7 @@ class FileServiceTest {
     @MockBean
     Chat chat;
     private FileData fileData;
+    private FileDataToDelete fileDataToDelete;
     private User user;
 
     @BeforeEach
@@ -59,6 +61,10 @@ class FileServiceTest {
                 "title",
                 "bytes".getBytes());
 
+        fileDataToDelete = new FileDataToDelete("userId",
+                "chatId",
+                "fileId");
+
         user = new User("email@gmail.com", "password", "userName", "nickName");
         user.setId("userId");
     }
@@ -70,16 +76,17 @@ class FileServiceTest {
                 .when(gridFsTemplate)
                 .findOne(new Query(Criteria.where("_id").is(null)));
 
-        Mockito.doReturn(chat)
-                .when(chatRepository)
-                .update(fileData.getChatId(), fileData.getFileId());
-
         File fileAdd = new File(user.getId(), "chatId", new Date(), "title");
         fileAdd.setId("3");
 
         Mockito.doReturn(fileAdd)
                 .when(fileRepository)
                 .save(any());
+
+        Mockito.doReturn(chat)
+                .when(chatRepository)
+                .update(fileData.getChatId(), fileAdd.getId());
+
         final File file = fileService.sendFile(fileData);
 
         assertEquals(fileData.getTitle(), file.getTitle());
@@ -153,7 +160,7 @@ class FileServiceTest {
                 .when(chatRepository)
                 .save(chat);
 
-        FileData data = new FileData(user.getId(), chat.getId(), fileDelete.getId(), "title");
+        FileDataToDelete data = new FileDataToDelete(user.getId(), chat.getId(), fileDelete.getId());
         fileService.deleteFile(data);
 
         assertFalse(fileRepository.existsById(fileDelete.getId()));
@@ -161,12 +168,10 @@ class FileServiceTest {
 
     @Test
     void deleteFile_FailFileDeleteException() {
-        FileData data = new FileData(
+        FileDataToDelete data = new FileDataToDelete(
                 "wrongUser",
                 null,
-                "fileId",
-                "title",
-                "bytes".getBytes());
+                "fileId");
 
         assertThrows(FileDeleteException.class, () -> {
             fileService.deleteFile(data);

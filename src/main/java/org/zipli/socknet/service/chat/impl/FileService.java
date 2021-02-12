@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Service;
 import org.zipli.socknet.dto.Command;
 import org.zipli.socknet.dto.FileData;
+import org.zipli.socknet.dto.FileDataToDelete;
 import org.zipli.socknet.dto.response.WsMessageResponse;
 import org.zipli.socknet.exception.ErrorStatusCode;
 import org.zipli.socknet.exception.chat.UpdateChatException;
@@ -63,7 +64,7 @@ public class FileService implements IFileService {
             if (gridFSFile != null) {
                 file = new File(data.getUserId(), data.getChatId(), new Date(), data.getTitle(), data.getBytes());
                 finalFile = fileRepository.save(file);
-                chat = chatRepository.update(data.getChatId(), data.getFileId());
+                chat = chatRepository.update(data.getChatId(), finalFile.getId());
                 log.info("Send file to db userId {} chatId {}", data.getUserId(), data.getChatId());
 
                 if (chat != null) {
@@ -91,7 +92,7 @@ public class FileService implements IFileService {
     }
 
     @Override
-    public void deleteFile(FileData data) throws FileDeleteException {
+    public void deleteFile(FileDataToDelete data) throws FileDeleteException {
         File file = fileRepository.getFileById(data.getFileId());
         Chat chat = chatRepository.findChatById(data.getChatId());
         try {
@@ -102,11 +103,9 @@ public class FileService implements IFileService {
                     finalChat.getUsersId().parallelStream()
                             .forEach(userId -> emitterService.sendMessageToUser(userId,
                                     new WsMessageResponse(Command.FILE_DELETE,
-                                            new FileData(userId,
+                                            new FileDataToDelete(userId,
                                                     finalChat.getId(),
-                                                    file.getId(),
-                                                    file.getTitle(),
-                                                    file.getBytes()
+                                                    file.getId()
                                             )
                                     ))
                             );
@@ -117,7 +116,6 @@ public class FileService implements IFileService {
             gridFsTemplate.delete(new Query(Criteria.where("_id").is(data.getFileId())));
             fileRepository.deleteById(file.getId());
             log.info("File is successfully deleted UserId {} ChatId {} FileId {}", data.getUserId(), data.getChatId(), data.getFileId());
-
         } catch (Exception e) {
             log.error("Error. The given data is invalid");
             throw new FileDeleteException(ErrorStatusCode.FILE_ACCESS_ERROR);

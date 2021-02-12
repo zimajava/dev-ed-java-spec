@@ -83,7 +83,7 @@ public class WsMessage {
                             data.findValue("signal").asText()
                     ));
                 case FILE_SEND:
-                case FILE_DELETE:
+
                     JsonNode bytesNode = data.get("bytes");
                     final int[] i = {0};
                     byte[] finalBytes = new byte[bytesNode.size()];
@@ -92,10 +92,17 @@ public class WsMessage {
                     return new WsMessage(command, new FileData(
                             data.findValue("userId").asText(),
                             data.findValue("chatId").asText(),
-                            data.findValue("fileId").asText(),
                             data.findValue("title").asText(),
                             finalBytes
                     ));
+
+                case FILE_DELETE:
+                    return new WsMessage(command, new FileDataToDelete(
+                            data.findValue("userId").asText(),
+                            data.findValue("chatId").asText(),
+                            data.findValue("fileId").asText()
+                    ));
+
                 case CHAT_DELETE:
                 case CHAT_USER_ADD:
                 case CHAT_LEAVE:
